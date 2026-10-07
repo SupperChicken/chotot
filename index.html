@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B5D4B">
+<meta name="format-detection" content="telephone=no,email=no">
+<meta name="author" content="ThienNV - thiennv@vnpt-technology.vn">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Chọn Đồ">
+<title>Chọn Đồ An Tâm</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap">
+<style>
+  /* ---- Nền (thay cho Tailwind preflight) ---- */
+  *,::before,::after{box-sizing:border-box;border:0 solid}
+  html{line-height:1.5}
+  body{margin:0}
+  h1,h2,h3,h4,p,ul,ol,figure,blockquote{margin:0}
+  h1,h2,h3,h4{font-size:inherit;font-weight:inherit}
+  ul,ol{list-style:none;padding:0}
+  button,input,select,textarea{font:inherit;color:inherit;margin:0}
+  button{background:transparent;padding:0;cursor:pointer}
+  a{color:inherit;text-decoration:inherit}
+  img,svg{display:block;max-width:100%}
+  img{height:auto}
+  table{border-collapse:collapse}
+  input[type=search]{-webkit-appearance:none;appearance:none}
+  /* ---- Lớp tiện ích tự viết (chỉ những lớp trang thật sự dùng) ---- */
+  .hidden{display:none}.block{display:block}.flex{display:flex}.grid{display:grid}.flex-wrap{flex-wrap:wrap}
+  .items-start{align-items:flex-start}.justify-between{justify-content:space-between}
+  .gap-1{gap:.25rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}
+  .space-y-2>*+*{margin-top:.5rem}.space-y-4>*+*{margin-top:1rem}
+  .mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mt-3{margin-top:.75rem}.mt-4{margin-top:1rem}.mt-5{margin-top:1.25rem}.mt-8{margin-top:2rem}
+  .mb-1{margin-bottom:.25rem}.mb-2{margin-bottom:.5rem}
+  .mx-auto{margin-left:auto;margin-right:auto}
+  .px-4{padding-left:1rem;padding-right:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}
+  .pt-5{padding-top:1.25rem}.pb-3{padding-bottom:.75rem}.pb-24{padding-bottom:6rem}
+  .max-w-2xl{max-width:42rem}.overflow-hidden{overflow:hidden}.rounded-2xl{border-radius:1rem}.cursor-pointer{cursor:pointer}
+  .text-sm{font-size:.875rem;line-height:1.25rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-2xl{font-size:1.5rem;line-height:2rem}
+  .text-center{text-align:center}.font-bold{font-weight:700}.font-extrabold{font-weight:800}
+  .leading-tight{line-height:1.25}.leading-snug{line-height:1.375}
+  :root{--blue:#1D4ED8;--blue-ink:#FFFFFF;--ink:#101820;--mute:#4A5560;--line:#C9D3CF;--bg:#FFFFFF;--soft:#EEF4F1;--pri:#0B5D4B;--pri-ink:#FFFFFF;--good:#14632F;--good-bg:#E3F4E8;--bad:#A61B1B;--bad-bg:#FBE6E6;--warn:#8A4B00;--warn-bg:#FFF0D6}
+  @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--blue:#8AB4FF;--blue-ink:#0B1B3A;--ink:#F2F5F3;--mute:#B8C3BE;--line:#3A4743;--bg:#0F1614;--soft:#18231F;--pri:#4FD1A8;--pri-ink:#06231B;--good:#7BE0A0;--good-bg:#12301E;--bad:#FF9A9A;--bad-bg:#3A1717;--warn:#FFC670;--warn-bg:#3A2A0C}}
+  html{font-size:16px;-webkit-text-size-adjust:100%}
+  body{font-family:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+  .mute{color:var(--mute)}
+  .btn{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;min-height:2.8rem;padding:.5rem .9rem;border-radius:.8rem;font-weight:700;font-size:1rem;background:var(--pri);color:var(--pri-ink);border:2px solid var(--pri);cursor:pointer;font-family:inherit}
+  .btn.alt{background:transparent;color:var(--pri)}
+  .btn:not(.alt):not(.tbtn){box-shadow:0 2px 0 rgba(0,0,0,.18)}
+  .hero{display:flex;gap:.8rem;align-items:center;margin-bottom:.4rem}
+  .ring{--p:0;--c:var(--pri);flex:none;width:4rem;height:4rem;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center}
+  .ring span{width:3.1rem;height:3.1rem;border-radius:50%;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+  .ring b{font-size:1.1rem;font-weight:800}.ring small{font-size:.6rem;color:var(--mute)}
+  .trust{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}.trust span{font-size:.75rem;font-weight:700;color:var(--pri);background:var(--soft);border-radius:2rem;padding:.15rem .6rem}
+  .sbox{position:relative}.sbox .field{padding-right:5.6rem}
+  .sact{position:absolute;right:.4rem;top:50%;transform:translateY(-50%);display:flex;gap:.3rem;align-items:center}
+  .xbtn{display:none;width:2.2rem;height:2.2rem;border-radius:50%;border:0;background:var(--soft);color:var(--mute);font-size:1rem;font-weight:800;line-height:1;cursor:pointer;font-family:inherit;touch-action:manipulation}
+  .mbtn{width:2.4rem;height:2.4rem;border-radius:50%;border:0;background:var(--pri);color:var(--pri-ink);font-size:1.1rem;line-height:1;cursor:pointer;touch-action:manipulation}
+  .mbtn.on{background:var(--bad);color:#fff;animation:mic 1.2s ease-in-out infinite}
+  @keyframes mic{50%{box-shadow:0 0 0 .5rem rgba(220,38,38,.25)}}
+  @media (prefers-reduced-motion:reduce){.mbtn.on{animation:none}}
+  .sbox.has .xbtn{display:block}
+  .ck{display:flex;gap:.6rem;align-items:flex-start;padding:.35rem 0;font-size:.95rem;cursor:pointer}
+  .ck input{width:1.3rem;height:1.3rem;margin-top:.15rem;accent-color:var(--pri);flex:none}
+  .ck input:checked+span{color:var(--mute);text-decoration:line-through}
+  .ovc.wide{max-width:30rem;max-height:90vh;overflow:auto}
+  .chart{width:100%;height:auto;display:block}
+  input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none;appearance:none}
+  .bk{display:grid;grid-template-columns:minmax(7.5rem,9.5rem) minmax(0,1fr) 2rem;gap:.5rem;align-items:center;padding:.3rem 0;font-size:.9rem}
+  .bk b{text-align:right}
+  .status{display:flex;gap:.7rem;align-items:flex-start;border-radius:1rem;padding:.8rem .9rem;margin-bottom:.8rem;border:1px solid var(--line);border-left-width:6px}
+  .status.good{background:var(--good-bg);border-color:var(--good);color:var(--good)}
+  .status.warn{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+  .status.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad);font-weight:700}
+  .status b{display:block;font-size:1.05rem}.status p{font-size:.92rem;margin-top:.15rem}.st-ic{font-size:1.6rem;line-height:1.1;flex:none}
+  .ev{font-size:.82rem;color:var(--mute);margin:-.1rem 0 .4rem;line-height:1.4}
+  .ev-full{font-size:.9rem;line-height:1.55;padding:.6rem;border:1px dashed var(--line);border-radius:.6rem;margin-top:.4rem;overflow-wrap:anywhere}
+  mark{background:#FFE08A;color:#101820;border-radius:.2rem;padding:0 .15rem;font-weight:700}
+  .dbg table{width:100%}.dbg td,.dbg th{border:1px solid var(--line);padding:.25rem .4rem;vertical-align:top;font-size:.75rem;text-align:left}
+  .dbg-ribbon{position:fixed;left:.5rem;top:.5rem;z-index:60;background:#7A1FA2;color:#fff;font-weight:800;font-size:.75rem;padding:.2rem .6rem;border-radius:2rem}
+  .tts{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:.8rem;padding:.8rem;margin-top:.9rem}
+  .tts-bar{height:.5rem;background:var(--line);border-radius:1rem;overflow:hidden;margin:.5rem 0}
+  .tts-bar i{display:block;height:100%;width:0;background:var(--pri);transition:width .3s}
+  .tts-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.6rem}
+  .tts-row .wide{grid-column:1/-1}
+  .author{margin-top:.8rem;text-align:center;font-size:.85rem;line-height:1.7}
+  .foot{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);font-size:.8rem;color:var(--mute);text-align:center}
+  .btn:disabled{opacity:.6;cursor:wait}
+  .btn:focus-visible,.tab:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #F5A524;outline-offset:2px}
+  .tab{flex:1;min-height:2.8rem;border:2px solid var(--pri);font-weight:700;color:var(--pri);background:transparent;cursor:pointer;font-size:.95rem;font-family:inherit}
+  .tab[aria-selected=true]{background:var(--pri);color:var(--pri-ink)}
+  .field{width:100%;border:2px solid var(--line);border-radius:.8rem;padding:.6rem .8rem;font-size:1rem;background:var(--bg);color:var(--ink);font-family:inherit}
+  .field:focus{border-color:var(--pri)}
+  .card{border:1px solid var(--line);border-radius:1rem;padding:.9rem;background:var(--bg)}
+  .card.best{border-color:var(--good);box-shadow:0 0 0 2px var(--good-bg)}
+  .zone-body>article.card{border:0;padding:0;background:transparent;box-shadow:none}
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:.8rem;padding:.55rem 0;border-top:1px solid var(--line)}
+  .row b{text-align:right}
+  .tag{display:inline-block;padding:.15rem .7rem;border-radius:2rem;font-weight:800;font-size:.85rem}
+  .tag.good{background:var(--good-bg);color:var(--good)}.tag.bad{background:var(--bad-bg);color:var(--bad)}.tag.warn{background:var(--warn-bg);color:var(--warn)}
+  .pill{background:var(--soft);border-radius:.8rem;padding:.4rem .8rem;margin:.3rem 0;display:block}
+  .verdict{border-radius:.9rem;padding:1rem;border:0;border-left:6px solid}
+  .verdict.good{background:var(--good-bg);border-color:var(--good);color:var(--ink)}
+  .verdict.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--ink)}
+  .verdict h3{font-size:1.4rem;line-height:1.25;font-weight:800}
+  .verdict.good h3{color:var(--good)}.verdict.bad h3{color:var(--bad)}
+  .spin{width:1.8rem;height:1.8rem;border:4px solid var(--line);border-top-color:var(--pri);border-radius:50%;animation:s 1s linear infinite;margin:0 auto}
+  @keyframes s{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+  .scroll-x{overflow-x:auto;max-width:100%}
+  table{border-collapse:collapse;min-width:100%}
+  th,td{border:1px solid var(--line);padding:.5rem .6rem;text-align:left;vertical-align:top;min-width:7.5rem}
+  th{background:var(--soft)}
+  a.btn{text-decoration:none}
+  .src{display:block;text-decoration:none;text-align:center;font-weight:700;border:2px solid var(--pri);color:var(--pri);border-radius:.8rem;padding:.6rem;margin:.4rem 0}
+  .bar{height:.8rem;border-radius:1rem;background:var(--line);overflow:hidden}.bar i{display:block;height:100%}
+  .card,.zbox,.grp{overflow-wrap:anywhere}
+  .row b{overflow-wrap:break-word}
+  .row span{flex:0 1 46%;min-width:0}.row b{flex:1 1 0;min-width:0}.row b.nw{flex:0 0 auto;white-space:nowrap}
+  .clamp2,.clamp3{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+  .clamp2{-webkit-line-clamp:2}.clamp3{-webkit-line-clamp:3}
+  .zone{border:1px solid var(--zc);border-radius:1rem;overflow:hidden;margin-top:1.2rem;background:var(--bg);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+  .zone>h2{background:var(--zc);color:var(--zt);padding:.55rem .9rem;font-weight:800;font-size:1.05rem;line-height:1.3}
+  .zone-body{padding:.85rem}
+  .li{display:grid;grid-template-columns:auto 4rem minmax(0,1fr);gap:.7rem;align-items:center;border:2px solid var(--line);border-radius:1rem;padding:.65rem;cursor:pointer}
+  .li-p{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin:.15rem 0}
+  .thumb{width:4rem;height:4rem;border-radius:.7rem;overflow:hidden;background:var(--soft);display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .gal{display:flex;gap:.6rem;overflow-x:auto;padding:.6rem;background:var(--soft);border-radius:1rem;scroll-snap-type:x mandatory;margin-top:.7rem}
+  .gal .ph{flex:none;width:min(12rem,62%);height:8.5rem;scroll-snap-align:start;display:block}
+  .gal .ph img{width:100%;height:100%;object-fit:cover;border-radius:.8rem;display:block}
+  .zbox{background:var(--soft);border-radius:1rem;padding:.9rem;margin-top:.9rem}
+  .zbox.line{background:transparent;border:1px solid var(--line)}
+  .grp{border:2px dashed var(--line);border-radius:.9rem;padding:.7rem;margin-top:.9rem}
+  .grp h3{font-weight:800;font-size:1rem}
+  .wr{padding:.8rem 0;border-top:1px solid var(--line)}
+  article[id^=tin-]{scroll-margin-top:.6rem}
+  th:first-child{position:sticky;left:0;z-index:1;min-width:5.5rem}
+  .tbtn{min-height:2.4rem;font-size:.9rem;padding:.3rem .55rem;border-width:2px;border-radius:.7rem}
+  .rchip{border:2px solid var(--pri);color:var(--pri);background:transparent;border-radius:2rem;padding:.3rem .8rem;font-weight:700;font-size:.9rem;cursor:pointer;font-family:inherit}
+  .rchip[aria-pressed=true]{background:var(--pri);color:var(--pri-ink)}
+  .sum{display:grid;grid-template-columns:4rem minmax(0,1fr);gap:.7rem;align-items:center;cursor:pointer;list-style:none}
+  .sum::-webkit-details-marker{display:none}
+  #fab{position:fixed;right:.5rem;bottom:calc(.9rem + env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;gap:.3rem;padding:.25rem;border-radius:2rem;background:var(--bg);border:1px solid var(--pri);box-shadow:0 3px 12px rgba(0,0,0,.25);opacity:.94}
+  #fab button{width:2.5rem;height:2.5rem;border-radius:50%;border:0;background:var(--pri);color:var(--pri-ink);font-weight:800;font-size:1rem;line-height:1;cursor:pointer;font-family:inherit;touch-action:manipulation}
+  #fab small{display:none}
+  #fab button:focus-visible{outline:3px solid #F5A524;outline-offset:2px}
+  .ov{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;padding:1rem;padding-bottom:calc(1rem + env(safe-area-inset-bottom,0px))}
+  .ovc{width:100%;max-width:24rem;background:var(--bg);color:var(--ink);border:2px solid var(--pri);border-radius:1rem;padding:1rem;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+  @media (min-width:640px){.ov{align-items:center}}
+</style>
+</head>
+<body>
+<div class="max-w-2xl mx-auto px-4 pb-24">
+
+  <header class="pt-5 pb-3 flex items-start justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-extrabold leading-tight">🛡️ Chọn Đồ An Tâm</h1>
+      <p class="mute">Tìm bất cứ món gì trên Chợ Tốt, so sánh và nghe lời khuyên trước khi mua.</p>
+      <div class="trust"><span>✔ Tin thật từ Chợ Tốt</span><span>✔ Chấm điểm người bán</span><span>✔ Cảnh báo lừa đảo</span></div>
+    </div>
+    <button id="fontBtn" class="btn alt" style="width:auto;min-height:2.4rem;padding:.3rem .8rem;font-size:.9rem" aria-label="Đổi cỡ chữ">Chữ: Vừa</button>
+  </header>
+
+  <div class="flex rounded-2xl overflow-hidden" role="tablist" aria-label="Cách nhập">
+    <button class="tab" role="tab" id="t1" aria-selected="true">🔎 Tìm giúp tôi</button>
+    <button class="tab" role="tab" id="t2" aria-selected="false">📋 Tôi tự dán tin</button>
+  </div>
+
+  <!-- Tab 1 -->
+  <section id="p1" class="mt-5">
+    <label for="q" class="block text-lg font-extrabold mb-2">Bố muốn tìm món gì?</label>
+    <div class="sbox" id="sbox"><input id="q" class="field" type="search" inputmode="search" enterkeyhint="search" placeholder="Ví dụ: xe máy Wave, tủ lạnh, iPhone 12" autocomplete="off"><div class="sact"><button type="button" class="xbtn" id="qClear" aria-label="Xóa hết chữ đang gõ" title="Xóa hết">✕</button><button type="button" class="mbtn" id="qMic" aria-label="Nói để tìm" aria-pressed="false" title="Nói để tìm">🎤</button></div></div>
+    <p class="mute text-sm mt-1" id="voiceStat" aria-live="polite"></p>
+    <div class="flex flex-wrap gap-2 mt-1" id="voiceAlt"></div>
+    <div class="flex flex-wrap gap-2 mt-3" id="chips"></div>
+    <div class="flex flex-wrap gap-2 mt-3 hidden" id="hist" aria-label="Các lần tìm gần đây"></div>
+    <div class="mt-4"><label for="reg" class="block font-extrabold mb-1">Khu vực</label>
+      <div class="flex flex-wrap gap-2 mb-2" id="regChips" role="group" aria-label="Chọn nhanh khu vực"></div>
+      <select id="reg" class="field" aria-label="Tất cả tỉnh thành"><option value="">Toàn quốc</option><option value="13000">Hồ Chí Minh</option><option value="12000">Hà Nội</option><option value="3017">Đà Nẵng</option></select></div>
+    <button id="goSearch" class="btn mt-4">🔎 Tìm trên Chợ Tốt</button>
+    
+  </section>
+
+  <!-- Tab 2 -->
+  <section id="p2" class="mt-5 hidden">
+    <p class="text-lg">Mở tin trên Chợ Tốt, bấm giữ vào chữ để <b>sao chép</b> (tiêu đề, giá, mô tả, nơi bán), rồi <b>dán</b> vào ô dưới. Cần ít nhất 2 tin.</p>
+    <div class="space-y-4 mt-4">
+      <div><label for="d1" class="block font-extrabold mb-1">Tin số 1</label><textarea id="d1" rows="5" class="field" placeholder="Dán nội dung tin đăng số 1 vào đây"></textarea></div>
+      <div><label for="d2" class="block font-extrabold mb-1">Tin số 2</label><textarea id="d2" rows="5" class="field" placeholder="Dán nội dung tin đăng số 2 vào đây"></textarea></div>
+      <div><label for="d3" class="block font-extrabold mb-1">Tin số 3 (không bắt buộc)</label><textarea id="d3" rows="5" class="field" placeholder="Dán nội dung tin đăng số 3 vào đây"></textarea></div>
+    </div>
+    <p class="mute text-sm mt-3">Chỉ dán đường link thì máy chưa đọc được nội dung (Chợ Tốt chặn đọc tự động). Hãy dán cả phần chữ của tin.</p>
+    <div class="grid gap-3 mt-4">
+      <button id="goPaste" class="btn">⚖️ So sánh các tin này</button>
+      <button id="demoPaste" class="btn alt">Điền thử 3 tin mẫu</button>
+    </div>
+  </section>
+
+  <div id="out" class="mt-8" aria-live="polite"></div>
+  <p class="foot">Chọn Đồ An Tâm v2.0 · Dữ liệu lấy từ tin đăng công khai trên Chợ Tốt.<br>Điểm số và lời khuyên chỉ là ước lượng để tham khảo. Luôn xem hàng và kiểm tra kỹ trước khi trả tiền.</p>
+  <div class="author"><p class="font-extrabold">Tác giả: ThienNV</p>
+   <p>thiennv@vnpt-technology.vn</p>
+   <p>0888.99.33.00</p></div>
+</div>
+
+<div id="fab" role="group" aria-label="Di chuyển nhanh">
+  <button id="toTop" type="button" aria-label="Lên đầu trang" title="Lên đầu trang">▲<small>Đầu trang</small></button>
+  <button id="toBot" type="button" aria-label="Xuống cuối trang" title="Xuống cuối trang">▼<small>Cuối trang</small></button>
+</div>
+
+<script>
+/* =========================================================================================
+   CHỌN ĐỒ AN TÂM · phiên bản 2.0 · Tác giả: ThienNV
+   -----------------------------------------------------------------------------------------
+   Cấu trúc file (tìm theo tiêu đề "/* ----------" trong mã):
+     1. CẤU HÌNH này            6. Tin trùng (đăng lại, nhiều người cùng đăng, nghi lừa đảo)
+     2. Kho lưu trữ & tiện ích   7. Xem theo cách khác (mới nhất, rẻ nhất, khó bán, ít người thấy)
+     3. Hiểu câu tìm kiếm        8. Hiển thị kết quả, biểu đồ, tin nhắn, checklist
+     4. Đọc sâu thông số         9. Giọng nói
+     5. Chấm điểm và xếp hạng   10. Chẩn đoán (thêm ?debug=1 vào địa chỉ trang)
+   Mọi con số quan trọng đều nằm trong CONFIG, muốn tinh chỉnh chỉ cần sửa ở đây.
+   ========================================================================================= */
+const CONFIG={
+  version:'2.0',
+  proxy:'https://dark-forest-8b58.nguyenvanthien3290.workers.dev/',   // địa chỉ Worker trung gian
+  timeoutMs:12000,      // chờ tối đa cho mỗi yêu cầu lấy tin
+  pageSize:30,          // số tin Chợ Tốt trả về mỗi trang
+  maxVariants:5,        // số cách gõ tối đa gửi đi cho mỗi lần tìm
+  deepVariants:2,       // số cách gõ đầu tiên được lấy thêm trang 2 và 3
+  maxResults:80,        // số tin khớp đúng tối đa hiển thị
+  nearIfFewer:6,        // ít hơn ngần này tin khớp đúng thì thêm các tin "gần giống"
+  maxNear:12,           // số tin "gần giống" tối đa
+  cacheMinutes:5,       // nhớ kết quả của lần tìm trong bao nhiêu phút
+  history:6,            // số cụm tìm gần đây được nhớ
+  weights:{trust:.4,price:.3,post:.3},   // điểm giao dịch = 40% người bán + 30% giá + 30% tin đăng
+  okScore:65,           // từ mức này (và người bán đủ tin cậy) mới gọi là "đáng giao dịch"
+  trustMin:50,          // điểm người bán tối thiểu để được chọn là tin tốt nhất
+  capUntrusted:59,      // người bán dưới mức trên thì tổng điểm tối đa chỉ bằng ngần này
+  dup:{                 // cách nhận ra tin trùng
+    title:.6, body:.8, titleHi:.85, bodyMid:.5, sameSeller:.7,   // độ giống của tiêu đề / nội dung (0 đến 1)
+    priceTight:.03, priceWide:.15, odoRatio:1.5,   // số km chênh hơn 1,5 lần thì là hai xe khác nhau
+                               // chênh giá cho phép (3% và 15%)
+    lowTrust:55, cloneLow:.7, cloneCheap:.5, cloneSamePrice:.4   // ngưỡng kết luận "nghi lừa đảo"
+  },
+  hard:{days:45, minScore:25}   // "khó bán": đăng đủ 45 ngày là điểm tối đa; từ 25 điểm mới liệt kê
+};
+
+/* ---------- 2. Kho lưu trữ (nhớ cỡ chữ, khu vực, lịch sử tìm) ---------- */
+const MEM={};
+const store={
+  get(k,d){ try{ const v=localStorage.getItem('ct:'+k); return v==null?d:JSON.parse(v); }catch(e){ return k in MEM?MEM[k]:d; } },
+  set(k,v){ try{ localStorage.setItem('ct:'+k,JSON.stringify(v)); }catch(e){ MEM[k]=v; } },
+  del(k){ try{ localStorage.removeItem('ct:'+k); }catch(e){} delete MEM[k]; }
+};
+
+/* ---------- Dữ liệu mẫu (thay bằng API thật khi có máy chủ trung gian) ---------- */
+const SAMPLE = [
+ {name:"Loa kéo JBL PartyBox 310 đã dùng 1 năm",seller:"Anh Hùng (cá nhân)",price:9500000,cond:"Đã dùng",loc:"Hải Châu, Đà Nẵng",km:3,ref:12000000,tags:"jbl partybox loa kéo karaoke",desc:"Loa JBL PartyBox 310 dùng 1 năm, còn bảo hành 3 tháng, đủ phụ kiện và hóa đơn. Cho nghe thử tại nhà, xem hàng thoải mái."},
+ {name:"JBL PartyBox 310 giá sốc",seller:"Minh Phát Store",price:4200000,cond:"Như mới",loc:"Hà Nội",km:760,ref:12000000,tags:"jbl partybox loa kéo",desc:"Loa JBL ib nhé. Đặt cọc trước 500k giữ hàng, ship toàn quốc."},
+ {name:"Loa kéo JBL PartyBox Club 120 fullbox",seller:"Cửa hàng Âm Thanh Việt",price:11800000,cond:"Mới",loc:"Sơn Trà, Đà Nẵng",km:6,ref:12500000,tags:"jbl partybox loa kéo",desc:"Mới 100% nguyên seal, chính hãng, bảo hành 12 tháng, xuất hóa đơn VAT. Giao hàng, cho kiểm tra rồi thanh toán."},
+ {name:"Loa JBL Flip 6 chính hãng",seller:"Chị Lan",price:2300000,cond:"Như mới",loc:"Thanh Khê, Đà Nẵng",km:4,ref:2800000,tags:"jbl flip bluetooth",desc:"Mua được 2 tháng, ít dùng, còn đủ hộp và dây sạc, bảo hành còn 10 tháng. Gặp trực tiếp xem hàng."},
+ {name:"Loa Bose SoundLink Revolve bãi Mỹ",seller:"Hoàng Audio",price:2800000,cond:"Đã dùng",loc:"Liên Chiểu, Đà Nẵng",km:9,ref:3500000,tags:"bose soundlink bãi bluetooth",desc:"Hàng bãi Mỹ, pin còn tốt, có vài vết xước nhẹ ở thân. Test thoải mái, không bảo hành."},
+ {name:"Bose S1 Pro loa di động",seller:"Anh Tuấn",price:8200000,cond:"Đã dùng",loc:"Cẩm Lệ, Đà Nẵng",km:7,ref:9500000,tags:"bose s1 pro loa kéo",desc:"Loa Bose S1 Pro dùng 6 tháng, nguyên zin, có hóa đơn mua hàng, kèm túi đựng. Cho nghe thử."},
+ {name:"Loa Bose Companion 2 Series III",seller:"Shop Cũ Mới",price:1100000,cond:"Đã dùng",loc:"Quận 1, TP. Hồ Chí Minh",km:610,ref:1800000,tags:"bose companion bãi",desc:"Loa Bose cũ, còn dùng được."},
+ {name:"Loa Sony SRS-XB43 Extra Bass",seller:"Chị Mai",price:3900000,cond:"Đã dùng",loc:"Hải Châu, Đà Nẵng",km:2,ref:4500000,tags:"sony xb43 bluetooth",desc:"Dùng nhẹ 8 tháng, đèn và bass đều tốt, còn hộp, sạc zin. Cho kiểm tra trước khi mua."},
+ {name:"Loa Marshall Stanmore II",seller:"Anh Dũng",price:5200000,cond:"Đã dùng",loc:"Ngũ Hành Sơn, Đà Nẵng",km:8,ref:6500000,tags:"marshall stanmore",desc:"Marshall Stanmore II đen, hoạt động tốt, vỏ có trầy nhỏ phía sau, đủ dây nguồn. Xem hàng tại nhà."},
+ {name:"Loa kéo Temeka TK-15 karaoke",seller:"Điện máy Hòa Bình",price:3200000,cond:"Mới",loc:"Hòa Vang, Đà Nẵng",km:14,ref:3300000,tags:"temeka loa kéo karaoke",desc:"Loa kéo mới 100%, kèm 2 micro không dây, bảo hành 12 tháng tại cửa hàng. Giao tận nơi, kiểm tra rồi trả tiền."},
+ {name:"Loa kéo Kiomic cũ, còn tốt",seller:"Cô Hạnh",price:1500000,cond:"Đã dùng",loc:"Thanh Khê, Đà Nẵng",km:5,ref:2600000,tags:"kiomic loa kéo karaoke",desc:"Loa kéo dùng 2 năm, có nghe thử được, hơi rè nhẹ ở âm cao khi mở lớn. Không bảo hành."},
+ {name:"Harman Kardon Onyx Studio 5",seller:"Anh Khoa",price:2100000,cond:"Đã dùng",loc:"Sơn Trà, Đà Nẵng",km:5,ref:3300000,tags:"harman kardon onyx",desc:"Âm thanh hay, pin trâu, vỏ nứt nhẹ một góc nhưng không ảnh hưởng âm thanh. Đủ sạc, gặp trực tiếp."}
+];
+const CHIPS = ["iPhone 12 cũ","xe máy Wave","tủ lạnh","laptop Dell","loa kéo JBL","xe đạp","máy giặt","tivi Samsung"];
+const DEMO = [
+`Loa Bose SoundLink Revolve đã qua sử dụng
+Giá: 2tr8
+Hàng bãi Mỹ, pin tốt, xước nhẹ. Cho test, không bảo hành.
+Người bán: Hoàng Audio - Liên Chiểu, Đà Nẵng`,
+`Loa Bose SoundLink Revolve 99%
+Giá 1.200.000đ
+Loa Bose ib nhé. Chuyển khoản trước giữ hàng, ship toàn quốc.
+Hà Nội`,
+`Loa Bose SoundLink Revolve like new fullbox
+3.300.000đ
+Mua 5 tháng, còn bảo hành 7 tháng, đủ hộp, hóa đơn, cáp sạc. Gặp trực tiếp xem hàng.
+Người bán: Chị Thu, quận Hải Châu, Đà Nẵng`];
+
+const $ = s => document.querySelector(s);
+const vnd = n => n ? n.toLocaleString('vi-VN') + ' đ' : 'Chưa rõ giá';
+const norm = s => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');
+const has = (t,re) => re.test(norm(t));
+
+/* ---------- Tab & cỡ chữ ---------- */
+function tab(n,keep){ [1,2].forEach(i=>{ $('#p'+i).classList.toggle('hidden',i!==n); $('#t'+i).setAttribute('aria-selected',i===n); }); if(!keep) $('#out').innerHTML=''; else $('#p'+n).scrollIntoView(); }
+$('#t1').onclick=()=>tab(1); $('#t2').onclick=()=>tab(2);
+const sizes=[[14,'Nhỏ'],[16,'Vừa'],[19,'Lớn'],[22,'Rất lớn']]; let si=store.get('font',1); if(!(si>=0&&si<sizes.length)) si=1;
+const applyFont=()=>{ document.documentElement.style.fontSize=sizes[si][0]+'px'; $('#fontBtn').textContent='Chữ: '+sizes[si][1]; };
+applyFont();
+$('#fontBtn').onclick=()=>{ si=(si+1)%sizes.length; applyFont(); store.set('font',si); };
+CHIPS.forEach(c=>{ const b=document.createElement('button'); b.className='tag warn'; b.style.cssText='font-size:.9rem;padding:.3rem .8rem;cursor:pointer;border:2px solid var(--warn)'; b.textContent=c; b.onclick=()=>{$('#q').value=c; syncX(); search();}; $('#chips').appendChild(b); });
+
+/* ---------- Giá tham khảo theo loại hàng (ước tính, đã dùng) ---------- */
+const CATS=[["partybox",10e6],["jbl",3e6],["bose",4e6],["sony alpha",15e6],["sony",3.5e6],["marshall",5.5e6],["harman",3.3e6],["klipsch",4e6],["temeka",3.2e6],["kiomic",2.6e6],["loa",3e6],["airpods",3e6],["tai nghe",1.5e6],["iphone 15",18e6],["iphone 14",14e6],["iphone 13",11e6],["iphone 12",8e6],["iphone 11",6e6],["iphone",9e6],["samsung",6e6],["oppo",4e6],["xiaomi",3.5e6],["dien thoai",4e6],["ipad",8e6],["macbook",16e6],["thinkpad",9e6],["dell",9e6],["laptop",9e6],["may tinh",7e6],["tivi",6e6],["tv",6e6],["tu lanh",5e6],["may giat",4.5e6],["dieu hoa",6e6],["may lanh",6e6],["noi chien",1.2e6],["quat",5e5],["wave",9e6],["vision",24e6],["air blade",30e6],["honda sh",60e6],["exciter",30e6],["winner",30e6],["xe may",15e6],["xe dap",2.5e6],["ban ghe",2e6],["sofa",4e6],["giuong",3.5e6],["tu quan ao",2.5e6],["may anh",8e6],["dong ho",3e6]];
+function refFor(t){ const n=norm(t); const h=CATS.find(c=>new RegExp('(^|[^a-z0-9])'+c[0]+'([^a-z0-9]|$)').test(n)); return h?h[1]:null; }
+const REG={'':['Toàn quốc',['Quận 7, TP. Hồ Chí Minh','Cầu Giấy, Hà Nội','Hải Châu, Đà Nẵng','Ninh Kiều, Cần Thơ']],
+ '13000':['TP. Hồ Chí Minh',['Quận 7, TP. Hồ Chí Minh','Bình Thạnh, TP. Hồ Chí Minh','Thủ Đức, TP. Hồ Chí Minh','Gò Vấp, TP. Hồ Chí Minh']],
+ '12000':['Hà Nội',['Cầu Giấy, Hà Nội','Đống Đa, Hà Nội','Hà Đông, Hà Nội','Long Biên, Hà Nội']],
+ '3017':['Đà Nẵng',['Hải Châu, Đà Nẵng','Thanh Khê, Đà Nẵng','Sơn Trà, Đà Nẵng','Cẩm Lệ, Đà Nẵng']]};
+
+/* ---------- Tin mẫu cho BẤT KỲ món nào ---------- */
+function generate(q,region){
+  const seed=[...norm(q)].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7);
+  const rnd=i=>((Math.sin(seed+i*97)*10000)%1+1)%1;
+  let ref=refFor(q); if(!ref) ref=Math.round((1.5e6+rnd(1)*4e6)/1e5)*1e5;
+  const locs=regLocs(region), near=region!=='';
+  const far=region==='12000'?'Quận 7, TP. Hồ Chí Minh':'Hà Nội';
+  const nm=q.trim().replace(/^./,c=>c.toUpperCase());
+  const u=ref<5e5?1e4:5e4, rp=v=>Math.max(u,Math.round(v/u)*u);
+  const SI=[{sold:24,rating:4.8,ratingCount:12},{sold:0},{sold:320,rating:4.9,ratingCount:86,shop:true,protected:true},{sold:2},{sold:9,rating:4.2,ratingCount:5},{sold:15,rating:4.7,ratingCount:8}];
+  const T=[
+   [nm+' đã dùng, còn tốt','Anh Hùng (cá nhân)',.9,'Đã dùng','Dùng được 8 tháng, còn bảo hành, đủ phụ kiện và hóa đơn mua hàng. Cho xem và kiểm tra thoải mái trước khi mua.'],
+   [nm+' giá sốc','Minh Phát Store',.42,'Như mới','Hàng đẹp ib nhé. Đặt cọc trước 500k giữ hàng, ship toàn quốc.',true],
+   [nm+' mới 100% nguyên seal','Cửa hàng Đại Phát',1.05,'Mới','Mới 100% nguyên seal, chính hãng, bảo hành 12 tháng, xuất hóa đơn VAT. Giao hàng, cho kiểm tra rồi thanh toán.'],
+   [nm+' cũ giá rẻ','Shop Cũ Mới',.8,'Đã dùng','Còn dùng tốt.'],
+   [nm+' có xước nhẹ','Chị Lan',.72,'Đã dùng','Dùng tốt, thân có vết xước nhẹ, không bảo hành. Gặp trực tiếp, cho test trước khi mua.'],
+   [nm+' like new fullbox','Anh Tuấn',1.4,'Như mới','Mua được 2 tháng, đủ hộp, hóa đơn, còn bảo hành 10 tháng. Gặp trực tiếp xem hàng.']];
+  return T.map((t,i)=>({name:t[0],seller:t[1],price:rp(ref*t[2]),cond:t[3],desc:t[4],
+    loc:t[5]?far:locs[i%locs.length],km:near?(t[5]?760:2+i*3):null,ref:refFor(q),refSrc:refFor(q)?'cat':null,sample:true,source:'Tin mẫu',phone:'09xx xxx xxx (tin mẫu)',addr:'',si:SI[i]}));
+}
+function sampleFor(q,region){
+  const toks=norm(q).split(/\s+/).filter(t=>t.length>1&&!['loa','bai','cu','gia','moi'].includes(t));
+  if(!toks.length&&/loa/.test(norm(q))) return SAMPLE.slice(0,6).map(x=>({...x,refSrc:'cat',sample:true,source:'Tin mẫu',phone:'09xx xxx xxx (tin mẫu)',si:{sold:12,rating:4.6,ratingCount:6}}));
+  const hits=SAMPLE.map(x=>({x,s:toks.filter(t=>norm(x.name+' '+x.tags).includes(t)).length})).filter(o=>o.s>0).sort((a,b)=>b.s-a.s||a.x.km-b.x.km).map(o=>({...o.x,refSrc:'cat',sample:true,source:'Tin mẫu',phone:'09xx xxx xxx (tin mẫu)',si:{sold:12,rating:4.6,ratingCount:6}}));
+  return hits.length>=3?hits.slice(0,8):generate(q,region);
+}
+
+/* ---------- Lấy tin thật từ Chợ Tốt qua máy chủ trung gian (Cloudflare Worker) ---------- */
+const PROXY_URL=CONFIG.proxy;
+/* ---------- Khu vực: thành phố lớn lên đầu, các tỉnh còn lại xếp theo chữ cái ---------- */
+const MAIN=['Hồ Chí Minh','Hà Nội','Đà Nẵng','Hải Phòng','Cần Thơ'];
+let PENDING_REGION=store.get('region','');   // khu vực đã chọn lần trước, áp dụng khi danh sách tỉnh thành tải xong
+const saveRegion=()=>{ PENDING_REGION=''; store.set('region',$('#reg').value); };
+let REGIONS=[{code:'13000',name:'Hồ Chí Minh'},{code:'12000',name:'Hà Nội'},{code:'3017',name:'Đà Nẵng'}];
+const mainIdx=n=>MAIN.findIndex(m=>norm(n).includes(norm(m)));
+function syncChips(){ document.querySelectorAll('#regChips .rchip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.code===$('#reg').value))); }
+function buildRegions(){
+  const cur=$('#reg').value||PENDING_REGION, main=[], rest=[];
+  REGIONS.forEach(r=>{ const i=mainIdx(r.name); (i>=0?main:rest).push({...r,i}); });
+  main.sort((a,b)=>a.i-b.i); rest.sort((a,b)=>a.name.localeCompare(b.name,'vi'));
+  const o=r=>`<option value="${esc(r.code)}">${esc(r.name)}</option>`;
+  $('#reg').innerHTML='<option value="">Toàn quốc</option>'+(main.length?`<optgroup label="Thành phố lớn">${main.map(o).join('')}</optgroup>`:'')+(rest.length?`<optgroup label="Các tỉnh khác">${rest.map(o).join('')}</optgroup>`:'');
+  $('#reg').value=cur; if($('#reg').value!==cur) $('#reg').value='';
+  $('#regChips').innerHTML='';
+  [{code:'',name:'Toàn quốc'},...main].forEach(r=>{ const b=document.createElement('button'); b.type='button'; b.className='rchip'; b.textContent=r.name; b.dataset.code=r.code; b.onclick=()=>{ $('#reg').value=r.code; syncChips(); saveRegion(); }; $('#regChips').appendChild(b); });
+  syncChips();
+}
+$('#reg').addEventListener('change',()=>{ syncChips(); saveRegion(); });
+buildRegions();
+(async()=>{ try{ const r=await fetch(PROXY_URL+'?mode=regions'); if(!r.ok) return; const j=await r.json(); if(j.regions&&j.regions.length>=3){ REGIONS=j.regions; buildRegions(); } }catch(e){} })();
+function regLocs(region){ if(REG[region]) return REG[region][1]; const r=REGIONS.find(x=>x.code===region); if(!r) return REG[''][1]; return ['Trung tâm, '+r.name,'Phường 1, '+r.name,'Ngoại thành, '+r.name,'Huyện lân cận, '+r.name]; }
+/* ---------- Hiểu câu tìm kiếm: gõ thiếu, gõ sai, dính/tách chữ-số, thiếu hãng ---------- */
+const GENERIC=new Set(['xem','kiem','xe','mua','ban','can','tim','cu','moi','gia','re','chinh','chu','cho','toi','minh','muon','cua','cac','nhung','la','loai','dep','tot','zin','hang','chiec','con','cai','va','co','khong','da','dung','qua','su','giup','xin','oi','nhe','nha']);
+const STRONG={ip:1,ss:1,xm:1,dt:1,tl:1,mg:1,dh:1,lap:1,mbp:1,dtdd:1,hd:1,ab:1,ex:1};
+const NOMERGE=new Set(['pro','air','max','tab','tv','ram','gb','cm','mm','inch','mac','led','hd','fhd','uhd','mini','plus','xe']);
+const SYN={ip:'iphone',dt:'dien thoai',dtdd:'dien thoai',mbp:'macbook',tl:'tu lanh',mg:'may giat',dh:'dieu hoa',sh:'honda sh',ss:'samsung',xm:'xiaomi',lap:'laptop',ab:'air blade',ex:'exciter',airblade:'air blade',oto:'o to',kawa:'kawasaki',hd:'harley davidson'};
+const BRANDS=new Set(['honda','yamaha','suzuki','kawasaki','ducati','triumph','bmw','ktm','harley','davidson','piaggio','vespa','sym','vinfast','benelli','enfield','royal','apple','samsung','oppo','xiaomi','vivo','realme','sony','jbl','bose','marshall','harman','dell','asus','acer','lenovo','hp','lg','panasonic','toshiba','daikin','sharp','toyota','mazda','hyundai','kia','ford','mercedes','audi','canon','nikon','fujifilm','giant','trek','casio','seiko','nokia','huawei','electrolux']);
+const VOCAB=['max','pro','plus','mini','ultra','air','note','fold','flip','promax','inch','iphone','ipad','macbook','airpods','samsung','galaxy','oppo','xiaomi','realme','vivo','huawei','nokia','laptop','dell','asus','acer','lenovo','thinkpad','honda','yamaha','suzuki','vinfast','piaggio','vespa','wave','vision','exciter','winner','airblade','lead','future','sirius','kawasaki','ninja','versys','vulcan','ducati','monster','panigale','scrambler','multistrada','triumph','bonneville','benelli','harley','davidson','sportster','himalayan','hayabusa','burgman','raider','satria','nvx','janus','freego','grande','jupiter','blade','rebel','tiger','camera','nikon','canon','fujifilm','sofa','casio','seiko','toyota','mazda','hyundai','mercedes','audi','panasonic','toshiba','daikin','sharp','electrolux','giant','tivi','marshall','harman','klipsch','bose','sony','kiomic','temeka','partybox','soundlink','stanmore','macbook','airblade','dieuhoa'];
+const KNOWN=new Set(VOCAB);
+const MODEL_BRAND=[
+ [/^(z(125|250|300|400|500|650|750|800|900|1000|1100)(sx|r|se)?|zh2|zx\d{1,2}r?|er6n?|er6f|w175|w800|klx\d*|kx\d+|versys|vulcan|ninja)$/,'kawasaki'],
+ [/^(cb\d{2,4}r?|cbr\d{2,4}(rr|r)?|crf\d+|msx|pcx\d*|vision|winner|wave|future|blade|rebel\d*|vario|airblade|lead)$/,'honda'],
+ [/^(exciter|nvx\d*|sirius|jupiter|grande|janus|freego|latte|r15|r3|r6|r1|mt\d{2}|xsr\d*|tfx|fz\d*|tenere)$/,'yamaha'],
+ [/^(raider|satria|gsx\w*|impulse|burgman|hayabusa|vstrom|intruder|axelo)$/,'suzuki'],
+ [/^(monster|panigale|multistrada|diavel|streetfighter)$/,'ducati'],
+ [/^(s1000(rr|r|xr)|r1[12]50(gs|rt|r)|g310(gs|r)|f[78]\d0(gs|r)|k1600\w*)$/,'bmw'],
+ [/^(duke|rc)\d*$/,'ktm'],
+ [/^(sportster|fatboy|softail|iron\d*)$/,'harley davidson'],
+ [/^(liberty|medley|primavera|sprint)$/,'piaggio'],
+ [/^(klara|feliz|evo\d*|theon|ludo|impes|vento|tempest)$/,'vinfast'],
+ [/^(bonneville|thruxton|daytona)$/,'triumph'],
+ [/^(himalayan|classic\d*|meteor|interceptor|continental)$/,'royal enfield'],
+ [/^(tnt\d+|trk\d+|leoncino\d*|imperiale)$/,'benelli']];
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,i)=>i);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c;}return p[n];}
+
+function understand(raw){
+  const base=norm(raw).replace(/[^a-z0-9]+/g,' ').trim();
+  let toks=[];
+  base.split(/\s+/).filter(Boolean).forEach(w=>{
+    const pre=(w.match(/^([a-z]{1,3})\d/)||[])[1];
+    if(/^[a-z]{1,3}\d{1,4}[a-z]{0,3}$/.test(w)&&!STRONG[pre]) toks.push(w);          // z1000, r15, sh150i, zx6r giữ nguyên
+    else toks.push(...w.replace(/([a-z])(\d)/g,'$1 $2').replace(/(\d)([a-z])/g,'$1 $2').split(' '));
+  });
+  const all=toks.slice();
+  const KW=new Set(['doi','sx','dk','model','nam','san','xuat','dang','ky']), isY=t=>/^(?:19[89]|20[0-3])\d$/.test(t||'');
+  toks=toks.filter((t,i)=>{ if(!KW.has(t)) return true; let j=i+1; while(KW.has(toks[j])) j++; return !isY(toks[j]); });   // "đời 2019", "năm sản xuất 2019" chỉ là cách nói của năm
+  toks=toks.filter((t,i)=>!(t==='may'&&toks[i-1]==='xe')&&!(t==='xe'&&toks[i+1]==='may')&&!GENERIC.has(t));
+  if(!toks.length) toks=all;
+  const mg=[]; for(let i=0;i<toks.length;i++){ const t=toks[i], n=toks[i+1];       // "z 1000" -> z1000
+    if(/^[a-z]{1,3}$/.test(t)&&!STRONG[t]&&!NOMERGE.has(t)&&n&&/^\d{2,4}$/.test(n)){ mg.push(t+n); i++; } else mg.push(t); }
+  const exp=[]; mg.forEach(t=>{ (SYN[t]?SYN[t].split(' '):[t]).forEach(x=>exp.push({t:x})); });
+  let changed=false;                                                                  // sửa gõ sai: kawsaki -> kawasaki
+  exp.forEach(o=>{ const t=o.t; if(/\d/.test(t)||t.length<5||KNOWN.has(t)) return; let best=null,bd=9;
+    for(const w of VOCAB){ if(Math.abs(w.length-t.length)>2) continue; const d=lev(t,w); if(d<bd){bd=d;best=w;} }
+    if(best&&bd<=(t.length<=6?1:2)){ o.alt=t; o.t=best; changed=true; } });
+  const units=exp.map(o=>{ const t=o.t, digits=/^\d+$/.test(t), brand=BRANDS.has(t);
+    return {t,alts:[t].concat(o.alt?[o.alt]:[]),digits,brand,short:!digits&&!/\d/.test(t)&&t.length<=2&&!brand,yearOpt:digits&&t.length===4&&+t>=1990&&+t<=2030}; });
+  const solid=units.some(u=>!u.brand&&!u.short&&!u.yearOpt);
+  units.forEach(u=>{ u.opt=u.yearOpt||(u.short&&solid); });
+  let req=units.filter(u=>!u.opt&&!u.brand); if(!req.length) req=units.filter(u=>!u.opt); if(!req.length) req=units;
+  const models=req.filter(u=>/\d/.test(u.t));
+  let mb=''; for(const u of units){ for(const [re,b] of MODEL_BRAND){ if(re.test(u.t)){ mb=b; break; } } if(mb) break; }
+  const hasBrand=mb&&units.some(u=>mb.split(' ').includes(u.t));
+  const core=units.filter(u=>!u.yearOpt).map(u=>u.t).join(' ')||raw.trim();
+  const spaced=core.replace(/([a-z])(\d)/g,'$1 $2');
+  const withB=mb&&!hasBrand?mb+' '+core:'';
+  const vs=[withB||core,core,spaced,withB&&mb+' '+spaced,raw.trim().toLowerCase()].filter(Boolean);
+  const variants=[...new Set(vs)].slice(0,CONFIG.maxVariants);
+  return {raw,units,req,models,variants,display:(withB||core)+(units.filter(u=>u.yearOpt).map(u=>' '+u.t).join('')),changed,brand:mb};
+}
+const BRAND_PREFIX='(?:(?<![a-z])|(?<=kawasaki|honda|yamaha|suzuki|ducati|benelli|triumph|harley|bmw|ktm|vespa|piaggio|vinfast))';   // cho phép #kawasakiz1000
+function unitHit(u,title,full,tw,fw,cf){
+  return u.alts.some(t=>{
+    if(/^\d+$/.test(t)) return new RegExp('(?<![0-9])'+t+'(?![0-9])').test(title);   // số trơn: chỉ tính ở tiêu đề
+    const m=t.match(/^([a-z]*)(\d+)([a-z]*)$/);
+    if(m){ const re=new RegExp(BRAND_PREFIX+m[1]+'[\\s.\\-]?'+m[2]+(m[3]?'[\\s.\\-]?'+m[3]:'(?![0-9])'));
+      if(re.test(title)) return true;
+      return !/(?<![a-z])[a-z]{1,3}[\s.\-]?\d{2,4}/.test(title)&&re.test(full); }   // tiêu đề đã nêu đời xe khác thì không tính lời nhắc trong mô tả
+    if(t.length<=3) return tw.has(t)||new RegExp('(?<![a-z])'+t+'[\\s.\\-]?\\d').test(title);
+    return cf.includes(t)||[...fw].some(w=>Math.abs(w.length-t.length)<=1&&w[0]===t[0]&&lev(w,t)<=1);
+  });
+}
+function vehicleEvidence(a,full,brand){ return !!(a.regdate||a.mileage_v2)||(!!brand&&full.includes(brand.split(' ')[0]))||/(?<![a-z])(?:xe|moto|pkl|odo|bien so|bstp|cavet|ca vet|dang kiem|sang ten|phan khoi|hqcn)(?![a-z])/.test(full); }
+function matchAd(U,a){
+  const title=norm(a.subject||''), full=norm((a.subject||'')+' '+(a.body||'')+' '+Object.values(paramsOf(a)).join(' '));
+  const tw=new Set(title.split(/[^a-z0-9]+/)), fw=new Set(full.split(/[^a-z0-9]+/).filter(w=>w.length>=4)), cf=full.replace(/[^a-z0-9]/g,'');
+  const hit=u=>unitHit(u,title,full,tw,fw,cf);
+  const got=U.req.filter(hit).length;
+  if(got===U.req.length){ if(U.brand&&!vehicleEvidence(a,full,U.brand)) return '';      // tìm mẫu xe mà tin không có dấu hiệu là xe: bỏ
+    const uy=(U.units.find(u=>u.yearOpt)||{}).t; if(uy){ const P=paramsOf(a), pk=Object.keys(P).find(k=>RK.year.test(k)), ly=findYear(full,title)||(pk?pnum(P[pk]):0); if(ly&&Math.abs(ly-+uy)>1) return 'near'; } return 'exact'; }
+  if(U.req.length>=2&&U.models.every(hit)&&got>=Math.ceil(U.req.length/2)) return 'near';
+  return '';
+}
+
+/* ---------- Lấy tin thật qua máy chủ trung gian: nhiều cách gõ, nhiều trang, gộp và lọc thông minh ---------- */
+let PAGING=true;     // Chợ Tốt từ chối trang 2, 3 thì ngừng xin trang sâu trong phiên này
+async function fetchPage(q,region,o,signal,log){
+  const ps=new URLSearchParams({q,limit:String(CONFIG.pageSize)}); if(region) ps.set('region_v2',region); if(o) ps.set('o',String(o));
+  const ctrl=new AbortController(); let timedOut=false;
+  const to=setTimeout(()=>{ timedOut=true; ctrl.abort(); },CONFIG.timeoutMs);
+  const onAbort=()=>ctrl.abort(); if(signal){ if(signal.aborted) ctrl.abort(); else signal.addEventListener('abort',onAbort,{once:true}); }
+  const t0=performance.now(); let status='lỗi mạng', n=0, note='';
+  try{
+    const res=await fetch(PROXY_URL+'?'+ps,{signal:ctrl.signal}); status=res.status;
+    if(!res.ok){ let m='', d=''; try{ const b=await res.json(); m=b.error||''; d=b.detail||''; }catch(_){} throw new Error((m||'Máy chủ trung gian trả lỗi HTTP '+res.status)+(d?' · '+String(d).slice(0,140):'')); }
+    const j=await res.json(); if(j.error) throw new Error(j.error);
+    const ads=(j.ads||[]).filter(a=>a&&a.subject); n=ads.length;
+    if(j.pageUnsupported){ ads.pageUnsupported=true; note='trang sau không được hỗ trợ'; }
+    if(j.fallback){ ads.fb=j.fallback; note='Chợ Tốt từ chối nên đã '+j.fallback; }
+    return ads;
+  } catch(e){ if(timedOut) throw new Error('Quá thời gian chờ'); throw e; }
+  finally{ clearTimeout(to); if(signal) signal.removeEventListener('abort',onAbort); if(log) log.push({q,o:o||0,status,ms:Math.round(performance.now()-t0),n,note}); }
+}
+/* biến một tin thô của Chợ Tốt thành đối tượng của trang */
+function mapAd(a,exact,pool){
+      const body=a.body||''; const t=parseListing((a.subject||'')+'\n'+body); const sI=a.seller_info||{}; const cn=a.condition_ad_name||'';
+      const parts=[]; [a.street_number,a.street_name,a.detail_address,a.ward_name_v3||a.ward_name,a.area_name,a.region_name_v3||a.region_name].forEach(x=>{ if(x&&!parts.join(' ').includes(String(x).trim())) parts.push(String(x).trim()); });
+      const imgs=(a.images&&a.images.length?a.images:(a.image?[a.image]:[])).slice(0,4);
+      return {...t,exact,name:(a.subject||'Tin không có tiêu đề').slice(0,90),seller:(a.account_name||'Chưa rõ').trim(),price:Number(a.price)||0,
+        cond:cn==='Đã sử dụng'?'Đã dùng':cn==='Mới'?'Mới':t.cond,
+        loc:[a.area_name,a.region_name].filter(Boolean).join(', ')||'Chưa rõ',addr:parts.join(', '),desc:body,urlOnly:false,
+        phone:a.phone?String(a.phone):t.phone,source:'Chợ Tốt',live:true,date:a.date||'',images:imgs,t:tm(a.list_time),t0:tm(a.orig_list_time),pos:pool.indexOf(a),params:paramsOf(a),
+        url:a.list_id?'https://www.chotot.com/'+a.list_id+'.htm':null,
+        si:{sold:a.sold_ads!=null?a.sold_ads:sI.sold_ads,live:sI.live_ads,rating:a.average_rating_for_seller||a.average_rating||0,
+            ratingCount:a.total_rating_for_seller||a.total_rating||0,shop:!!(a.shop||a.shop_alias),protected:!!a.protection_entitlement,
+            inspected:a.veh_inspected===1||a.gds_inspected===1,company:!!a.company_ad}};
+}
+/* Lấy tin bằng nhiều cách gõ song song. Có tin đầu tiên là báo ngay (onPartial), không phải đợi đủ mọi lượt. */
+async function fetchLive(U,region,opt){
+  opt=opt||{}; const jobs=[];
+  U.variants.forEach((v,i)=>{ [0].concat(PAGING&&i<CONFIG.deepVariants?[CONFIG.pageSize,CONFIG.pageSize*2]:[]).forEach(o=>jobs.push([v,o])); });
+  const seen=new Map(); let okc=0, failed=0, firstErr=null, painted=false, fb='';
+  const build=()=>{
+    const pool=[...seen.values()], tag=pool.map(a=>({a,m:matchAd(U,a)}));
+    const exact=tag.filter(o=>o.m==='exact'), near=tag.filter(o=>o.m==='near');
+    const keep=exact.slice(0,CONFIG.maxResults).map(o=>({a:o.a,exact:true})).concat(exact.length<CONFIG.nearIfFewer?near.slice(0,CONFIG.maxNear).map(o=>({a:o.a,exact:false})):[]);
+    const out=keep.map(({a,exact})=>mapAd(a,exact,pool));
+    const have={}; ['list_time','orig_list_time','ad_params','params','regdate','mileage_v2','size','phone'].forEach(k=>{ have[k]=pool.filter(a=>a[k]!=null&&a[k]!=='').length; });
+    out.meta={fetched:pool.length,kept:exact.length,near:keep.length-Math.min(exact.length,CONFIG.maxResults),failed,jobs:jobs.length,have,fb};
+    return out;
+  };
+  await Promise.all(jobs.map(([v,o])=>fetchPage(v,region,o,opt.signal,opt.log)
+    .then(ads=>{ okc++; if(ads.pageUnsupported) PAGING=false; if(ads.fb&&!fb) fb=ads.fb; ads.forEach(a=>{ const k=a.list_id||(a.subject+'|'+a.price+'|'+a.account_name); if(!seen.has(k)) seen.set(k,a); }); })
+    .catch(e=>{ if(opt.signal&&opt.signal.aborted) throw e; failed++; firstErr=firstErr||e; })
+    .then(()=>{ if(!painted&&opt.onPartial&&okc&&seen.size){ const part=build(); if(part.length){ painted=true; try{ opt.onPartial(part); }catch(e){ console.error(e); } } } })));
+  if(!okc) throw firstErr||new Error('Lỗi mạng');
+  return build();
+}
+
+/* ---------- Nguồn khác: nút mở trực tiếp + kết quả web (diễn đàn, Facebook công khai...) ---------- */
+let lastQ='', WEB=[];
+const smooth=()=>matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+function srcPanel(q){
+  if(!q) return '';
+  const e=encodeURIComponent, g=s=>'https://www.google.com/search?q='+e(s);
+  const L=[['📘 Facebook Marketplace','https://www.facebook.com/marketplace/search/?query='+e(q)],
+    ['👥 Nhóm mua bán Facebook (qua Google)',g(q+' mua bán site:facebook.com')],
+    ['💬 Diễn đàn: Voz, Nhật Tảo, Webtretho...',g(q+' site:voz.vn OR site:nhattao.com OR site:webtretho.com')],
+    ['🛍️ Shopee','https://shopee.vn/search?keyword='+e(q)],['🛒 Lazada','https://www.lazada.vn/catalog/?q='+e(q)],
+    ['🌐 Muaban.net, Sendo...',g(q+' site:muaban.net OR site:sendo.vn')],['🖼️ Ảnh thật trên Google','https://www.google.com/search?tbm=isch&q='+e(q)]];
+  return `<section class="zone" style="--zc:var(--warn);--zt:var(--warn-bg)"><h2>🌐 Mở trực tiếp ở nơi khác</h2><div class="zone-body">
+   <p class="mute text-sm mb-2">Bấm để mở kết quả tìm “${esc(q)}” trên từng nơi.</p>
+   ${L.map(x=>`<a class="src" href="${x[1]}" target="_blank" rel="noopener">${x[0]}</a>`).join('')}
+   <p class="mute text-sm mt-3"><b>Zalo, Viber và Facebook</b> không cho máy tự đọc tin (phải đăng nhập và bị cấm thu thập). Bố thấy tin ưng ý ở đó thì <b>sao chép chữ</b> rồi dán vào mục “Tôi tự dán tin”.</p>
+   <button class="btn alt mt-3" onclick="tab(2)">📋 Dán tin vừa tìm được</button></div></section>`;
+}
+function webSlot(q){
+  if(!q) return '';
+  return `<section id="webzone" class="zone" style="--zc:var(--blue);--zt:var(--blue-ink)"><h2>💬 Diễn đàn, Facebook công khai và các trang web</h2>
+   <div class="zone-body text-center"><div class="spin"></div><p class="mt-2">Đang tìm thêm ở các nguồn khác...</p></div></section>`;
+}
+function srcName(u){
+  try{ const d=new URL(u).hostname.replace(/^www\./,'');
+    return /facebook|fb\.com/.test(d)?['Facebook','📘']:/voz\.vn/.test(d)?['Voz','💬']:/nhattao/.test(d)?['Nhật Tảo','💬']:/webtretho/.test(d)?['Webtretho','💬']:/muaban/.test(d)?['Muaban.net','🌐']:/sendo/.test(d)?['Sendo','🛍️']:/chotot/.test(d)?['Chợ Tốt (web)','🛒']:[d,'🌐'];
+  }catch(e){ return ['Khác','🌐']; }
+}
+async function fetchWeb(q){
+  const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(),CONFIG.timeoutMs);
+  try{
+    const res=await fetch(PROXY_URL+'?mode=web&q='+encodeURIComponent(q),{signal:ctrl.signal});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const j=await res.json(); if(j.error) throw new Error(j.error);
+    return (j.results||[]).filter(r=>r&&r.url&&r.title).slice(0,12);
+  } finally { clearTimeout(to); }
+}
+function renderWeb(list,err){
+  const z=$('#webzone'); if(!z) return;
+  const body=z.querySelector('.zone-body'); body.classList.remove('text-center');
+  if(!list||!list.length){
+    body.innerHTML=msg(err?'Chưa lấy được kết quả từ diễn đàn và các trang web.':'Chưa thấy bài viết nào khớp ở diễn đàn và các trang web.','warn')+'<p class="mute text-sm">Bố dùng các nút ở khung “Mở trực tiếp ở nơi khác” bên dưới để tự xem nhé.'+(err?'<br>Chi tiết kỹ thuật (cho con cháu): '+esc(err):'')+'</p>'; return;
+  }
+  WEB=list; const groups={};
+  list.forEach((r,i)=>{ const [n,ic]=srcName(r.url); (groups[n]=groups[n]||{ic,items:[]}).items.push([r,i]); });
+  body.innerHTML=`<p class="mute text-sm">Đây là bài viết công khai tìm được trên mạng, <b>chưa được kiểm chứng</b>. Mỗi nguồn nằm trong một khung riêng.</p>`+
+   Object.entries(groups).sort((x,y)=>y[1].items.length-x[1].items.length).map(([n,g])=>`<div class="grp"><h3>${g.ic} ${esc(n)} <span class="tag warn">${g.items.length} kết quả</span></h3>
+    ${g.items.map(([r,i])=>`<div class="wr"><b class="clamp2">${esc(r.title)}</b>${r.snippet?`<p class="mute text-sm clamp3 mt-1">${esc(r.snippet)}</p>`:''}
+     <div class="grid gap-2 mt-2"><a class="btn tbtn" href="${esc(r.url)}" target="_blank" rel="noopener">🔗 Mở bài gốc</a>
+     <button class="btn alt tbtn" onclick="toPaste(${i})">📋 Chấm điểm bài này</button></div></div>`).join('')}</div>`).join('');
+}
+function toPaste(i){
+  const w=WEB[i]; if(!w) return; const t=w.title+'\n'+(w.snippet||'')+'\n'+w.url;
+  const id=['#d1','#d2','#d3'].find(s=>!$(s).value.trim())||'#d3'; $(id).value=t; tab(2,true);
+}
+function attachWeb(p,seq){ const cur=()=>seq===undefined||seq===SEQ; p.then(l=>{ if(cur()) renderWeb(l,''); }).catch(e=>{ if(cur()) renderWeb(null,(e&&e.name==='AbortError')?'Quá thời gian chờ':((e&&e.message)||'Lỗi mạng')); }); }
+
+/* ---------- Tìm kiếm: huỷ lượt cũ, nhớ kết quả, hiện dần, báo trạng thái thật ---------- */
+let SEQ=0, CURCTRL=null;
+const CACHE=new Map();
+const ckey=(U,region)=>norm(U.display)+'|'+region;
+const sig=a=>a.map(x=>x.url||x.name).join('|');
+function cacheGet(k){
+  let e=CACHE.get(k);
+  if(!e){ try{ const r=sessionStorage.getItem('ctc:'+k); if(r){ e=JSON.parse(r); CACHE.set(k,e); } }catch(_){} }
+  if(!e) return null;
+  if(Date.now()-e.t>CONFIG.cacheMinutes*6e4){ CACHE.delete(k); try{ sessionStorage.removeItem('ctc:'+k); }catch(_){} return null; }
+  return e;
+}
+function cacheSet(k,items){
+  const e={t:Date.now(),meta:items.meta,items:JSON.parse(JSON.stringify(items))}; CACHE.set(k,e);
+  try{ const str=JSON.stringify(e); if(str.length>4e5) return; sessionStorage.setItem('ctc:'+k,str);
+    const idx=JSON.parse(sessionStorage.getItem('ctc:idx')||'[]').filter(x=>x!==k); idx.push(k);
+    while(idx.length>3) sessionStorage.removeItem('ctc:'+idx.shift()); sessionStorage.setItem('ctc:idx',JSON.stringify(idx)); }catch(_){}
+}
+const fromCache=e=>{ const it=JSON.parse(JSON.stringify(e.items)); it.meta=e.meta; return it; };
+const hhmm=t=>new Date(t).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+function explainErr(e){
+  const m=String((e&&e.message)||e||'');
+  if(/\b400\b/.test(m)) return 'Chợ Tốt từ chối yêu cầu (lỗi 400), có thể một tham số tìm kiếm không còn được hỗ trợ.';
+  if(/429|giới hạn/i.test(m)) return 'Chợ Tốt đang giới hạn số lần truy cập (gọi quá nhiều). Bố đợi vài phút rồi thử lại.';
+  if(/403|chặn/i.test(m)) return 'Chợ Tốt đang chặn truy cập từ máy chủ trung gian.';
+  if(/Quá thời gian/i.test(m)) return 'Chợ Tốt hoặc máy chủ trung gian phản hồi quá chậm.';
+  if(/1031|Invalid Workers|Worker/i.test(m)) return 'Máy chủ trung gian (Worker) đang cấu hình sai hoặc chưa chạy.';
+  if(/Failed to fetch|NetworkError|Load failed|Lỗi mạng/i.test(m)) return 'Không kết nối được tới máy chủ trung gian. Bố kiểm tra mạng nhé.';
+  return 'Có lỗi khi lấy tin.';
+}
+/* thanh trạng thái to, rõ: bố biết ngay đang xem tin thật hay tin mẫu */
+function statusBar(kind,d){
+  d=d||{};
+  const M={
+    loading:['⏳','warn','Đang tìm thêm...','Đã có '+d.n+' tin đầu tiên, máy đang lấy thêm từ các cách gõ khác để không sót.'],
+    live:[(d.partial||d.fb)?'⚠️':'✅',(d.partial||d.fb)?'warn':'good','Dữ liệu thật từ Chợ Tốt · lúc '+hhmm(Date.now()),(d.kept||0)+' tin khớp trong '+(d.fetched||0)+' tin tìm được'+(d.near>0?', kèm '+d.near+' tin gần giống':'')+'.'+(d.partial?' Có '+d.failed+'/'+d.jobs+' lượt lấy tin bị lỗi nên có thể còn thiếu tin.':'')+(d.fb?(/khu vực/.test(d.fb)?' Chợ Tốt không nhận bộ lọc khu vực này nên máy đang tìm toàn quốc.':' Chợ Tốt không nhận bộ lọc loại tin nên kết quả có thể lẫn cả tin cho thuê.'):'')],
+    cache:['🕘','good','Kết quả đã lưu · cách đây '+Math.max(1,Math.round((Date.now()-d.t)/6e4))+' phút',(d.kept||0)+' tin khớp. Bấm “Tải mới” nếu muốn lấy tin mới nhất.'],
+    sample:['🚫','bad','ĐANG HIỆN TIN MẪU, KHÔNG PHẢI TIN THẬT','Máy chưa lấy được tin từ Chợ Tốt. '+explainErr(d.err)+' Bố đừng dùng các tin dưới đây để quyết định mua.'],
+    empty:['🔍','warn','Chợ Tốt không có tin nào khớp','Bố thử gõ ngắn hơn hoặc chọn “Toàn quốc”, hoặc xem các nguồn khác bên dưới.']
+  }[kind];
+  const act=kind==='sample'?'<button type="button" class="btn alt tbtn" data-act="retry">🔄 Thử lại</button>':kind==='cache'?'<button type="button" class="btn alt tbtn" data-act="retry">🔄 Tải mới</button>':'';
+  const tech=kind==='sample'&&d.err?'<p class="text-sm" style="font-weight:400;opacity:.85">Chi tiết kỹ thuật (cho con cháu): '+esc((d.err&&d.err.message)||String(d.err))+'</p>':'';
+  return `<div id="statBox" class="status ${M[1]}" role="status"><span class="st-ic" aria-hidden="true">${M[0]}</span><div><b>${esc(M[2])}</b><p>${esc(M[3])}</p>${tech}${act?`<div style="margin-top:.5rem">${act}</div>`:''}</div></div>`;
+}
+const DBG={log:[],U:null,region:'',t0:0,meta:null,P:null,raw:null,ping:null,reset(U,region){ this.log=[]; this.U=U; this.region=region; this.t0=performance.now(); this.meta=null; this.raw=null; }};
+async function search(force){
+  force=(force===true);                       // onclick truyền sự kiện vào đây, nên chỉ coi là "tải mới" khi đúng là true
+  const raw=$('#q').value.trim(), region=$('#reg').value;
+  if(!raw){ $('#out').innerHTML=msg('Bố hãy gõ tên món muốn tìm trước nhé, ví dụ “xe máy Wave”.','warn'); $('#q').focus(); return; }
+  const seq=++SEQ; if(CURCTRL) CURCTRL.abort(); const ctrl=CURCTRL=new AbortController();   // lượt tìm cũ bị huỷ, không thể ghi đè lượt mới
+  const U=understand(raw), q=U.display; lastQ=q; addHist(raw); DBG.reset(U,region);
+  const hint=msg('Máy hiểu bố muốn tìm: <b>“'+esc(q)+'”</b>. Đã thử '+U.variants.length+' cách gõ ('+U.variants.map(esc).join(' · ')+') để không sót tin.','good');
+  const title='Kết quả cho “'+esc(q)+'”';
+  const web=fetchWeb(q); web.catch(()=>{});
+  const key=ckey(U,region), hit=force?null:cacheGet(key);
+  if(hit){ DBG.meta=hit.meta; showResults(fromCache(hit),statusBar('cache',{t:hit.t,kept:hit.meta&&hit.meta.kept})+hint,title,false); attachWeb(web,seq); return; }
+  loading('Đang tìm “'+esc(q)+'” trên Chợ Tốt và các nguồn khác...');
+  let items=null, err=null, painted='';
+  try{
+    items=await fetchLive(U,region,{signal:ctrl.signal,log:DBG.log,onPartial:part=>{ if(seq!==SEQ) return; DBG.meta=part.meta; painted=sig(part); showResults(part,statusBar('loading',{n:part.length})+hint,title,false); attachWeb(web,seq); }});
+  }catch(e){ if(seq!==SEQ||(e&&e.name==='AbortError'&&ctrl.signal.aborted)) return; err=e; }
+  if(seq!==SEQ) return;
+  if(items&&items.length){
+    cacheSet(key,items); const m=items.meta; DBG.meta=m;
+    const st=statusBar('live',{kept:m.kept,fetched:m.fetched,near:m.near,partial:m.failed>0,failed:m.failed,jobs:m.jobs,fb:m.fb});
+    if(painted&&sig(items)===painted){ const bx=$('#statBox'); if(bx) bx.outerHTML=st; }          // không có gì mới: chỉ đổi thanh trạng thái, giữ nguyên chỗ bố đang xem
+    else{ showResults(items,st+hint,title,false,{keep:!!painted}); attachWeb(web,seq); }
+    return;
+  }
+  if(items){ $('#out').innerHTML=hint+statusBar('empty')+webSlot(q)+srcPanel(q); attachWeb(web,seq); return; }
+  showResults(sampleFor(q,region),statusBar('sample',{err})+hint,title,false); attachWeb(web,seq);
+}
+function addHist(q){ q=String(q||'').trim(); if(!q) return; const h=store.get('hist',[]).filter(x=>norm(x)!==norm(q)); h.unshift(q); store.set('hist',h.slice(0,CONFIG.history)); renderHist(); }
+function renderHist(){
+  const h=store.get('hist',[]), box=$('#hist'); if(!h.length){ box.classList.add('hidden'); box.innerHTML=''; return; }
+  box.classList.remove('hidden');
+  box.innerHTML='<span class="mute text-sm" style="align-self:center">🕘 Gần đây:</span>'+h.map(x=>`<button type="button" class="rchip" data-hist="${esc(x)}">${esc(x)}</button>`).join('')+'<button type="button" class="rchip" data-hist-clear="1" style="border-color:var(--line);color:var(--mute)" aria-label="Xóa lịch sử tìm">✕ Xóa</button>';
+}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('[data-hist],[data-hist-clear]'); if(!c) return;
+  if(c.hasAttribute('data-hist-clear')){ store.del('hist'); renderHist(); return; }
+  $('#q').value=c.dataset.hist; syncX(); search();
+});
+function syncX(){ $('#sbox').classList.toggle('has',$('#q').value.length>0); }
+$('#q').addEventListener('input',syncX);
+$('#qClear').onclick=()=>{ $('#q').value=''; syncX(); $('#q').focus(); };
+$('#q').addEventListener('keydown',e=>{ if(e.key==='Escape'&&$('#q').value){ $('#q').value=''; syncX(); } });
+$('#goSearch').onclick=search; $('#q').addEventListener('keydown',e=>{ if(e.key==='Enter') search(); });
+
+/* ---------- Đọc tin dán ---------- */
+function parsePrice(t){
+  let m=t.match(/(\d+(?:[.,]\d+)?)\s*(?:triệu|trieu|tr)(?![a-zà-ỹ])\s*(\d{1,3})?/i);
+  if(m){ let v=parseFloat(m[1].replace(',','.'))*1e6; if(m[2]) v+=parseFloat('0.'+m[2])*1e6; return Math.round(v); }
+  m=t.match(/(\d{1,3}(?:[.,]\d{3})+)\s*(?:đ|vnđ|vnd|₫|d)?/i); if(m) return parseInt(m[1].replace(/[.,]/g,''));
+  m=t.match(/(\d{2,5})\s*k(?![a-zà-ỹ])/i); if(m) return parseInt(m[1])*1000;
+  return 0;
+}
+function srcOf(t){
+  const m=t.match(/https?:\/\/([^\s\/]+)/i); if(!m) return 'Tin tự dán'; const d=m[1].toLowerCase();
+  return /facebook|fb\.com|fb\.watch/.test(d)?'Facebook':/zalo/.test(d)?'Zalo':/chotot/.test(d)?'Chợ Tốt':/shopee/.test(d)?'Shopee':/lazada/.test(d)?'Lazada':/muaban/.test(d)?'Muaban.net':/voz|webtretho|nhattao|otofun|tinhte/.test(d)?'Diễn đàn':d.replace(/^www\./,'');
+}
+function parseListing(text){
+  const lines=text.split('\n').map(l=>l.trim()).filter(Boolean);
+  const urlM=text.match(/https?:\/\/\S+/);
+  const urlOnly=/^https?:\/\/\S+$/.test(text.trim());
+  const body=text.replace(/https?:\/\/\S+/g,'').trim();
+  const name=urlOnly?'Tin từ đường link':(lines[0]||'').replace(/https?:\/\/\S+/g,'').slice(0,80)||'Tin chưa có tiêu đề';
+  let cond='Chưa rõ';
+  if(has(body,/nguyen seal|moi 100|moi nguyen|chua (qua )?su dung|\bmoi\b(?!.*(nhu|99))/)) cond='Mới';
+  if(has(body,/nhu moi|like ?new|99%|98%|ken/)) cond='Như mới';
+  if(has(body,/\bbai\b|\bcu\b|da (qua )?su dung|da dung|qua su dung/)) cond='Đã dùng';
+  if(has(body,/sua chua|refurb|tan trang|dan lai/)) cond='Tân trang';
+  const lm=body.match(/(?:phường|quận|q\.|huyện|tp\.?|thành phố)\s*[A-Za-zÀ-ỹ0-9 .]{2,30}(?:,\s*[A-Za-zÀ-ỹ. ]{2,25})?|Đà Nẵng|Hà Nội|Hồ Chí Minh|Sài Gòn|Hải Phòng|Cần Thơ|Huế|Quảng Nam|Nha Trang/i);
+  const sm=body.match(/(?:người bán|liên hệ|chủ shop|shop)\s*[:\-]\s*([^\n,\-–]{2,30})/i);
+  const pm=body.match(/(?<![\d.,])(?:\+?84|0)(?:[\s.\-]?\d){9}(?![\d]|[.,]\d)/);
+  const am=body.match(/(?:địa chỉ|đ\/c|dc)\s*[:\-]\s*([^\n]{6,90})/i);
+  const rf=refFor(body);
+  return {name,seller:sm?sm[1].trim():'Chưa rõ',price:parsePrice(body),cond,loc:lm?lm[0].trim():'Chưa rõ',km:null,ref:rf,refSrc:rf?'cat':null,
+    desc:urlOnly?'':lines.slice(1).join(' '),urlOnly,phone:pm?pm[0].replace(/[^\d+]/g,'').replace(/^\+?84/,'0'):'',addr:am?am[1].trim():'',
+    source:srcOf(text),url:urlM?urlM[0].replace(/[),.]+$/,''):null,images:[]};
+}
+$('#goPaste').onclick=()=>{
+  const raw=['#d1','#d2','#d3'].map(s=>$(s).value.trim()).filter(Boolean);
+  if(raw.length<2){ $('#out').innerHTML=msg('Cần dán ít nhất 2 tin để so sánh. Bố dán thêm một tin nữa nhé.','warn'); return; }
+  loading('Đang đọc và so sánh các tin...');
+  setTimeout(()=>showResults(raw.map(parseListing),'','So sánh '+raw.length+' tin bố đã dán',true),700);
+};
+$('#demoPaste').onclick=()=>{ DEMO.forEach((d,i)=>$('#d'+(i+1)).value=d); $('#goPaste').click(); };
+
+/* ---------- Bộ phân tích tin + độ tin cậy người bán ---------- */
+/* ---------- Đọc sâu thông số: đời, số km, thời gian dùng, pháp lý, tình trạng ---------- */
+const CURY=new Date().getFullYear();
+const fmtN=n=>Math.round(n).toLocaleString('vi-VN');
+const stripPhones=t=>t.replace(/(?<![\d])(?:\+?84|0)(?:[\s.\-]?\d){8,10}(?!\d)/g,m=>' '.repeat(m.length));   // thay bằng khoảng trắng cùng độ dài để vị trí chữ không bị lệch
+function numVN(str,unit){
+  const u=(unit||'').toLowerCase(); let v;
+  if(/^\d{1,3}([.,]\d{3})+$/.test(str)) v=parseFloat(str.replace(/[.,]/g,'')); else v=parseFloat(str.replace(',','.'));
+  if(isNaN(v)) return 0;
+  if(u==='van') v*=1e4; else if(u==='k'||u==='nghin'||u==='ngan') v*=1e3;
+  return Math.round(v);
+}
+/* Các mẫu nhận diện (chạy trên chữ đã bỏ dấu, viết thường) */
+const RE={
+  yearA:/(?<![a-z0-9])(?:doi|nam sx|nam san xuat|san xuat|sx|nam dang ky|dang ky|dk|doi xe|model)\s*[:\-]?\s*(?:nam\s*)?((?:19[89]|20[0-3])\d)(?!\d)/,
+  yearB:/(?<![a-z0-9])(?:doi|sx|dk)\s*[:\-]?\s*(\d{2})(?![\d])/,
+  yearC:/(?<![\d.,])((?:19[89]|20[0-3])\d)(?![\d.,]|\s*(?:km|m2|trieu|tr\b|k\b|d\b|vnd|ty))/g,
+  odo1:/(?:odo|so km|km da di|dong ho|da di|da chay|chay duoc|di duoc|moi di|moi chay|chi di|chi chay|quang duong|so cay|chay)\s*[:\-=]?\s*(?:khoang|gan|tam|hon|chua toi|duoi)?\s*(\d+(?:[.,]\d+)*)\s*(k(?![a-z])|nghin|ngan|van)?\s*(?:km|cay)?/,
+  odo2:/(\d+(?:[.,]\d+)*)\s*(k(?![a-z])|nghin|ngan|van)?\s*(?:km|cay so)\b/,
+  used1:/(?<![a-z])(?:dung|su dung|xai|mua duoc|da dung|mua cach day|moi mua)\s*(?:duoc|khoang|gan|hon|tam)?\s*(\d+(?:[.,]\d+)?)\s*(thang|nam|tuan|ngay)/,
+  used2:/(?<![a-z])(?:mua|su dung|dung|xai)\s*(?:tu\s*)?(?:nam\s*)?(20[0-3]\d)(?!\d)/,
+  battery:/(?:pin|battery|suc khoe pin|do chai pin)[^0-9%]{0,15}(\d{2,3})\s*%/,
+  warr:/bao hanh\s*(?:con|den|them|tiep|chinh hang|hang)?\s*(?:khoang)?\s*(\d+)\s*(thang|nam)/,
+  area1:/(\d+(?:[.,]\d+)?)\s*(?:m2|m²|met vuong|m vuong)(?![a-z])/,
+  area2:/(?<![\d.,])(\d+(?:[.,]\d+)?)\s*[x*]\s*(\d+(?:[.,]\d+)?)\s*m?(?![\d])/,
+  built:/(?:xay|xay dung|nam xay dung|xay nam|hoan cong)\s*(?:nam|vao)?\s*[:\-]?\s*((?:19[89]|20[0-3])\d)(?!\d)/,
+  floors:/(?<![\d.,])(\d)\s*(?:tang|lau)\b/
+};
+const RK={year:/regdate|mfdate|manufactur|nam_?sx|nam_?dang|^year$/, odo:/mileage|odo|so_?km/, area:/^size$|^area$|dien_?tich/, built:/construction|nam_?xay/, floors:/^floors$|so_?tang/};
+const span=(m,v)=>m?{v,i:m.index,j:m.index+m[0].length}:null;     // v: giá trị đọc được; i..j: vị trí đoạn chữ gốc
+function locYear(tFull,tTitle){
+  const T=stripPhones(tFull);
+  let m=T.match(RE.yearA); if(m&&+m[1]<=CURY+1) return span(m,+m[1]);
+  m=T.match(RE.yearB); if(m){ const y=+m[1]; return span(m,y<=(CURY+1)%100?2000+y:1900+y); }
+  const L=[...stripPhones(tTitle||'').matchAll(RE.yearC)].filter(x=>+x[1]<=CURY+1);
+  return L.length?{...span(L[0],+L[0][1]),inTitle:true}:null;
+}
+function locOdo(t){ const T=stripPhones(t); for(const re of [RE.odo1,RE.odo2]){ const m=T.match(re); if(m){ const v=numVN(m[1],m[2]); if(v>=50&&v<=1.5e6) return span(m,v); } } return null; }
+function locUsed(t){
+  let m=t.match(RE.used1); if(m){ const n=parseFloat(m[1].replace(',','.')); return span(m,Math.round(m[2]==='nam'?n*12:m[2]==='thang'?n:m[2]==='tuan'?n/4.3:n/30)); }
+  m=t.match(RE.used2); if(m&&+m[1]<=CURY) return span(m,(CURY-+m[1])*12); return null;
+}
+function locBattery(t){ const m=t.match(RE.battery), v=m?+m[1]:0; return v>=30&&v<=100?span(m,v):null; }
+function locWarranty(t){ const m=t.match(RE.warr); return m?span(m,m[2]==='nam'?+m[1]*12:+m[1]):null; }
+function locArea(t){
+  let m=t.match(RE.area1); if(m){ const v=parseFloat(m[1].replace(',','.')); if(v>=10&&v<=1e5) return span(m,v); }
+  m=t.match(RE.area2); if(m){ const v=parseFloat(m[1].replace(',','.'))*parseFloat(m[2].replace(',','.')); if(v>=10&&v<=1e5) return span(m,Math.round(v*10)/10); }
+  return null;
+}
+function locBuilt(t){ const m=t.match(RE.built); return m&&+m[1]<=CURY+1?span(m,+m[1]):null; }
+function locFloors(t){ const m=t.match(RE.floors); return m?span(m,+m[1]):null; }
+const val=r=>r?r.v:0;
+function findYear(a,b){ return val(locYear(a,b)); }
+function findOdo(t){ return val(locOdo(t)); }
+function findUsedMonths(t){ return val(locUsed(t)); }
+function findBattery(t){ return val(locBattery(t)); }
+function findWarranty(t){ return val(locWarranty(t)); }
+function findArea(t){ return val(locArea(t)); }
+function findBuilt(t){ return val(locBuilt(t)); }
+function findFloors(t){ return val(locFloors(t)); }
+/* tìm từ khoá nhưng bỏ qua khi đang bị phủ định: "không tai nạn, không ngập nước" */
+function locNeg(t,re){
+  const g=new RegExp(re.source,'g'); let m;
+  while((m=g.exec(t))){
+    const pre=t.slice(Math.max(0,m.index-30),m.index).split(/[.;!\n]/).pop();
+    if(!/(?:khong|ko|chua|chang|chu a)\s*(?:bi|tung|he|co|dinh)?\b/.test(pre)&&!/(?:^|\s)k\s*$/.test(pre)) return {i:m.index,j:m.index+m[0].length};
+    if(!m[0].length) g.lastIndex++;
+  }
+  return null;
+}
+function hitNeg(t,re){ return !!locNeg(t,re); }
+function paramsOf(a){
+  const o={}, put=(k,v)=>{ if(v==null||v==='') return; if(typeof v==='object') v=v.value!=null?v.value:(v.label||v.name||''); v=String(v).trim(); if(v) o[norm(String(k))]=v; };
+  const ap=a.ad_params; if(ap&&typeof ap==='object'&&!Array.isArray(ap)) Object.entries(ap).forEach(([k,v])=>put(k,v));
+  if(Array.isArray(a.params)) a.params.forEach(q=>q&&put(q.id||q.key||q.label,q.value!=null?q.value:q.label));
+  ['regdate','mfdate','mileage_v2','mileage','size','area','rooms','floors','property_legal_document','house_type','motorbike_brand','motorbike_model','car_brand','car_model','owner','construction_year'].forEach(k=>{ if(a[k]!=null) put(k,a[k]); });
+  return o;
+}
+const pnum=v=>{ const m=String(v||'').replace(/\s/g,'').match(/\d[\d.,]*/); return m?numVN(m[0],''):0; };
+function extractSpecs(x){
+  const P=x.params||{}, pkk=re=>Object.keys(P).find(k=>re.test(k)), pk=re=>{ const k=pkk(re); return k?P[k]:''; };
+  const text=norm((x.name||'')+'\n'+(x.desc||'')+'\n'+Object.values(P).join(' ')), title=norm(x.name||'');
+  const sp={ask:[],legalPros:[],legalCons:[],risks:[],src:{},srcKey:{},rules:[]};
+  const textNP=norm((x.name||'')+'\n'+(x.desc||''));      // chữ của tin, không kể mục thông số
+  let y=pnum(pk(RK.year)); if(y>=1980&&y<=CURY+1){ sp.src.year='mục thông số'; sp.srcKey.year=pkk(RK.year); } else y=0;
+  const yTxt=findYear(textNP,title);
+  if(y&&yTxt&&Math.abs(y-yTxt)>=2){ sp.paramYear=y; y=yTxt; sp.src.year='tiêu đề / mô tả'; delete sp.srcKey.year; }   // tin viết một đằng, mục thông số ghi một nẻo: tin viết thường đúng hơn
+  else if(!y&&yTxt){ y=yTxt; sp.src.year='tiêu đề / mô tả'; }
+  let odo=pnum(pk(RK.odo)); if(odo>=50&&odo<=1.5e6){ sp.src.odo='mục thông số'; sp.srcKey.odo=pkk(RK.odo); } else odo=0;
+  const ot=findOdo(textNP);
+  if(odo&&ot&&Math.max(odo,ot)/Math.min(odo,ot)>1.3){ sp.paramOdo=odo; odo=ot; sp.src.odo='tiêu đề / mô tả'; delete sp.srcKey.odo; }
+  else if(!odo&&ot){ odo=ot; sp.src.odo='tiêu đề / mô tả'; }
+  let area=pnum(pk(RK.area)); if(area>=10&&area<=1e5) sp.srcKey.area=pkk(RK.area); else area=findArea(text);
+  const mv=title.match(/(?<![a-z])[a-z]{1,3}\s?\d{3,4}\s?(rr|sx|se|r|s|x)(?![a-z0-9])/); sp.variant=mv?mv[1]:'';   // z1000r, z1000 sx: bản khác nhau, giá khác nhau
+  sp.year=y; sp.age=y?Math.max(0,CURY-y):0; sp.odo=odo; sp.area=area; sp.usedM=findUsedMonths(text); sp.battery=findBattery(text); sp.warrM=findWarranty(text);
+  sp.built=pnum(pk(RK.built)); if(sp.built) sp.srcKey.built=pkk(RK.built); else sp.built=findBuilt(text);
+  sp.floors=pnum(pk(RK.floors)); if(sp.floors) sp.srcKey.floors=pkk(RK.floors); else sp.floors=findFloors(text);
+  const VEH=/(?:honda|yamaha|suzuki|kawasaki|ducati|bmw|triumph|ktm|harley|piaggio|vespa|sym|vinfast|toyota|mazda|hyundai|kia|ford|mercedes|audi|moto|phan khoi|exciter|winner|wave|vision|lead|air ?blade|ninja|vios|civic|xe may|o to|oto)\b/;
+  const PROP=/(?:nha|dat|can ho|chung cu|phong tro|biet thu|mat tien|hem|kiot|nha pho|lo dat|so hong|so do|nha cap 4|shophouse)/;
+  const ELEC=/(?:iphone|ipad|samsung|xiaomi|oppo|laptop|macbook|dien thoai|tai nghe|airpods|tivi|man hinh|may anh|may tinh|apple watch)/;
+  const VSTRONG=/(?:xe may|xe so|xe ga|xe tay ga|xe con tay|moto|phan khoi|o to|oto|exciter|winner|wave|vision|air ?blade|ninja|vios|civic|(?<![a-z])sh ?\d{2,3}|(?<![a-z])z ?\d{3,4}|r15|nvx|sirius|raider|vario|pcx)/;
+  const notVeh=/(?:xe dap|xe noi|xe day|xe lan|xe tap di|do choi|mo hinh)/.test(title);
+  sp.cat=(sp.area&&PROP.test(text)&&!/(?:xe|moto)\b/.test(title))?'property':(!notVeh&&(sp.odo||(sp.year&&VEH.test(text))||(VSTRONG.test(title)&&(sp.year||/(?<![a-z])(?:xe|moto|pkl|odo|bien so|cavet|ca vet|dang kiem|sang ten|phan khoi|hqcn)(?![a-z])/.test(text)))||(VEH.test(title)&&/(?<![a-z])xe(?![a-z])/.test(title)))||/(?:bien so|ca ?vet|dang kiem|bstp)/.test(text)||Object.keys(P).some(k=>/mileage|regdate|motorbike|car_/.test(k)))?'vehicle':ELEC.test(text)?'electronics':'generic';
+  const L=(re,t)=>{ if(hitNeg(text,re)){ sp.legalPros.push(t); sp.rules.push({k:'pro',label:t,re}); } }, C=(re,t)=>{ if(hitNeg(text,re)){ sp.legalCons.push(t); sp.rules.push({k:'con',label:t,re}); } }, R=(re,t)=>{ if(hitNeg(text,re)){ sp.risks.push(t); sp.rules.push({k:'risk',label:t,re}); } };
+  if(sp.cat==='vehicle'){
+    L(/chinh chu/,'Chính chủ'); L(/ca ?vet|cavet/,'Có cà vẹt'); L(/dang kiem/,'Có đăng kiểm'); L(/giay to (?:day du|hop le|chinh chu|ro rang)|day du giay to/,'Giấy tờ đầy đủ'); L(/bstp|bien so (?:tp|thanh pho|so dep)/,'Biển số thành phố');
+    C(/khong (?:co )?giay to|ko giay to|thieu giay to|giay to viet tay|giay tay|mat ca ?vet|bao giay|chua sang ten|ky gui|ban ho/,'Giấy tờ không rõ ràng hoặc không chính chủ');
+    R(/tai nan|dam dung|va cham/,'Từng tai nạn / đâm đụng'); R(/ngap nuoc|ngap/,'Từng ngập nước'); R(/xe cat|xe cua|do khung|thay khung|thay so may/,'Có dấu hiệu cắt / độ khung'); R(/son lai|do lai|lam lai/,'Đã sơn lại / làm lại');
+    if(sp.paramYear||sp.paramOdo) sp.ask.push('Mục thông số và nội dung tin ghi khác nhau, đời xe và số km thật là bao nhiêu?');
+    if(!sp.year) sp.ask.push('Xe đời năm nào?'); if(!sp.odo) sp.ask.push('Xe đã đi bao nhiêu km (xem ảnh đồng hồ odo)?');
+    if(!sp.legalPros.length) sp.ask.push('Xe có chính chủ, đủ cà vẹt và giấy tờ không?'); sp.ask.push('Xe có từng tai nạn, ngập nước hay sơn lại không?');
+  } else if(sp.cat==='property'){
+    L(/so hong|so do|giay chung nhan|gcn/,'Có sổ hồng / sổ đỏ'); L(/phap ly (?:day du|ro rang|chuan)/,'Pháp lý rõ ràng'); L(/hoan cong/,'Có hoàn công'); L(/giay phep xay dung|gpxd/,'Có giấy phép xây dựng'); L(/cong chung/,'Công chứng được');
+    C(/vi bang/,'Giao dịch bằng vi bằng (rủi ro pháp lý cao)'); C(/giay tay|chua co so|chua so|so chung|dat coc/,'Giấy tờ chưa đầy đủ (giấy tay / sổ chung / chưa có sổ)'); C(/xay sai phep|chua hoan cong/,'Xây sai phép / chưa hoàn công');
+    R(/quy hoach|giai toa|lo gioi/,'Có thể dính quy hoạch / lộ giới'); R(/tranh chap/,'Có thể đang tranh chấp'); R(/the chap|giai chap/,'Đang thế chấp ngân hàng');
+    if(!sp.legalPros.length) sp.ask.push('Nhà/đất đã có sổ hồng, sổ đỏ chưa? Sổ chính chủ hay sổ chung?'); sp.ask.push('Có dính quy hoạch, lộ giới, tranh chấp hay thế chấp không?');
+    if(!sp.area) sp.ask.push('Diện tích đất và diện tích sàn là bao nhiêu?'); if(!sp.built) sp.ask.push('Nhà xây năm nào, có hoàn công và giấy phép xây dựng không?');
+  } else if(sp.cat==='electronics'){
+    C(/(?:khoa|mat|an|lock|bypass|treo)\s*icloud|icloud\s*(?:khoa|an|lock|bypass)|ban (?:xac|linh kien)|xac may/,'Máy bị khóa iCloud / chỉ bán xác, linh kiện');
+    R(/thay man|thay vo|ep kinh|sua chua|bo main|mat face ?id|mat van tay|mat touch ?id|hong cam/,'Đã sửa chữa / thay linh kiện');
+    if(!sp.battery) sp.ask.push('Pin còn bao nhiêu phần trăm (xem ảnh chụp Sức khỏe pin)?'); if(!sp.warrM) sp.ask.push('Còn bảo hành không, đến khi nào?'); sp.ask.push('Máy đã từng sửa chữa hay thay linh kiện chưa? Có bị khóa iCloud/mạng không?');
+  }
+  if(!sp.usedM&&sp.cat!=='property'&&sp.cat!=='vehicle') sp.ask.push('Đã dùng bao lâu rồi?');
+  const yt=findYear(title,title), yb=findYear(norm(x.desc||''),'');
+  sp.yearConflict=!!(yt&&yb&&Math.abs(yt-yb)>1);
+  return sp;
+}
+/* Giá "câu khách": dãy số tăng dần (123456789, 111123456, 67891234) hoặc giá lẻ kèm lời "liên hệ để có giá cụ thể" */
+function isFakePrice(p,t){
+  if(!(p>0)) return false; const s=String(Math.round(p)); let run=1, best=1, runs4=0;
+  for(let i=1;i<s.length;i++){ if(+s[i]===+s[i-1]+1) run++; else{ if(run>=4) runs4++; best=Math.max(best,run); run=1; } }
+  if(run>=4) runs4++; best=Math.max(best,run);
+  if(best>=5||runs4>=2||/([1-9])\1{5,}/.test(s)) return true;
+  return p%100000!==0&&/lien he (?:truc tiep )?de co gia|gia cu the chinh xac|gia lien he/.test(t||'');
+}
+/* Tin quảng cáo chung của cửa hàng (liệt kê hàng chục loại xe), không phải một chiếc xe cụ thể */
+function isGenericAd(x){
+  const t=(x.name||'')+' '+(x.desc||''), tags=(t.match(/#[\p{L}\p{N}_]+/gu)||[]).length, n=norm(t);
+  const brands=['yamaha','honda','kawasaki','suzuki','ducati','triumph','harley','ktm','bmw','benelli','aprilia','vespa','piaggio','royal enfield','moto guzzi'].filter(b=>n.includes(b)).length;
+  return tags>=6||(brands>=4&&/ban du cac loai|chuyen phan phoi|nhieu mau xe|cac dong xe/.test(n));
+}
+/* Chấm điểm theo thông số, trả về số điểm cộng/trừ cho phần "tin đăng" */
+function applySpecs(sp,pros,cons,danger){
+  let q=0; const bad=(t,n)=>{ cons.push(t); q-=n; };
+  if(sp.paramYear) bad('Mục thông số ghi đời '+sp.paramYear+' nhưng tin viết '+sp.year+', nên hỏi lại cho rõ',3);
+  if(sp.paramOdo) bad('Mục thông số ghi '+fmtN(sp.paramOdo)+' km nhưng tin viết '+fmtN(sp.odo)+' km, nên hỏi lại số km thật',3);
+  if(sp.yearConflict) bad('Đời xe ghi không thống nhất giữa tiêu đề và mô tả',4);
+  if(sp.cat==='vehicle'){
+    if(!sp.year) bad('Tin không ghi rõ đời xe / năm sản xuất',3);
+    if(!sp.odo) bad('Tin không ghi số km đã đi',4);
+    if(sp.year&&sp.odo&&sp.age>=2){ const py=sp.odo/sp.age;
+      if(py<1000) bad('Số km thấp bất thường so với tuổi xe (~'+fmtN(py)+' km/năm), nên kiểm tra kỹ vì có thể đã chỉnh đồng hồ',5);
+      else if(py>25000) bad('Xe chạy nhiều (~'+fmtN(py)+' km/năm)',3);
+      else if(py>=3000&&py<=15000){ pros.push('Số km hợp lý so với tuổi xe (~'+fmtN(py)+' km/năm)'); q+=3; } }
+    if(sp.year&&sp.age>=15) bad('Xe đã khá cũ ('+sp.age+' năm tuổi)',2);
+    sp.legalCons.forEach((t,i)=>bad(t,i?4:12)); sp.risks.slice(0,3).forEach(t=>bad(t,6));
+  } else if(sp.cat==='property'){
+    if(sp.legalPros.length){ pros.push('Pháp lý: '+sp.legalPros.join(', ')); q+=Math.min(12,sp.legalPros.length*4+4); }
+    sp.legalCons.forEach((t,i)=>bad(t,i?4:12)); sp.risks.slice(0,3).forEach(t=>bad(t,6));
+    if(sp.built){ const a=CURY-sp.built; if(a<=5) { pros.push('Nhà mới xây (năm '+sp.built+')'); q+=3; } else if(a>=25) bad('Nhà đã xây '+a+' năm, nên kiểm tra kết cấu và hệ thống điện nước',2); }
+    if(!sp.area) bad('Tin không ghi rõ diện tích',4);
+  } else if(sp.cat==='electronics'){
+    if(sp.battery>=90){ pros.push('Pin còn '+sp.battery+'%'); q+=3; } else if(sp.battery&&sp.battery<80) bad('Pin chỉ còn '+sp.battery+'%, có thể phải thay sớm',4);
+    if(sp.warrM>=6){ pros.push('Còn bảo hành khoảng '+sp.warrM+' tháng'); q+=3; }
+    sp.legalCons.forEach(t=>{ danger.push(t+' — rất rủi ro'); }); sp.risks.slice(0,2).forEach(t=>bad(t,5));
+  }
+  return Math.max(-20,Math.min(15,q));
+}
+/* Giá tham khảo theo tin tương tự: cùng đời + cùng mức số km (xe), cùng cỡ diện tích (nhà đất) */
+function simRefs(items,reps){
+  const pool=reps.filter(y=>y.exact!==false&&y.price>0&&y.specs&&!y.genericAd);
+  items.forEach(x=>{
+    const sp=x.specs; if(!sp||!(x.price>0)) return; let cand=[], veh=false;
+    if(sp.cat==='vehicle'&&sp.year){ veh=true;
+      cand=pool.filter(y=>y!==x&&y.specs.cat==='vehicle'&&y.specs.year).map(y=>({y,d:Math.abs(y.specs.year-sp.year)+((sp.odo&&y.specs.odo)?Math.abs(Math.log((sp.odo+2000)/(y.specs.odo+2000)))*1.2:.4)+((sp.variant||'')!==(y.specs.variant||'')?1.5:0)}));
+    } else if(sp.cat==='property'&&sp.area){
+      cand=pool.filter(y=>y!==x&&y.specs.cat==='property'&&y.specs.area).map(y=>({y,d:Math.abs(Math.log(sp.area/y.specs.area))*2}));
+    } else return;
+    const near=cand.filter(c=>c.d<=(veh?2.5:1.2)).sort((a,b)=>a.d-b.d).slice(0,7);
+    if(near.length<4){ const ys=pool.filter(y=>y.specs.cat==='vehicle'&&y.specs.year).map(y=>y.specs.year); if(veh&&ys.length&&Math.max(...ys)-Math.min(...ys)>=3){ x.ref=0; x.refSrc=''; x.refNote='insufficient'; } return; }
+    const vals=near.map(c=>veh?c.y.price:c.y.price/c.y.specs.area).sort((a,b)=>a-b), med=vals[Math.floor(vals.length/2)];
+    x.ref=veh?med:Math.round(med*sp.area); x.refSrc='similar'; x.refN=near.length;
+    if(veh){ const ys=near.map(c=>c.y.specs.year); x.refNote='đời '+Math.min(...ys)+(Math.max(...ys)>Math.min(...ys)?'–'+Math.max(...ys):'')+(sp.odo?', số km gần '+fmtN(sp.odo):''); }
+    else x.refNote='khoảng '+vnd(Math.round(med/1e4)*1e4)+'/m²';
+  });
+}
+/* ---------- Bằng chứng: chỉ ra đúng đoạn chữ trong tin mà máy đã đọc ra số liệu ---------- */
+function normMap(str){            // chữ đã bỏ dấu, kèm bảng đổi vị trí về chữ gốc
+  let n='', map=[], end=[];
+  for(let i=0;i<str.length;){
+    const ch=String.fromCodePoint(str.codePointAt(i)), len=ch.length;
+    const r=ch.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/đ/g,'d');
+    for(let k=0;k<r.length;k++){ n+=r[k]; map.push(i); end.push(i+len); }
+    i+=len;
+  }
+  return {n,map,end};
+}
+function evidenceFor(x){
+  const sp=x.specs; if(!sp) return null;
+  const nm=x.name||'', ds=x.desc||'', P=x.params||{}, orig=nm+'\n'+ds+'\n'+Object.values(P).join(' ');
+  const M=normMap(orig), n=M.n, cut=L=>{ let k=0; while(k<M.map.length&&M.map[k]<L) k++; return k; };
+  const nameN=cut(nm.length), descN=cut(nm.length+1+ds.length), ev={}, spans=[], rules=[];
+  const O=r=>r?{start:M.map[r.i],end:M.end[r.j-1]}:null;
+  const put=(key,label,r,paramKey)=>{
+    if(paramKey){ ev[key]={param:paramKey,value:P[paramKey]}; return; }
+    const o=O(r); if(o){ ev[key]=o; spans.push({...o,label}); }
+  };
+  if(sp.year) put('year','Đời xe / năm sản xuất',sp.srcKey.year?null:locYear(n.slice(0,descN),n.slice(0,nameN)),sp.srcKey.year);
+  if(sp.odo) put('odo','Số km đã đi',sp.srcKey.odo?null:locOdo(n),sp.srcKey.odo);
+  if(sp.area) put('area','Diện tích',sp.srcKey.area?null:locArea(n),sp.srcKey.area);
+  if(sp.built) put('built','Năm xây',sp.srcKey.built?null:locBuilt(n),sp.srcKey.built);
+  if(sp.floors) put('floors','Số tầng',sp.srcKey.floors?null:locFloors(n),sp.srcKey.floors);
+  if(sp.usedM) put('usedM','Thời gian đã dùng',locUsed(n));
+  if(sp.battery) put('battery','Pin',locBattery(n));
+  if(sp.warrM) put('warrM','Bảo hành',locWarranty(n));
+  (sp.rules||[]).forEach(r=>{ const o=O(locNeg(n,r.re)); if(o){ rules.push({k:r.k,label:r.label,...o}); spans.push({...o,label:r.label}); } });
+  return {orig,nameLen:nm.length,descEnd:nm.length+1+ds.length,ev,rules,spans};
+}
+function highlightText(text,spans){
+  const sp=spans.filter(s=>s.end>s.start).sort((a,b)=>a.start-b.start); let out='', pos=0;
+  sp.forEach(s=>{ if(s.start<pos) return; out+=esc(text.slice(pos,s.start))+`<mark title="Máy đọc là: ${esc(s.label)}">${esc(text.slice(s.start,s.end))}</mark>`; pos=s.end; });
+  return (out+esc(text.slice(pos))).replace(/\n/g,'<br>');
+}
+function snippetHtml(orig,start,end){
+  const a=Math.max(0,start-45), b=Math.min(orig.length,end+45), flat=t=>esc(t.replace(/\s*\n\s*/g,' '));
+  return (a>0?'…':'')+flat(orig.slice(a,start))+'<mark>'+flat(orig.slice(start,end))+'</mark>'+flat(orig.slice(end,b))+(b<orig.length?'…':'');
+}
+
+function specsHtml(x){
+  const sp=x.specs; if(!sp||sp.cat==='generic'&&!sp.usedM&&!sp.year) return '';
+  const E=evidenceFor(x)||{ev:{},rules:[],spans:[],orig:'',descEnd:0,nameLen:0};
+  const rows=[], evLine=k=>{ const e=E.ev[k]; const conf=k==='year'&&sp.paramYear?`<div class="ev">⚠ Mục thông số của tin ghi đời <b>${sp.paramYear}</b>, khác với nội dung tin.</div>`:(k==='odo'&&sp.paramOdo?`<div class="ev">⚠ Mục thông số của tin ghi <b>${fmtN(sp.paramOdo)} km</b>, khác với nội dung tin.</div>`:''); if(!e) return conf;
+    return conf+(e.param?`<div class="ev">Lấy từ mục thông số của tin: <b>${esc(e.param)}</b> = ${esc(e.value)}</div>`:`<div class="ev">“${snippetHtml(E.orig,e.start,e.end)}”</div>`); };
+  const row=(l,v,warn,k)=>rows.push(`<div class="row"><span class="mute">${l}</span><b${warn?' style="color:var(--warn)"':''}>${v}</b></div>${k?evLine(k):''}`);
+  const KIND={vehicle:'Xe cộ',property:'Nhà đất',electronics:'Đồ điện tử',generic:'Khác'};
+  const py=sp.year&&sp.odo&&sp.age>=2?' (~'+fmtN(sp.odo/sp.age)+' km/năm)':'';
+  if(sp.cat==='vehicle'){ row('Đời / năm sản xuất',sp.year?sp.year+' ('+sp.age+' năm tuổi)':'Chưa ghi rõ',!sp.year,'year'); row('Số km đã đi',sp.odo?fmtN(sp.odo)+' km'+py:'Chưa ghi rõ',!sp.odo,'odo'); }
+  if(sp.cat==='property'){ row('Diện tích',sp.area?sp.area+' m²'+(x.price>0&&sp.area?' · '+vnd(Math.round(x.price/sp.area/1e4)*1e4)+'/m²':''):'Chưa ghi rõ',!sp.area,'area'); if(sp.floors) row('Số tầng',sp.floors,false,'floors'); row('Năm xây',sp.built?sp.built+' ('+(CURY-sp.built)+' năm)':'Chưa ghi rõ',!sp.built,'built'); }
+  if(sp.cat==='electronics'){ row('Pin',sp.battery?sp.battery+'%':'Chưa ghi rõ',!sp.battery,'battery'); row('Bảo hành',sp.warrM?'~'+sp.warrM+' tháng':'Chưa ghi rõ',!sp.warrM,'warrM'); }
+  if(sp.usedM) row('Thời gian đã dùng',sp.usedM>=12?(Math.round(sp.usedM/12*10)/10)+' năm':sp.usedM+' tháng',false,'usedM');
+  if(sp.cat!=='generic'){ row(sp.cat==='property'?'Pháp lý':'Giấy tờ',sp.legalPros.length?esc(sp.legalPros.join(', ')):'Chưa thấy nhắc',!sp.legalPros.length); }
+  const flags=sp.legalCons.map(t=>'⛔ '+t).concat(sp.risks.map(t=>'⚠️ '+t));
+  const src=[...new Set(Object.values(sp.src))].join(', ');
+  const evRules=E.rules.length?`<details class="mt-2"><summary class="text-sm" style="font-weight:700;cursor:pointer">🔎 Xem ${E.rules.length} chỗ máy đã đọc ra ý này</summary>${E.rules.map(r=>`<div class="ev"><b>${r.k==='pro'?'✅':r.k==='con'?'⛔':'⚠️'} ${esc(r.label)}:</b> “${snippetHtml(E.orig,r.start,r.end)}”</div>`).join('')}</details>`:'';
+  const full=E.orig&&E.spans.length?`<details class="mt-2"><summary class="text-sm" style="font-weight:700;cursor:pointer">📄 Xem nguyên văn tin, máy tô sáng chỗ đã đọc</summary><div class="ev-full">${highlightText(E.orig.slice(0,E.descEnd),E.spans.filter(s=>s.end<=E.descEnd))}</div></details>`:'';
+  return `<div class="zbox line"><p class="font-extrabold">🔎 Máy đọc được từ tin (${KIND[sp.cat]})</p>${rows.join('')}
+    ${flags.length?flags.map(f=>`<span class="pill" style="background:var(--bad-bg)">${esc(f)}</span>`).join(''):''}
+    ${evRules}${full}
+    ${sp.ask.length?`<p class="font-extrabold mt-3">❓ Nên hỏi người bán</p>${sp.ask.slice(0,4).map(q=>`<span class="pill">${esc(q)}</span>`).join('')}`:''}
+    ${src?`<p class="mute text-sm mt-2">Nguồn số liệu: ${esc(src)}. Máy chỉ đọc được những gì người bán viết ra, nên bố vẫn cần kiểm tra ngoài đời.</p>`:''}</div>`;
+}
+
+const TRUST_CRITERIA=['Số món người bán đã bán thành công (từ 1.000 món là rất dày kinh nghiệm)','Điểm đánh giá của người mua và số lượt đánh giá (nhiều lượt mới đáng tin)','Có gian hàng đăng ký và có địa chỉ cụ thể','Được nền tảng bảo vệ người mua, hoặc hàng đã kiểm định','Có tên và thông tin liên hệ rõ ràng','Cho xem hàng, kiểm tra trước khi trả tiền','Không đòi cọc hoặc chuyển tiền trước','Giá không thấp bất thường so với các tin cùng loại'];
+function trustOf(it,priceBad,scamPay){
+  let s=35; const why=[],bad=[],si=it.si||{}, all=it.name+' '+(it.desc||'');
+  const add=(n,t)=>{ s+=n; (n>0?why:bad).push(t); };
+  if(si.sold!=null){ const k=si.sold, f=k.toLocaleString('vi-VN');
+    if(k>=1000) add(28,'Đã bán '+f+' món, rất dày kinh nghiệm'); else if(k>=300) add(24,'Đã bán '+f+' món'); else if(k>=100) add(20,'Đã bán '+f+' món');
+    else if(k>=50) add(16,'Đã bán '+f+' món'); else if(k>=10) add(9,'Đã bán '+f+' món'); else if(k>=1) add(3,'Mới có '+f+' giao dịch'); else add(-8,'Chưa có giao dịch nào được ghi nhận'); }
+  if(si.rating){ const n=si.ratingCount||0, rt=String(si.rating).replace('.',',');
+    if(si.rating>=4.5){ if(n>=100) add(20,'Người mua đánh giá '+rt+'/5 ('+n+' lượt)'); else if(n>=20) add(16,'Người mua đánh giá '+rt+'/5 ('+n+' lượt)'); else if(n>=3) add(10,'Người mua đánh giá '+rt+'/5 ('+n+' lượt)'); }
+    else if(si.rating>=4&&n>=3) add(4,'Điểm đánh giá khá ('+rt+'/5)');
+    else if(si.rating<3.5&&n>=3) add(-15,'Điểm đánh giá thấp ('+rt+'/5)'); }
+  if(si.shop) add(8,'Có gian hàng đăng ký'); if(si.protected) add(6,'Được nền tảng bảo vệ người mua'); if(si.inspected) add(6,'Hàng đã được kiểm định');
+  if(it.phone) add(4,'Có số điện thoại trong tin');
+  if(it.addr) add(6,'Có địa chỉ cụ thể'); else if(it.loc&&it.loc!=='Chưa rõ') add(2,'Có ghi khu vực bán'); else add(-6,'Không ghi nơi bán');
+  if(it.seller==='Chưa rõ') add(-6,'Không rõ tên người bán');
+  const dl=(it.desc||'').replace(/\s/g,'').length; if(dl>=150) add(4,'Mô tả chi tiết'); else if(dl<45&&!it.urlOnly) add(-4,'Mô tả sơ sài');
+  if(has(all,/xem hang|xem xe|xem may|xem tai|gap truc tiep|kiem tra roi|kiem tra thoai mai|cho kiem tra|nghe thu|test/)) add(5,'Cho xem hàng, kiểm tra trước khi trả tiền');
+  if(scamPay) add(-30,'Đòi cọc / chuyển tiền trước');
+  if(priceBad) add(-20,'Giá rẻ bất thường');
+  s=Math.max(5,Math.min(98,s));
+  return {score:s,why,bad,label:s>=70?'Đáng tin':s>=50?'Tạm được, cần thận trọng':'Nhiều rủi ro',level:s>=70?'good':s>=50?'warn':'bad'};
+}
+/* Điểm giá: càng thấp hơn mức chung càng tốt, nhưng thấp quá mức thì đáng ngờ */
+function priceValue(r){
+  const P=[[0.5,10],[0.65,60],[0.85,100],[1.0,85],[1.3,50],[1.6,20]];
+  if(r<=P[0][0]) return P[0][1]; if(r>=P[P.length-1][0]) return P[P.length-1][1];
+  for(let i=1;i<P.length;i++){ if(r<=P[i][0]){ const [x0,y0]=P[i-1],[x1,y1]=P[i]; return Math.round(y0+(y1-y0)*(r-x0)/(x1-x0)); } }
+  return 60;
+}
+function priceDiff(x){
+  if(!x.ref||!x.price) return {txt:'',col:''};
+  const d=Math.round((x.price/x.ref-1)*100);
+  return {d,txt:d<=-3?'Thấp hơn '+(-d)+'%':d>=3?'Cao hơn '+d+'%':'Sát giá',col:d<=-40?'--bad':d<=-3?'--good':d>=8?'--warn':'--ink'};
+}
+/* Điểm giao dịch = 40% người bán + 30% giá + 30% chất lượng tin đăng. Tin nghi lừa đảo bị loại khỏi vị trí tốt nhất. */
+const W=CONFIG.weights;
+function analyze(it){
+  let q=60, v=60; const pros=[], cons=[], danger=[]; let priceBad=false;
+  const d=it.desc||'', all=it.name+' '+d;
+  if(it.urlOnly){ cons.push('Chỉ có đường link, chưa đọc được nội dung tin'); q-=15; }
+  if(it.ref&&it.price){
+    const r=it.price/it.ref, w=it.refSrc==='similar'?'giá trung bình các tin tương tự ('+(it.refNote||'cùng đời')+')':it.refSrc==='median'?'giá trung bình các tin cùng loại':'giá tham khảo', pct=Math.round(Math.abs(1-r)*100);
+    v=priceValue(r);
+    if(r<0.5){ danger.push('Giá rẻ bất thường (chỉ bằng '+Math.round(r*100)+'% '+w+') — rất dễ là lừa đảo'); priceBad=true; }
+    else if(r<0.65) cons.push('Giá thấp hơn '+pct+'% so với '+w+', cần xem hàng kỹ');
+    else if(r<0.97) pros.push('Giá tốt: thấp hơn '+pct+'% so với '+w);
+    else if(r<=1.1) pros.push('Giá hợp lý, sát '+w);
+    else if(r<=1.3) cons.push('Giá cao hơn '+pct+'% so với '+w);
+    else cons.push('Giá cao hơn nhiều ('+pct+'%) so với '+w);
+  } else if(!it.price){ cons.push(it.priceFake?'Giá ghi trên tin ('+vnd(it.priceRaw)+') trông như giá giả để câu khách, cần hỏi giá thật':'Tin không ghi rõ giá (thương lượng)'); v=40; }
+  else cons.push(it.refNote==='insufficient'?'Chưa đủ tin cùng đời, cùng mức số km để so giá, nên giá chưa được đánh giá':'Chưa có giá tham khảo cho món này');
+  const scamPay=has(all,/coc|chuyen khoan truoc|ck truoc|dat coc|ung truoc/);
+  if(scamPay) danger.push('Đòi cọc / chuyển tiền trước — tuyệt đối không nên làm');
+  const trust=trustOf(it,priceBad,scamPay);
+  if(has(all,/ship toan quoc|ib nhe|ib de|inbox/)&&!has(all,/xem hang|xem xe|xem may|nghe thu|gap truc tiep/)){ cons.push('Chỉ bán qua tin nhắn, không hẹn xem hàng trực tiếp'); q-=8; }
+  if(d.replace(/\s/g,'').length<45&&!it.urlOnly){ cons.push('Mô tả quá ngắn, thiếu thông tin'); q-=trust.score>=75?2:6; }   // người bán dày kinh nghiệm không cần viết dài
+  if(has(all,/khong bao hanh|mien bao hanh|het bao hanh/)){ cons.push('Không có bảo hành'); q-=6; }
+  else if(has(all,/bao hanh/)){ pros.push('Có bảo hành'); q+=8; }
+  if(has(all,/hoa don|fullbox|day du hop|chinh hang|vat|giay to|cavet|chinh chu/)){ pros.push('Có hộp / hóa đơn / giấy tờ / chính hãng'); q+=6; }
+  if(has(all,/nghe thu|test|xem hang|xem xe|xem may|xem tai|kiem tra|gap truc tiep/)){ pros.push('Cho xem và kiểm tra hàng trước khi mua'); q+=8; }
+  if(has(all,/re nhe|hong|loi |sua chua|nut|xuoc|tray|ngap nuoc|thay man/)){ cons.push('Có lỗi hoặc vết xước/trầy/sửa chữa được nhắc trong tin'); q-=6; }
+  if(it.cond==='Mới'||it.cond==='Như mới'){ pros.push('Tình trạng '+it.cond.toLowerCase()); q+=3; }
+  if(it.cond==='Chưa rõ'){ cons.push('Không nói rõ tình trạng'); q-=4; }
+  if(it.km!=null){ if(it.km<=10){ pros.push('Gần nhà, đi xem hàng dễ (khoảng '+it.km+' km)'); q+=4; } else if(it.km>100){ cons.push('Ở xa ('+it.km+' km), khó đi xem hàng'); q-=8; } }
+  else if(it.loc==='Chưa rõ'){ cons.push('Không ghi nơi bán'); q-=4; }
+  const sp=it.specs||(it.specs=extractSpecs(it)); q+=applySpecs(sp,pros,cons,danger);
+  if(it.genericAd){ cons.push('Đây là tin quảng cáo chung của cửa hàng (nhiều loại xe), không phải một chiếc xe cụ thể'); q-=15; }
+  q=Math.max(5,Math.min(98,q));
+  let deal=Math.round(W.trust*trust.score+W.price*v+W.post*q);
+  if(trust.score<CONFIG.trustMin){ deal=Math.min(deal,CONFIG.capUntrusted); cons.push('Người bán chưa đủ tin cậy (xem điểm bên dưới)'); }
+  if(sp.cat!=='electronics'&&(sp.legalCons.length||sp.risks.some(t=>/ngập|cắt|tai nạn|tranh chấp/.test(t)))){ deal=Math.min(deal,59); cons.push('Có rủi ro nghiêm trọng về giấy tờ hoặc tình trạng nên không được chọn là tin tốt nhất'); }
+  if(it.genericAd) deal=Math.min(deal,CONFIG.capUntrusted);
+  if(danger.length) deal=Math.min(deal,35);
+  const ok=!danger.length&&trust.score>=CONFIG.trustMin&&deal>=CONFIG.okScore;
+  return {...it,score:deal,q,v,pros,cons,danger,ok,trust,level:danger.length?'bad':ok?'good':'warn'};
+}
+
+/* ---------- Hiển thị ---------- */
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function msg(t,k){ return `<div class="tag ${k}" style="display:block;border-radius:1rem;font-size:1rem;padding:.65rem .85rem;font-weight:600;margin-bottom:.8rem;font-size:.95rem">${t}</div>`; }
+function loading(t){ ttsReset(); $('#out').innerHTML=`<div class="py-8 text-center"><div class="spin"></div><p class="mt-3 text-lg">${t}</p></div>`; $('#out').scrollIntoView({behavior:'smooth'}); }
+let S={r:[],sel:[]}, speech='';
+const lvlTxt=l=>l==='good'?'An tâm':l==='bad'?'Nguy cơ cao':'Cần xem kỹ';
+const img=(u,t)=>`<img src="${esc(u)}" loading="lazy" referrerpolicy="no-referrer" alt="Ảnh sản phẩm" onerror="${t?"this.parentNode.textContent='🖼️'":"this.parentNode.remove()"}">`;
+const cleanTel=p=>{ const d=String(p||'').replace(/[^\d+]/g,'').replace(/^\+?84/,'0'); return /^0\d{9,10}$/.test(d)?d:''; };
+const fmtTel=d=>d.length===10?d.replace(/(\d{4})(\d{3})(\d{3})/,'$1 $2 $3'):d.replace(/(\d{4})(\d{3})(\d{4})/,'$1 $2 $3');
+
+function contactHtml(x){
+  const k=S.r.indexOf(x), dg=cleanTel(x.phone), ok=!!dg, isCt=!!(x.live||/chotot\.com/i.test(x.url||''));
+  const mq=encodeURIComponent(((x.addr||x.loc||'')).replace('Chưa rõ','').trim());
+  const phoneTxt=ok?fmtTel(dg):(x.sample?'Tin mẫu, không có số thật':'Xem trong tin gốc');
+  return `<div class="zbox" data-contact="${k}">
+   <p class="font-extrabold">📇 Thông tin gốc để liên hệ</p>
+   <div class="row"><span class="mute">Tên người bán</span><b>${esc(x.seller)}</b></div>
+   <div class="row"><span class="mute">Số điện thoại</span><b>${esc(phoneTxt)}</b></div>
+   <div class="row"><span class="mute">Địa chỉ</span><b>${esc(x.addr||x.loc)}</b></div>
+   ${(ageH(x)!=null||x.date)?`<div class="row"><span class="mute">Đăng lúc</span><b>${esc(ageH(x)!=null?ageTxt(ageH(x)):x.date)}${bumped(x)?' (đã đẩy tin lên)':''}</b></div>`:''}
+   ${x.source?`<div class="row"><span class="mute">Nguồn tin</span><b>${esc(x.source)}</b></div>`:''}
+   <div class="grid gap-2 mt-3">
+    ${x.url?`<a class="btn" href="${esc(x.url)}" target="_blank" rel="noopener">${isCt?'💬 Chat với người bán trên Chợ Tốt':'🔗 Mở tin gốc'}</a>`:''}
+    <button type="button" class="btn alt" data-act="nego" data-k="${k}">✍️ Soạn tin nhắn thương lượng</button>
+    ${ok?`<button type="button" class="btn alt" data-act="contact" data-k="${k}">📞 Gọi hoặc nhắn Zalo</button>`:''}
+    ${mq?`<a class="btn alt" href="https://www.google.com/maps/search/?api=1&query=${mq}" target="_blank" rel="noopener">📍 Xem trên bản đồ</a>`:''}
+   </div>
+   ${x.url&&isCt?'<p class="mute text-sm mt-2">Trong tin gốc, bấm nút Chat để nhắn người bán. Muốn gọi thì bấm “Hiện số” ở đó.</p>':''}</div>`;
+}
+function closeAsk(){ const o=document.getElementById('askBox'); if(o) o.remove(); }
+function askContact(x){
+  const dg=cleanTel(x.phone); if(!dg) return; closeAsk();
+  const who=x.seller&&x.seller!=='Chưa rõ'?x.seller:'người bán';
+  const d=document.createElement('div'); d.id='askBox'; d.className='ov'; d.setAttribute('role','dialog'); d.setAttribute('aria-modal','true'); d.setAttribute('aria-label','Chọn cách liên hệ');
+  d.innerHTML=`<div class="ovc"><p class="font-extrabold text-lg">Liên hệ ${esc(who)}</p>
+   <p class="mute">Số điện thoại: <b style="color:var(--ink)">${fmtTel(dg)}</b></p>
+   <p class="font-extrabold mt-3">Bố muốn liên hệ bằng cách nào?</p>
+   <div class="grid gap-2 mt-3">
+    <a class="btn" href="tel:${dg}">📞 Gọi bằng số điện thoại thường</a>
+    <a class="btn alt" href="https://zalo.me/${dg}" target="_blank" rel="noopener">💬 Mở Zalo (nhắn hoặc gọi)</a>
+    <button type="button" class="btn alt" data-act="copy" data-tel="${dg}">📋 Sao chép số</button>
+    <button type="button" class="btn alt" data-act="close" style="border-color:var(--line);color:var(--mute)">Để sau</button>
+   </div></div>`;
+  d.addEventListener('click',e=>{ if(e.target===d) closeAsk(); });
+  document.body.appendChild(d); d.querySelector('a').focus();
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeAsk(); });
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-act]'); if(!b) return; const act=b.dataset.act;
+  if(act==='retry') return search(true);
+  if(act==='close') return closeAsk();
+  if(act==='contact') return askContact(S.r[+b.dataset.k]);
+  if(act==='nego') return negoBox(S.r[+b.dataset.k]);
+  if(act==='copy'){
+    const t=b.dataset.tel; try{ await navigator.clipboard.writeText(t); }catch(_){ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(__){} ta.remove(); }
+    b.textContent='✅ Đã sao chép';
+  }
+});
+
+function trustHtml(t){
+  const col=t.level==='good'?'--good':t.level==='bad'?'--bad':'--warn';
+  return `<div class="zbox line"><p class="font-extrabold">🛡️ Người bán: <span class="tag ${t.level}">${t.label} · ${t.score}/100</span></p>
+   <div class="bar mt-2"><i style="width:${t.score}%;background:var(${col})"></i></div>
+   ${t.why.map(p=>`<span class="pill">➕ ${esc(p)}</span>`).join('')}${t.bad.map(p=>`<span class="pill" style="background:var(--bad-bg)">➖ ${esc(p)}</span>`).join('')}</div>`;
+}
+
+function detailBody(x,best,buy){
+  const col=x.level==='good'?'--good':x.level==='bad'?'--bad':'--warn';
+  const refLbl=x.refSrc==='similar'?'Trung bình '+x.refN+' tin tương tự ('+x.refNote+')':x.refSrc==='median'?'Trung bình '+(x.refN?x.refN+' ':'')+'tin cùng loại':'Giá tham khảo (ước tính)';
+  const pd=priceDiff(x), dTxt=pd.txt, dCol=pd.col;
+  const bk=(ic,lb,w,val)=>`<div class="bk"><span>${ic} ${lb} <span class="mute">(${w}%)</span></span><div class="bar"><i style="width:${val}%;background:var(${val>=70?'--good':val>=50?'--warn':'--bad'})"></i></div><b>${val}</b></div>`;
+  return `<div class="hero"><div class="ring" style="--p:${x.score};--c:var(${col})" role="img" aria-label="Điểm ${x.score} trên 100"><span><b>${x.score}</b><small>/100</small></span></div>
+    <div style="min-width:0"><div class="flex flex-wrap gap-1 mb-1"><span class="tag ${x.level}">${lvlTxt(x.level)}</span>
+    ${best&&buy?'<span class="tag good">⭐ Đáng giao dịch nhất</span>':''}${x.exact===false?'<span class="tag warn">Gần giống</span>':''}${x.sample?'<span class="tag warn">Tin mẫu</span>':''}${x.source&&!x.sample?`<span class="tag warn">${esc(x.source)}</span>`:''}</div>
+    <h3 class="text-lg font-extrabold leading-snug">${esc(x.name)}</h3></div></div>
+   ${x.images&&x.images.length?`<div class="gal" aria-label="Ảnh sản phẩm">${x.images.map(u=>x.url?`<a class="ph" href="${esc(x.url)}" target="_blank" rel="noopener">${img(u)}</a>`:`<div class="ph">${img(u)}</div>`).join('')}</div>`:''}
+   <div class="zbox line">
+    <div class="row" style="border-top:0"><span class="mute">Giá</span><b class="text-lg nw">${vnd(x.price)}</b></div>
+    ${x.priceFake?`<div class="row"><span class="mute">Giá tin ghi</span><b>${vnd(x.priceRaw)} <span class="tag warn">giá giả?</span></b></div>`:''}
+    <div class="row"><span class="mute">Tình trạng</span><b>${esc(x.cond)}</b></div>
+    <div class="row"><span class="mute">Nơi bán</span><b>${esc(x.loc)}${x.km!=null?' (~'+x.km+' km)':''}</b></div>
+    ${x.ref?`<div class="row"><span class="mute">${refLbl}</span><b class="nw">${vnd(Math.round(x.ref/1e4)*1e4)}</b></div>`:''}
+    ${dTxt?`<div class="row"><span class="mute">So với giá tham khảo</span><b class="nw" style="color:var(${dCol})">${dTxt}</b></div>`:''}
+   </div>
+   ${priceChart(x)}
+   ${specsHtml(x)}
+   ${checklistHtml(x)}
+   <div class="zbox line"><p class="font-extrabold">📊 Điểm giao dịch ${x.score}/100 được tính từ</p>
+    ${bk('🛡️','Người bán',Math.round(W.trust*100),x.trust.score)}${bk('💰','Giá',Math.round(W.price*100),x.v)}${bk('📝','Tin đăng',Math.round(W.post*100),x.q)}
+    ${x.danger.length?'<p class="mute text-sm mt-1">Tin có dấu hiệu lừa đảo nên điểm bị hạ xuống mức thấp.</p>':x.trust.score<CONFIG.trustMin?'<p class="mute text-sm mt-1">Người bán chưa đủ tin cậy nên điểm tối đa chỉ 59.</p>':''}</div>
+   ${contactHtml(x)}
+   ${trustHtml(x.trust)}
+   <div class="zbox line">
+   ${x.pros.length?`<p class="font-extrabold" style="color:var(--good)">👍 Điểm tốt của món hàng</p>${x.pros.map(p=>`<span class="pill">✅ ${p}</span>`).join('')}`:''}
+   ${(x.cons.length||x.danger.length)?`<p class="font-extrabold mt-3" style="color:var(--bad)">👎 Điểm cần lưu ý</p>${x.danger.map(p=>`<span class="pill" style="background:var(--bad-bg)">⛔ ${p}</span>`).join('')}${x.cons.map(p=>`<span class="pill">⚠️ ${p}</span>`).join('')}`:''}
+   </div>
+   ${dupHtml(x)}`;
+}
+
+/* ---------- Thời gian đăng ---------- */
+const tm=v=>{ v=Number(v)||0; return v?(v<1e12?v*1000:v):0; };
+function parseAge(d){
+  const n=norm(String(d||'')); if(!n) return null; let m;
+  if(/vua xong|vua dang/.test(n)) return .1;
+  if(m=n.match(/(\d+)\s*phut/)) return +m[1]/60;
+  if(m=n.match(/(\d+)\s*gio/)) return +m[1];
+  if(m=n.match(/(\d+)\s*ngay/)) return +m[1]*24;
+  if(m=n.match(/(\d+)\s*tuan/)) return +m[1]*168;
+  if(m=n.match(/(\d+)\s*thang/)) return +m[1]*720;
+  if(m=n.match(/(\d+)\s*nam/)) return +m[1]*8760;
+  if(/hom qua/.test(n)) return 30; if(/hom nay/.test(n)) return 6;
+  if(m=n.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/)) return (Date.now()-new Date(+m[3],+m[2]-1,+m[1]).getTime())/36e5;
+  return null;
+}
+function ageH(x){ const t=x.t0||x.t; if(t){ const h=(Date.now()-t)/36e5; if(h>=0&&h<24*365*6) return h; } return parseAge(x.date); }
+function ageTxt(h){ if(h<1) return 'vừa đăng'; if(h<24) return Math.round(h)+' giờ trước'; const d=Math.round(h/24); if(d<=1) return 'hôm qua'; if(d<30) return d+' ngày trước'; if(d<365) return Math.round(d/30)+' tháng trước'; return Math.round(d/365)+' năm trước'; }
+const ageLbl=h=>h<1?'Vừa đăng':'Đăng '+ageTxt(h);
+function firstH(x){ const v=[ageH(x)].concat((x.dup&&x.dup.kind==='repost'?x.dup.members:[]).map(ageH)).filter(h=>h!=null); return v.length?Math.max(...v):null; }   // tin đăng lại: tính từ lần đăng đầu
+const bumped=x=>!!(x.t&&x.t0&&x.t-x.t0>3*864e5);
+
+/* ---------- Tin trùng: đăng lại, nhiều người cùng đăng, hay nghi lừa đảo ---------- */
+const wtoks=s=>norm(s||'').replace(/[^a-z0-9]+/g,' ').split(' ').filter(w=>w.length>1);
+const jac=(A,B)=>{ if(!A.size||!B.size) return 0; let i=0; A.forEach(v=>{ if(B.has(v)) i++; }); return i/(A.size+B.size-i); };
+function shingles(t){ const w=wtoks(t), o=new Set(); if(w.length<3){ w.forEach(x=>o.add(x)); return o; } for(let i=0;i<=w.length-3;i++) o.add(w.slice(i,i+3).join(' ')); return o; }
+function dupPair(a,b){
+  const ts=jac(a._t,b._t), bs=(a._b.size&&b._b.size)?jac(a._b,b._b):0;
+  const hi=Math.max(a.price,b.price), lo=Math.min(a.price,b.price);
+  const pc=a.price>0&&b.price>0&&(hi-lo)/hi<=CONFIG.dup.priceTight, pw=a.price>0&&b.price>0&&(hi-lo)/hi<=CONFIG.dup.priceWide;
+  const sameAcc=!!a._n&&a._n===b._n&&a._n!=='chua ro';
+  const pa=cleanTel(a.phone), sameP=!!pa&&pa===cleanTel(b.phone);
+  const img=(a.images||[]).some(u=>(b.images||[]).includes(u));
+  if(img) return true;
+  const ya=a.specs&&a.specs.year, yb=b.specs&&b.specs.year, oa=a.specs&&a.specs.odo, ob=b.specs&&b.specs.odo;
+  if(ya&&yb&&ya!==yb) return false;                                                   // khác đời: là hai chiếc xe khác nhau
+  if(oa&&ob&&Math.max(oa,ob)/Math.min(oa,ob)>CONFIG.dup.odoRatio) return false;       // số km chênh quá nhiều: cũng là hai chiếc khác nhau
+  const D=CONFIG.dup;
+  return (sameAcc&&a.price>0&&a.price===b.price&&ya&&ya===yb)||(sameP&&ts>=D.title)||(bs>=D.body&&ts>=D.title)||(ts>=D.titleHi&&pc&&(sameAcc||bs>=D.bodyMid))||(sameAcc&&ts>=D.sameSeller&&bs>=D.bodyMid&&pw);
+}
+function clusterItems(list){
+  list.forEach(x=>{ x._t=new Set(wtoks(x.name)); x._b=(x.desc||'').length>=60?shingles(x.desc):new Set(); x._n=norm(x.seller||''); });
+  const par=list.map((_,i)=>i), f=i=>par[i]===i?i:(par[i]=f(par[i]));
+  for(let i=0;i<list.length;i++) for(let j=i+1;j<list.length;j++) if(f(i)!==f(j)&&dupPair(list[i],list[j])) par[f(i)]=f(j);
+  const g=new Map(); list.forEach((x,i)=>{ const k=f(i); if(!g.has(k)) g.set(k,[]); g.get(k).push(x); });
+  return [...g.values()];
+}
+function applyDups(groups){
+  const stats={merged:0,clone:0,repost:0,network:0}, reps=[];
+  groups.forEach(g=>{
+    if(g.length===1){ reps.push(g[0]); return; }
+    const sellers=new Set(g.map(x=>x._n||'?'));
+    const lowShare=g.filter(x=>x.trust.score<CONFIG.dup.lowTrust).length/g.length;
+    const cheap=g.some(x=>x.ref&&x.price&&x.price/x.ref<0.8);
+    const priceSame=new Set(g.map(x=>x.price)).size===1;
+    const imgShared=sellers.size>1&&g.some((x,i)=>g.some((y,j)=>j>i&&x._n!==y._n&&(x.images||[]).some(u=>(y.images||[]).includes(u))));
+    let kind;
+    if(sellers.size===1) kind='repost';
+    else if(imgShared||(cheap&&lowShare>=CONFIG.dup.cloneCheap)||lowShare>=CONFIG.dup.cloneLow||(priceSame&&sellers.size>=3&&lowShare>=CONFIG.dup.cloneSamePrice)) kind='clone';   // nhiều tài khoản yếu cùng nội dung: nghi lừa
+    else kind='network';                                                                                                 // có tài khoản uy tín: đại lý hoặc nhờ đăng hộ
+    const rep=(kind==='repost'?g.slice().sort((a,b)=>(b.t||0)-(a.t||0)||b.score-a.score):g.slice().sort((a,b)=>b.score-a.score))[0];
+    g.forEach(x=>{ if(x!==rep) x.hidden=true; });
+    rep.dup={kind,n:g.length,sellers:sellers.size,members:g.filter(x=>x!==rep)};
+    if(kind==='clone'){ rep.danger.push('Có '+g.length+' tin gần giống nhau do '+sellers.size+' tài khoản khác nhau đăng: dấu hiệu lừa đảo (đăng trùng nội dung)'); rep.score=Math.min(rep.score,35); }
+    else if(kind==='network'){ rep.cons.push('Có '+sellers.size+' người khác nhau cùng đăng nội dung giống nhau, nên hỏi rõ ai là chủ hàng'); rep.score=Math.max(5,rep.score-4); }
+    rep.ok=!rep.danger.length&&rep.trust.score>=CONFIG.trustMin&&rep.score>=CONFIG.okScore; rep.level=rep.danger.length?'bad':rep.ok?'good':'warn';
+    stats.merged+=g.length-1; stats[kind]++; reps.push(rep);
+  });
+  reps.stats=stats; return reps;
+}
+function prepare(items){
+  items.forEach(x=>{
+    if(!x.specs) x.specs=extractSpecs(x);
+    if(isFakePrice(x.price,norm((x.name||'')+' '+(x.desc||'')))){ x.priceRaw=x.price; x.price=0; x.priceFake=true; }   // giá giả không được tính vào giá tham khảo
+    x.genericAd=isGenericAd(x);
+  });
+  const cl0=clusterItems(items), reps0=cl0.map(g=>g.slice().sort((a,b)=>(b.t||0)-(a.t||0))[0]);
+  const prices=reps0.filter(x=>x.exact!==false&&!x.genericAd).map(x=>x.price).filter(p=>p>0).sort((a,b)=>a-b);   // mỗi nhóm trùng chỉ tính một lần
+  const med=prices.length>=3?prices[Math.floor(prices.length/2)]:0;
+  items.forEach(x=>{ if(med&&(!x.ref||prices.length>=6)){ x.ref=med; x.refSrc='median'; x.refN=prices.length; } });   // đủ nhiều tin thật thì dùng giá thật, không dùng bảng ước tính
+  simRefs(items,reps0);
+  const an=items.map(analyze), groups=clusterItems(an);
+  const r=applyDups(groups).sort((a,b)=>((b.exact!==false)-(a.exact!==false))||(b.ok-a.ok)||(b.score-a.score));
+  return {r,an,groups};
+}
+function dupHtml(x){
+  const d=x.dup; if(!d) return '';
+  const T={repost:['🔁','Người bán đã đăng lại '+(d.n-1)+' lần','Đăng lại nhiều lần thường là đang muốn bán nhanh hoặc hàng chưa bán được, nên có thể thương lượng giá. Bố hỏi rõ lý do bán và xem hàng kỹ.'],
+    network:['👥',d.sellers+' người khác nhau cùng đăng nội dung giống nhau','Có thể là đại lý, hoặc người bán nhờ nhiều người đăng hộ để bán nhanh. Bố hỏi rõ ai là chủ hàng, xem hàng trực tiếp và đừng chuyển tiền trước.'],
+    clone:['⛔',d.n+' tin trùng từ '+d.sellers+' tài khoản','Nhiều tài khoản đăng cùng một nội dung là cách lừa đảo thường gặp. Bố không chuyển tiền trước, chỉ giao dịch khi xem hàng trực tiếp, hoặc chọn tin khác.']}[d.kind];
+  const old=d.members.filter(m=>m.price>0).sort((a,b)=>(ageH(b)||0)-(ageH(a)||0))[0];
+  const drop=d.kind==='repost'&&old&&x.price>0&&x.price<old.price*0.97?`<p class="text-sm mt-2" style="color:var(--good);font-weight:700">📉 Giá đã giảm từ ${vnd(old.price)} xuống ${vnd(x.price)}</p>`:'';
+  const rows=d.members.slice(0,5).map(m=>`<div class="row"><span class="mute">${esc(m.seller)}</span><b class="nw">${m.url?`<a href="${esc(m.url)}" target="_blank" rel="noopener" style="color:var(--pri)">${vnd(m.price)}</a>`:vnd(m.price)}</b></div>`).join('');
+  return `<div class="zbox line" style="${d.kind==='clone'?'border-color:var(--bad)':''}"><p class="font-extrabold">${T[0]} ${T[1]}</p><p class="mute text-sm">${T[2]}</p>${drop}
+    <p class="text-sm mt-2" style="font-weight:700">Các tin trùng đã được gộp lại:</p>${rows}</div>`;
+}
+
+/* ---------- Xem theo cách khác: mới nhất, rẻ nhất, khó bán nhất, chất lượng nhưng ít người thấy ---------- */
+const LENS=[['new','🆕 Mới đăng nhất'],['cheap','💰 Rẻ nhất'],['hard','🐢 Khó bán nhất'],['gem','💎 Chất lượng, ít người thấy']];
+function lensRow(x,reason){
+  return `<details class="card" style="padding:.6rem" data-i="${S.r.indexOf(x)}"><summary class="sum">
+    <div class="thumb">${x.images&&x.images[0]?img(x.images[0],1):'🖼️'}</div>
+    <div style="min-width:0"><b class="clamp2">${esc(x.name)}</b>
+     <div class="li-p"><span class="font-extrabold">${vnd(x.price)}</span><span class="tag ${x.level}">${lvlTxt(x.level)} · ${x.score}</span></div>
+     <div class="text-sm" style="color:var(--pri);font-weight:700">${reason}</div></div></summary><div class="mt-3 lazy"></div></details>`;
+}
+function lensData(k){
+  const R=S.r, safe=R.filter(x=>!x.danger.length); let help='', note='', rows=[];
+  if(k==='new'){
+    help='Các tin vừa được đăng, xếp từ mới đến cũ. Tin mới thường còn hàng và người bán còn nhiệt tình trả lời.';
+    rows=safe.filter(x=>ageH(x)!=null).sort((a,b)=>ageH(a)-ageH(b)).slice(0,8).map(x=>[x,'🆕 '+ageLbl(ageH(x))+(x.dup&&x.dup.kind==='repost'?' · đăng lại '+(x.dup.n-1)+' lần':'')+(bumped(x)?' (đã đẩy tin)':'')+(x.trust.score<CONFIG.trustMin?' · người bán chưa đủ tin cậy':'')]);
+    if(!rows.length) note='Chưa đọc được thời gian đăng của các tin này.';
+  }
+  else if(k==='cheap'){
+    help='Các tin giá thấp nhất. Đã bỏ các tin giá rẻ bất thường hoặc đòi cọc vì dễ là lừa đảo.';
+    rows=safe.filter(x=>x.price>0).sort((a,b)=>a.price-b.price).slice(0,8).map(x=>{ const pd=priceDiff(x); return [x,'💰 '+vnd(x.price)+(pd.txt?' · '+pd.txt.toLowerCase():'')+(x.ref&&x.price/x.ref<0.65?' · rẻ khác thường, xem kỹ':'')+(x.trust.score<CONFIG.trustMin?' · người bán chưa đủ tin cậy':'')]; });
+    const dropped=R.filter(x=>x.danger.length&&x.price>0).length; if(dropped) note='Đã bỏ '+dropped+' tin nghi lừa đảo (giá quá rẻ hoặc đòi cọc).';
+  }
+  else if(k==='hard'){
+    help='Tin đăng lâu, giá còn cao hoặc phải đăng lại nhiều lần nên khó bán. Đây là những tin dễ trả giá nhất, nhưng cũng có thể do hàng có vấn đề, bố xem hàng thật kỹ.';
+    const hs=x=>{ const days=(firstH(x)||0)/24, r=x.ref&&x.price?x.price/x.ref:1; return Math.min(days/CONFIG.hard.days,1)*50+Math.max(0,Math.min((r-1)/.25,1))*35+((x.dup&&x.dup.kind==='repost')?15:0); };
+    rows=safe.map(x=>({x,h:hs(x)})).filter(o=>o.h>=CONFIG.hard.minScore).sort((a,b)=>b.h-a.h).slice(0,8).map(({x})=>{
+      const h=firstH(x), r=x.ref&&x.price?x.price/x.ref:1, parts=[];
+      if(h!=null&&h>=168) parts.push((x.dup&&x.dup.kind==='repost'?'Lần đầu đăng ':'Đăng ')+ageTxt(h)); if(r>1.03) parts.push('cao hơn '+Math.round((r-1)*100)+'% so với giá tham khảo');
+      if(x.dup&&x.dup.kind==='repost') parts.push('đăng lại '+(x.dup.n-1)+' lần');
+      let tip; if(r>1.03){ const u=x.ref>=2e7?1e6:x.ref>=2e6?1e5:1e4; tip='Gợi ý trả khoảng '+vnd(Math.round(x.ref/u)*u); } else tip='Thử trả giảm 5–10%';
+      return [x,'🐢 '+parts.join(' · ')+' · '+tip]; });
+    if(!rows.length) note='Chưa thấy tin nào đăng lâu hoặc giá cao rõ rệt. Các tin này đang được định giá khá sát thị trường.';
+  }
+  else{
+    help='Tin có người bán đáng tin, giá và nội dung tốt nhưng ít người lướt tới, nên ít bị tranh mua và dễ thương lượng.';
+    const total=Math.max(1,(S.all||[]).length-1);
+    const lv=x=>{ const si=x.si||{}, posN=x.pos!=null?Math.min(1,x.pos/total):0, small=!si.shop&&(si.sold||0)<30&&(si.ratingCount||0)<10;
+      return {v:Math.round(posN*60+(small?25:0)+((x.images||[]).length<=2?10:0)),small,deep:posN>=.5}; };
+    rows=safe.filter(x=>x.ok).map(x=>({x,l:lv(x)})).filter(o=>o.l.v>=40).sort((a,b)=>(b.x.score+.3*b.l.v)-(a.x.score+.3*a.l.v)).slice(0,8)
+      .map(({x,l})=>[x,'💎 Điểm '+x.score+'/100'+(l.small?' · người bán nhỏ, ít người biết':'')+(l.deep?' · nằm sâu trong kết quả':'')]);
+    note=rows.length?'Chợ Tốt không công khai lượt xem, nên “ít người thấy” chỉ là ước đoán từ vị trí của tin và quy mô người bán.':'Chưa thấy tin nào vừa đáng tin vừa ít người biết đến.';
+  }
+  return {help,note,rows};
+}
+function lensHtml(k){
+  const d=lensData(k);
+  return `<p class="mute text-sm mb-2">${d.help}</p>${d.rows.length?`<div class="space-y-2">${d.rows.map(([x,r])=>lensRow(x,esc(r))).join('')}</div>`:''}${d.note?`<p class="mute text-sm mt-2">${d.note}</p>`:''}`;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-lens]'); if(!b) return;
+  document.querySelectorAll('#lensChips [data-lens]').forEach(c=>c.setAttribute('aria-pressed',String(c===b)));
+  $('#lensOut').innerHTML=lensHtml(b.dataset.lens);
+});
+
+/* ---------- Biểu đồ: tin này đang nằm ở đâu so với các tin khác ---------- */
+const shortVnd=n=>n>=1e9?String(Math.round(n/1e8)/10).replace('.',',')+' tỷ':n>=1e7?Math.round(n/1e6)+' tr':n>=1e6?String(Math.round(n/1e5)/10).replace('.',',')+' tr':Math.round(n/1e3)+'k';
+function niceTicks(lo,hi,n){ const raw=(hi-lo)/n, p=Math.pow(10,Math.floor(Math.log10(raw))), f=raw/p, step=(f<=1?1:f<=2?2:f<=5?5:10)*p, out=[]; for(let v=Math.ceil(lo/step)*step;v<=hi+1e-9;v+=step) out.push(v); return out; }
+function priceChart(x){
+  if(!(x.price>0)) return '';
+  let pts=(S.r||[]).filter(y=>y.price>0&&y.exact!==false); if(!pts.includes(x)) pts=pts.concat(x);
+  if(pts.length<4) return '';
+  const veh=!!(x.specs&&x.specs.cat==='vehicle'&&x.specs.year), vp=pts.filter(y=>y.specs&&y.specs.cat==='vehicle'&&y.specs.year), scatter=veh&&vp.length>=4;
+  const arr=scatter?vp:pts, W=320, H=scatter?176:124, L=scatter?46:12, R=14, T=16, B=34;
+  let lo=Math.min(...arr.map(y=>y.price)), hi=Math.max(...arr.map(y=>y.price)); const pad=(hi-lo)*.12||hi*.1; lo=Math.max(0,lo-pad); hi+=pad;
+  const col=y=>y.level==='good'?'var(--good)':y.level==='bad'?'var(--bad)':'var(--warn)';
+  const TX='font-size:10px;fill:var(--mute);paint-order:stroke;stroke:var(--bg);stroke-width:3px', f1=n=>n.toFixed(1);
+  let body='', cx, cy;
+  if(scatter){
+    let y0=Math.min(...vp.map(y=>y.specs.year)), y1=Math.max(...vp.map(y=>y.specs.year)); if(y0===y1){ y0--; y1++; }
+    const sx=v=>L+(W-L-R)*((v-(y0-.6))/((y1+.6)-(y0-.6))), sy=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+    niceTicks(lo,hi,3).forEach(v=>{ body+=`<line x1="${L}" x2="${W-R}" y1="${f1(sy(v))}" y2="${f1(sy(v))}" style="stroke:var(--line);stroke-width:1"/><text x="${L-5}" y="${f1(sy(v)+3)}" text-anchor="end" style="${TX}">${shortVnd(v)}</text>`; });
+    const yrs=[y0,y1]; if(y1-y0>=4) yrs.splice(1,0,Math.round((y0+y1)/2)); yrs.forEach(v=>{ body+=`<text x="${f1(sx(v))}" y="${H-17}" text-anchor="middle" style="${TX}">${v}</text>`; });
+    body+=`<text x="${(L+W-R)/2}" y="${H-4}" text-anchor="middle" style="${TX}">Đời xe</text>`;
+    if(x.ref>lo&&x.ref<hi) body+=`<line x1="${L}" x2="${W-R}" y1="${f1(sy(x.ref))}" y2="${f1(sy(x.ref))}" style="stroke:var(--ink);stroke-dasharray:4 3;opacity:.55"/><text x="${L+4}" y="${f1(sy(x.ref)-4)}" text-anchor="start" style="${TX}">${x.refSrc==='similar'?'TB tương tự ':'TB '}${shortVnd(x.ref)}</text>`;
+    arr.forEach((y,i)=>{ if(y===x) return; body+=`<circle cx="${f1(sx(y.specs.year)+((i*37)%7-3)*1.6)}" cy="${f1(sy(y.price))}" r="4" style="fill:${col(y)};opacity:.7"/>`; });
+    cx=sx(x.specs.year); cy=sy(x.price);
+  } else {
+    const sx=v=>L+(W-L-R)*((v-lo)/(hi-lo)), md=[...arr.map(y=>y.price)].sort((a,b)=>a-b)[Math.floor(arr.length/2)];
+    body+=`<line x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}" style="stroke:var(--line);stroke-width:1.5"/>`;
+    const mn=Math.min(...arr.map(y=>y.price)), mx=Math.max(...arr.map(y=>y.price));
+    [[mn,'rẻ nhất'],[md,'giữa'],[mx,'đắt nhất']].forEach(([v,lb])=>{ body+=`<text x="${f1(sx(v))}" y="${H-17}" text-anchor="middle" style="${TX}">${shortVnd(v)}</text><text x="${f1(sx(v))}" y="${H-5}" text-anchor="middle" style="${TX};opacity:.8">${lb}</text>`; });
+    const rf=x.ref>lo&&x.ref<hi?x.ref:md; body+=`<line x1="${f1(sx(rf))}" x2="${f1(sx(rf))}" y1="${T}" y2="${H-B}" style="stroke:var(--ink);stroke-dasharray:4 3;opacity:.55"/><text x="${f1(sx(rf))}" y="${T-4}" text-anchor="middle" style="${TX}">${x.ref?(x.refSrc==='similar'?'TB tương tự ':'TB ')+shortVnd(rf):'Giữa '+shortVnd(rf)}</text>`;
+    arr.forEach((y,i)=>{ if(y===x) return; body+=`<circle cx="${f1(sx(y.price))}" cy="${f1(T+12+((i*5)%4)*17)}" r="4.5" style="fill:${col(y)};opacity:.7"/>`; });
+    cx=sx(x.price); cy=T+12+1.5*17;
+  }
+  const anc=cx>W-60?'end':cx<L+40?'start':'middle', tx=anc==='end'?cx+6:anc==='start'?cx-6:cx;
+  body+=`<circle cx="${f1(cx)}" cy="${f1(cy)}" r="8" style="fill:${col(x)};stroke:var(--ink);stroke-width:2.5"/><text x="${f1(tx)}" y="${f1(cy-13)}" text-anchor="${anc}" style="font-size:11px;font-weight:800;fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:3px">Tin này ${shortVnd(x.price)}</text>`;
+  const pd=priceDiff(x), cap=pd.txt?'Tin này '+pd.txt.toLowerCase()+' so với '+(x.refSrc==='similar'?'các tin tương tự':'mức giá chung')+'.':'';
+  return `<div class="zbox line"><p class="font-extrabold">📈 Tin này đang nằm ở đâu?</p>
+   <svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Biểu đồ giá: tin này ${esc(vnd(x.price))}${x.ref?', mức tham khảo '+esc(vnd(Math.round(x.ref/1e4)*1e4)):''}. ${esc(cap)}">${body}</svg>
+   <p class="text-sm" style="font-weight:700">${esc(cap)}</p>
+   <p class="mute text-sm">Mỗi chấm là một tin: <span style="color:var(--good)">●</span> an tâm · <span style="color:var(--warn)">●</span> cần xem kỹ · <span style="color:var(--bad)">●</span> nguy cơ cao. Vòng to có viền đậm là tin đang xem${scatter?', đường nét đứt là giá trung bình của các tin tương tự':''}.</p></div>`;
+}
+
+/* ---------- Soạn tin nhắn thương lượng ---------- */
+const sayVnd=n=>n>=1e9?String(Math.round(n/1e7)/100).replace('.',',')+' tỷ':n>=1e6?String(Math.round(n/1e5)/10).replace('.',',')+' triệu':fmtN(n)+' đồng';
+function offerPrice(x){
+  const p=x.price; if(!(p>0)) return 0; const r=x.ref?p/x.ref:1; let t;
+  if(r>1.03) t=Math.max(x.ref,p*0.88); else if(r<0.8) t=p*0.97; else t=p*0.93;
+  const u=p>=1e9?1e7:p>=1e8?1e6:p>=1e7?5e5:p>=1e6?1e5:1e4; let o=Math.round(t/u)*u; if(o>=p) o=p-u; return Math.max(u,o);
+}
+function negoMsgs(x){
+  const sp=x.specs||{cat:'generic',ask:[]}, nm=(x.name||'sản phẩm').slice(0,60), who='anh/chị';
+  const photo=sp.cat==='vehicle'?'ảnh đồng hồ odo, cà vẹt và số khung':sp.cat==='property'?'ảnh sổ (anh/chị có thể che số CCCD) và ảnh hiện trạng':sp.cat==='electronics'?'ảnh màn hình pin và phần cài đặt iCloud':'thêm vài tấm ảnh thật, chụp gần';
+  const qs=sp.ask.slice(0,3).map(q=>'- '+q).join('\n');
+  const refTxt=x.refSrc==='similar'?'các tin tương tự ('+(x.refNote||'cùng loại')+')':x.refSrc==='median'?'các tin cùng loại trên Chợ Tốt':'giá thị trường';
+  const r=x.ref&&x.price?x.price/x.ref:1, pct=Math.round(Math.abs(r-1)*100), off=offerPrice(x);
+  const extra=(x.dup&&x.dup.kind==='repost'?' Em thấy tin này đã được đăng lại, không biết mình còn bán không ạ?':'')+((ageH(x)||0)>=24*30?' Em thấy tin đã đăng từ '+ageTxt(ageH(x))+'.':'');
+  const refLine=x.ref?(r>1.03?` Em có tham khảo ${refTxt} thì quanh ${sayVnd(Math.round(x.ref/1e5)*1e5)}, mức ${who} đang đăng cao hơn khoảng ${pct}%.`:` Em thấy mức giá khá tốt so với ${refTxt} (quanh ${sayVnd(Math.round(x.ref/1e5)*1e5)}).`):'';
+  return {
+    ask:`Chào ${who}, em đang quan tâm tin "${nm}" trên Chợ Tốt ạ.${extra}\n${qs?`${who[0].toUpperCase()+who.slice(1)} cho em hỏi thêm:\n${qs}\n`:''}${who[0].toUpperCase()+who.slice(1)} cho em xin ${photo} ạ. Em cảm ơn!`,
+    deal:off?`Chào ${who}, em đang quan tâm tin "${nm}" (giá ${sayVnd(x.price)}) ạ.${extra}${refLine}\nNếu hàng đúng như mô tả, em xin đề nghị ${sayVnd(off)}, em đến xem và lấy ngay trong ngày. ${who[0].toUpperCase()+who.slice(1)} xem giúp em nhé, em cảm ơn!`:`Chào ${who}, em đang quan tâm tin "${nm}" nhưng chưa thấy ghi giá. ${who[0].toUpperCase()+who.slice(1)} cho em xin giá cuối và hàng còn không ạ?`,
+    meet:`Chào ${who}, em muốn hẹn xem trực tiếp "${nm}" ạ. ${who[0].toUpperCase()+who.slice(1)} cho em xin địa chỉ và giờ phù hợp (em ưu tiên ban ngày, nơi đông người hoặc tại nhà ${who}). Em xin kiểm tra hàng${sp.cat==='vehicle'?' và đối chiếu giấy tờ chính chủ':sp.cat==='property'?' và xem bản gốc giấy tờ':''}, ưng thì em thanh toán ngay khi nhận hàng, em không đặt cọc hay chuyển tiền trước ạ. Em cảm ơn!`
+  };
+}
+function negoBox(x){
+  if(!x) return; closeAsk(); const M=negoMsgs(x); let cur='deal'; if(!(x.price>0)) cur='ask';
+  const d=document.createElement('div'); d.id='askBox'; d.className='ov'; d.setAttribute('role','dialog'); d.setAttribute('aria-modal','true'); d.setAttribute('aria-label','Soạn tin nhắn cho người bán');
+  const T=[['ask','🙂 Hỏi thông tin'],['deal','💰 Thương lượng giá'],['meet','📅 Hẹn xem hàng']];
+  d.innerHTML=`<div class="ovc wide"><p class="font-extrabold text-lg">✍️ Tin nhắn gửi người bán</p>
+    <p class="mute text-sm">Chọn kiểu tin nhắn, sửa lại nếu muốn, rồi sao chép và dán vào ô Chat trong tin gốc.</p>
+    <div class="flex flex-wrap gap-2 mt-2" id="ngTabs">${T.map(([k,l])=>`<button type="button" class="rchip" data-ng="${k}" aria-pressed="${k===cur}">${l}</button>`).join('')}</div>
+    <textarea id="ngText" class="field mt-3" rows="9" aria-label="Nội dung tin nhắn">${esc(M[cur])}</textarea>
+    <div class="grid gap-2 mt-3">
+     <button type="button" class="btn" id="ngCopy">📋 Sao chép tin nhắn</button>
+     ${x.url?`<a class="btn alt" href="${esc(x.url)}" target="_blank" rel="noopener">💬 Mở tin để dán vào Chat</a>`:''}
+     <button type="button" class="btn alt" data-act="close" style="border-color:var(--line);color:var(--mute)">Đóng</button></div>
+    <p class="mute text-sm mt-2">Mẹo: đừng gửi số CCCD, mã OTP hay chuyển tiền trước khi xem hàng.</p></div>`;
+  d.addEventListener('click',e=>{ if(e.target===d) return closeAsk();
+    const t=e.target.closest('[data-ng]'); if(t){ cur=t.dataset.ng; d.querySelectorAll('[data-ng]').forEach(c=>c.setAttribute('aria-pressed',String(c===t))); d.querySelector('#ngText').value=M[cur]; }
+    if(e.target.closest('#ngCopy')){ const ta=d.querySelector('#ngText'), b=d.querySelector('#ngCopy'); (async()=>{ try{ await navigator.clipboard.writeText(ta.value); }catch(_){ ta.select(); try{ document.execCommand('copy'); }catch(__){} } b.textContent='✅ Đã sao chép, giờ dán vào Chat'; })(); } });
+  document.body.appendChild(d); d.querySelector('#ngText').focus();
+}
+
+/* ---------- Checklist khi đi xem hàng ---------- */
+function checklistFor(x){
+  const sp=x.specs||{cat:'generic',legalCons:[],risks:[],ask:[]}, G=[];
+  const SAFE=['Hẹn nơi đông người, ban ngày và đi cùng người quen'];
+  if(sp.cat==='vehicle'){
+    G.push({t:'Trước khi đi',i:SAFE.concat(['Nhắn trước để người bán chuẩn bị cà vẹt bản gốc','Mang CCCD của bạn và nhờ người bán cho xem CCCD để đối chiếu chủ xe'],sp.legalCons.length?['⛔ Tin có dấu hiệu giấy tờ không rõ: yêu cầu xem cà vẹt bản gốc TRƯỚC khi đi']:[])});
+    G.push({t:'Khi xem xe',i:['Tên chủ xe trên cà vẹt khớp với CCCD người bán','Đối chiếu số khung, số máy trên xe với cà vẹt',sp.odo?'Xem đồng hồ odo (tin ghi '+fmtN(sp.odo)+' km), so với độ mòn bàn đạp, tay lái, yên xe':'Hỏi và xem đồng hồ odo, so với độ mòn bàn đạp, tay lái, yên xe','Tìm vết hàn, cắt, sơn lại, rỉ sét ở khung và chân chống','Khởi động nguội, nghe tiếng máy, xem khói và rò dầu','Chạy thử: phanh, côn/số, tay ga, đèn, còi, xi nhan','Xem lốp, nhông xích, giảm xóc',sp.risks.length?'Kiểm tra kỹ vì tin có nhắc: '+sp.risks.join(', '):'Hỏi xe từng tai nạn, ngập nước hay sơn lại chưa']});
+    G.push({t:'Thanh toán và sang tên',i:['Không đặt cọc, không chuyển tiền khi chưa gặp và chưa xem giấy tờ','Cùng ra cơ quan đăng ký (hoặc phòng công chứng) làm thủ tục sang tên','Chỉ trả tiền khi nhận đủ cà vẹt và chìa khóa, lập giấy bán xe có chữ ký hai bên']});
+  } else if(sp.cat==='property'){
+    G.push({t:'Trước khi đi',i:SAFE.concat(['Nhờ người bán gửi ảnh sổ hồng/sổ đỏ trước (che số CCCD)'],sp.legalCons.length?['⛔ Tin có dấu hiệu pháp lý chưa rõ: làm rõ giấy tờ TRƯỚC khi đi xem']:[])});
+    G.push({t:'Khi xem nhà đất',i:['Xem sổ bản gốc, tên chủ sổ khớp CCCD người bán','Đo diện tích thực tế và so với sổ',sp.built?'Nhà xây năm '+sp.built+': xem tường thấm, nứt, điện nước, mái':'Hỏi năm xây, xem tường thấm, nứt, điện nước, mái','Hỏi hàng xóm về ngập, tiếng ồn, an ninh; đi vào giờ cao điểm','Tra quy hoạch, lộ giới tại UBND phường hoặc cổng thông tin địa phương',sp.risks.length?'Kiểm tra kỹ vì tin có nhắc: '+sp.risks.join(', '):'Hỏi nhà đất có tranh chấp, thế chấp ngân hàng không']});
+    G.push({t:'Đặt cọc và thanh toán',i:['Không đặt cọc khi chưa xem sổ và chưa tra quy hoạch','Thanh toán qua công chứng hoặc tài khoản ngân hàng, không đưa tiền mặt cho môi giới','Nhờ luật sư hoặc người có kinh nghiệm xem hợp đồng trước khi ký']});
+  } else if(sp.cat==='electronics'){
+    G.push({t:'Trước khi đi',i:SAFE.concat(['Hỏi trước: pin, bảo hành, đã sửa chữa chưa','Chuẩn bị SIM và sạc của bạn để thử'])});
+    G.push({t:'Khi xem máy',i:['Kiểm tra iCloud / tài khoản: yêu cầu chủ máy đăng xuất trước mặt bạn','Đối chiếu số IMEI / serial trên máy với hộp và tra bảo hành trên web hãng',sp.battery?'Mở Cài đặt xem sức khỏe pin (tin ghi '+sp.battery+'%)':'Mở Cài đặt xem sức khỏe pin','Kiểm tra màn hình: điểm chết, ám màu, cảm ứng','Thử loa, micro, camera trước sau, sạc, nút bấm, vân tay / Face ID','Thử SIM, sóng, wifi, bluetooth']});
+    G.push({t:'Thanh toán',i:['Ưng ý mới thanh toán, ưu tiên chuyển khoản ngay tại chỗ sau khi nhận máy','Lấy hóa đơn, hộp và phụ kiện đi kèm']});
+  } else {
+    G.push({t:'Trước khi đi',i:SAFE.concat(['Hỏi lại hàng còn không, phụ kiện đi kèm gồm những gì'])});
+    G.push({t:'Khi xem hàng',i:['So hàng thật với ảnh và mô tả trong tin','Chạy thử / dùng thử mọi chức năng chính','Hỏi hóa đơn, bảo hành, lý do bán']});
+    G.push({t:'Thanh toán',i:['Không đặt cọc, không chuyển tiền khi chưa xem hàng','Chỉ trả tiền khi nhận hàng và đã kiểm tra']});
+  }
+  return G;
+}
+function ckLoad(k){ try{ return JSON.parse(localStorage.getItem('ck:'+k)||'{}'); }catch(e){ return CKMEM[k]||{}; } }
+function ckSave(k,v){ try{ localStorage.setItem('ck:'+k,JSON.stringify(v)); }catch(e){ CKMEM[k]=v; } }
+const CKMEM={};
+function checklistHtml(x){
+  const G=checklistFor(x), base=String((x.url||x.name||'')).slice(0,90), saved=ckLoad(base); let total=0, done=0;
+  const html=G.map((g,gi)=>`<p class="font-bold mt-2">${esc(g.t)}</p>`+g.i.map((t,ii)=>{ const id=gi+'-'+ii, on=!!saved[id]; total++; if(on) done++;
+    return `<label class="ck"><input type="checkbox" data-ck="${id}" ${on?'checked':''}><span>${esc(t)}</span></label>`; }).join('')).join('');
+  return `<details class="zbox line" data-ckbase="${esc(base)}"><summary class="font-extrabold" style="cursor:pointer">✅ Checklist khi đi xem <span class="mute" data-ckcount>(${done}/${total})</span></summary>${html}<p class="mute text-sm mt-2">Tích vào từng mục khi đã làm xong. Máy nhớ giúp bố cho tin này.</p></details>`;
+}
+document.addEventListener('change',e=>{
+  const c=e.target; if(!c||!c.matches||!c.matches('input[data-ck]')) return;
+  const w=c.closest('[data-ckbase]'), base=w.dataset.ckbase, st={}; let done=0; const all=w.querySelectorAll('input[data-ck]');
+  all.forEach(i=>{ if(i.checked){ st[i.dataset.ck]=1; done++; } }); ckSave(base,st); const n=w.querySelector('[data-ckcount]'); if(n) n.textContent='('+done+'/'+all.length+')';
+});
+
+/* ---------- Tìm bằng giọng nói: hiểu số đọc thành chữ, tên chữ cái, tên hãng ---------- */
+const cleanVoice=t=>String(t||'').replace(/[.,!?]+$/,'').replace(/\s+/g,' ').trim();
+const VN1={khong:0,linh:0,le:0,mot:1,hai:2,ba:3,bon:4,tu:4,nam:5,lam:5,sau:6,bay:7,tam:8,chin:9};
+const VUNITS=new Set(['tram','nghin','ngan','trieu','ty','muoi']), NUMW=new Set([...Object.keys(VN1),...VUNITS]);
+const LETTER={};
+[['z',['zét','dét','zết','dết','giết','gét','zê','dê','zi','dế']],['d',['đê','đi','đờ']],['b',['bê','bi','bờ']],['c',['xê','xi','si','cê']],['e',['ê']],['f',['ép','ef']],['g',['giê','gờ','ghê']],['h',['hát','hắt','hờ']],['k',['ca','ka']],['l',['lờ','eo']],['m',['mờ','em']],['n',['nờ','en']],['o',['ô']],['p',['pê','pi']],['q',['quy','kiu']],['r',['rờ']],['s',['ét','ết']],['t',['tê','ti']],['v',['vê','vi']],['x',['ích','ếch','xờ']]].forEach(([l,ws])=>ws.forEach(w=>LETTER[w]=l));
+const VOICE_ALIAS=[[/\b(?:ca|ka|cà)\s?(?:oa|qua|oa)\s?(?:sa|xa)\s?(?:ki|ky)\b/g,'kawasaki'],[/\bhon\s?đa\b|\bhôn\s?đa\b/g,'honda'],[/\b(?:ya|da|gia)\s?ma\s?ha\b/g,'yamaha'],[/\b(?:su|xu)\s?(?:du|zu)\s?(?:ki|ky)\b/g,'suzuki'],[/\bđu\s?ca\s?ti\b/g,'ducati'],[/\bvét\s?pa\b/g,'vespa'],[/\bai\s?phôn\b|\bai\s?phone\b/g,'iphone'],[/\bmác\s?búc\b/g,'macbook']];
+function parseNumRun(run){
+  if(!run.some(t=>VUNITS.has(t))) return run.map(t=>VN1[t]).join('');          // đọc từng số: "một không không không" -> 1000
+  let total=0, grp=0, d=null; const flush=()=>{ grp+=d||0; d=null; };
+  run.forEach(t=>{
+    if(t in VN1){ d=(t==='linh'||t==='le')?null:VN1[t]; }
+    else if(t==='tram'){ grp+=(d===null?1:d)*100; d=null; }
+    else if(t==='muoi'){ if(d!==null){ grp+=d*10; d=null; } else grp+=10; }
+    else if(t==='nghin'||t==='ngan'){ flush(); total+=(grp||1)*1e3; grp=0; }
+    else if(t==='trieu'){ flush(); total+=(grp||1)*1e6; grp=0; }
+    else if(t==='ty'){ flush(); total+=(grp||1)*1e9; grp=0; }
+  });
+  flush(); return String(total+grp);
+}
+function voiceFix(raw){
+  let t=String(raw||'').toLowerCase().replace(/[.,!?;:"“”]/g,' ').replace(/\s+/g,' ').trim(); if(!t) return '';
+  VOICE_ALIAS.forEach(([re,to])=>{ t=t.replace(re,to); });
+  t=t.replace(/(\d+(?:[.,]\d+)?)\s*(nghìn|ngàn)/g,(m,x)=>String(Math.round(parseFloat(x.replace(',','.'))*1e3))).replace(/(\d+)\s*triệu/g,(m,x)=>String(+x*1e6)).replace(/(\d+)\s*trăm/g,(m,x)=>String(+x*100));
+  const tk=t.split(' '), out=[];
+  const isNum=j=>{ const w=tk[j]; if(!w) return false; const n=norm(w); if(!NUMW.has(n)) return false;
+    if(n==='nam'){ if(w!=='năm') return false; const pv=norm(tk[j-1]||''); if(['doi','xe','san','xuat','mua','dung','dk','sx'].includes(pv)||/^\d+$/.test(tk[j+1]||'')) return false; } return true; };
+  for(let i=0;i<tk.length;){
+    if(isNum(i)){ let j=i; const run=[]; while(isNum(j)){ run.push(norm(tk[j])); j++; }
+      const prev=out[out.length-1];
+      if(run.length>=2||run.some(r=>VUNITS.has(r))||(prev&&LETTER[prev])) out.push(parseNumRun(run)); else out.push(tk[i]);   // một chữ số lẻ loi thì giữ nguyên là chữ
+      i=j; continue; }
+    out.push(tk[i]); i++; }
+  const res=[]; for(let k=0;k<out.length;k++){ const L=LETTER[out[k]]; if(L&&/^\d+$/.test(out[k+1]||'')){ res.push(L+out[k+1]); k++; } else res.push(out[k]); }
+  return res.join(' ').replace(/\s+/g,' ').trim();
+}
+function voiceScore(t){
+  const U=understand(t); let sc=0;
+  U.units.forEach(u=>{ if(BRANDS.has(u.t)) sc+=2; else if(KNOWN.has(u.t)) sc+=1.5; else if(/[a-z]\d|\d[a-z]/.test(u.t)) sc+=2; else if(/^\d+$/.test(u.t)&&u.t.length>=3&&!u.yearOpt) sc+=1; });
+  return sc+(U.brand?1:0);
+}
+function voiceCandidates(alts){          // alts: [{t,c}] các cách nghe khác nhau của cùng một câu nói
+  const seen=new Map();
+  alts.forEach(a=>{ const f=voiceFix(a.t); if(!f) return; const sc=voiceScore(f)+(a.c||0)*1.5; if(!seen.has(f)||seen.get(f).sc<sc) seen.set(f,{text:f,raw:a.t,sc}); });
+  return [...seen.values()].sort((x,y)=>y.sc-x.sc).slice(0,4);
+}
+(function(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition, mic=$('#qMic'), stat=$('#voiceStat'), alt=$('#voiceAlt');
+  if(!mic) return; if(!SR){ mic.style.display='none'; return; }
+  let rec=null, on=false, err='';
+  const pick=t=>{ $('#q').value=t; syncX(); alt.innerHTML=''; stat.textContent='Đang tìm “'+t+'”...'; search(); };
+  alt.addEventListener('click',e=>{ const b=e.target.closest('[data-v]'); if(b) pick(b.dataset.v); });
+  mic.onclick=()=>{
+    if(on){ try{ rec.stop(); }catch(e){} return; }
+    ttsReset(); err=''; alt.innerHTML=''; let raw='', finals=[]; rec=new SR(); rec.lang='vi-VN'; rec.interimResults=true; rec.maxAlternatives=5; rec.continuous=false;
+    rec.onstart=()=>{ on=true; mic.classList.add('on'); mic.setAttribute('aria-pressed','true'); stat.textContent='🎤 Đang nghe... bố cứ nói tên món cần tìm.'; };
+    rec.onresult=e=>{ let t=''; for(let i=e.resultIndex;i<e.results.length;i++){ const r=e.results[i]; t+=r[0].transcript; if(r.isFinal){ finals=[]; for(let k=0;k<r.length;k++) finals.push({t:r[k].transcript,c:r[k].confidence||0}); } }
+      raw=t; $('#q').value=cleanVoice(voiceFix(t)); syncX(); stat.textContent='🎤 Đang nghe: “'+cleanVoice(t)+'”'; };
+    rec.onerror=e=>{ err=(e.error==='not-allowed'||e.error==='service-not-allowed')?'Trình duyệt chưa cho phép dùng micro. Bố bấm vào biểu tượng ổ khóa cạnh địa chỉ để cho phép nhé. Trên iPhone: Cài đặt > Safari > Micro, và bật Cài đặt chung > Bàn phím > Đọc chính tả.':e.error==='no-speech'?'Máy chưa nghe thấy tiếng nói. Bố bấm micro và nói lại gần hơn nhé.':e.error==='network'?'Không kết nối được dịch vụ nhận giọng nói. Bố kiểm tra mạng nhé.':'Chưa nghe được, bố thử lại nhé.'; stat.textContent=err; };
+    rec.onend=()=>{ on=false; mic.classList.remove('on'); mic.setAttribute('aria-pressed','false'); if(err) return;
+      if(!raw.trim()){ stat.textContent='Máy chưa nghe được chữ nào. Bố thử nói chậm và rõ, hoặc dùng nút micro ngay trên bàn phím điện thoại.'; return; }
+      const list=voiceCandidates(finals.length?finals:[{t:raw,c:0}]); if(!list.length){ stat.textContent='Máy chưa hiểu. Bố gõ giúp nhé.'; return; }
+      const best=list[0]; $('#q').value=best.text; syncX();
+      const heard='Máy nghe được: “'+cleanVoice(finals.length?finals[0].t:raw)+'”';
+      const conf=finals.length?finals[0].c:0;
+      if(best.sc>=2||(list.length===1&&conf>=.6)||conf>=.85){ stat.textContent=heard+' → hiểu là “'+best.text+'”. Đang tìm...'; search(); }
+      else stat.textContent=heard+'. Máy chưa chắc, bố chọn câu đúng bên dưới hoặc sửa trong ô rồi bấm Tìm.';
+      if(list.length>1||best.sc<2) alt.innerHTML='<span class="mute text-sm" style="align-self:center">Có phải:</span>'+list.map(c=>`<button type="button" class="rchip" data-v="${esc(c.text)}">${esc(c.text)}</button>`).join('');
+    };
+    try{ rec.start(); }catch(e){ stat.textContent='Không bật được micro, bố thử lại nhé.'; }
+  };
+})();
+
+function whyBest(best,second){
+  const out=[], si=best.si||{}, facts=[];
+  if(si.sold>0) facts.push('đã bán '+si.sold.toLocaleString('vi-VN')+' món');
+  if(si.rating&&(si.ratingCount||0)>=3) facts.push('đánh giá '+String(si.rating).replace('.',',')+'/5 ('+si.ratingCount+' lượt)');
+  if(second){
+    const dT=best.trust.score-second.trust.score, dV=best.v-second.v, dQ=best.q-second.q, pd=priceDiff(best);
+    if(dT>=8) out.push('Người bán uy tín hơn tin xếp sau (+'+dT+' điểm)'+(facts.length?': '+facts.join(', '):''));
+    if(dV>=6) out.push('Giá tốt hơn tin xếp sau'+(pd.txt&&pd.d<0?' ('+pd.txt.toLowerCase()+' so với giá tham khảo)':''));
+    if(dQ>=6) out.push('Tin đăng rõ ràng, đầy đủ thông tin hơn');
+    if(!out.length) out.push('Hơn tin xếp sau ở điểm tổng, nhưng chênh lệch nhỏ. Bố so thêm trước khi quyết.');
+  } else if(facts.length) out.push('Người bán '+facts.join(', '));
+  return out;
+}
+function showResults(items,note,title,paste,opt){
+  opt=opt||{};
+  ttsReset();
+  const P=prepare(items), r=P.r;
+  S={r,all:P.an}; const best=r[0], buy=best.ok, rest=r.slice(1), risky=rest.filter(x=>x.danger.length).length, sample=!!best.sample;
+  let head,sub;
+  if(buy){ head='NÊN GIAO DỊCH TIN NÀY'; sub=`<b>${esc(best.name)}</b> là tin đáng giao dịch nhất trong ${r.length} tin (${best.score}/100), người bán được đánh giá “${best.trust.label.toLowerCase()}”. ${best.price?'Giá '+vnd(best.price)+'.':''} Bố nhớ hẹn xem hàng trực tiếp, kiểm tra kỹ rồi mới trả tiền.`;
+    speech=`Kết luận: nên giao dịch tin này. ${best.name}. Nhớ xem hàng trực tiếp, kiểm tra kỹ rồi mới trả tiền.`; }
+  else{ head='CHƯA CÓ TIN NÀO THẬT SỰ AN TÂM'; sub=`Tin tốt nhất trong ${r.length} tin cũng chỉ đạt ${best.score}/100. Bố đừng vội chuyển tiền, hãy xem thêm tin khác hoặc nhờ con cháu xem giúp.`;
+    speech='Kết luận: chưa có tin nào thật sự an tâm. Bố đừng vội chuyển tiền, hãy xem thêm tin khác hoặc nhờ con cháu xem giúp.'; }
+  const lines=best.danger.map(dg=>`<li class="pill" style="background:var(--bad-bg)">⚠️ ${dg}.</li>`);
+  const why=buy?whyBest(best,rest[0]):[];
+  if(risky) lines.push(`<li class="pill" style="background:var(--bad-bg)">⚠️ Có ${risky} tin khác nghi lừa đảo, đã xếp xuống cuối danh sách.</li>`);
+  const bestZone=`<section class="zone" style="--zc:${buy?'var(--good)':'var(--warn)'};--zt:${buy?'var(--bg)':'var(--warn-bg)'}"><h2>${buy?'⭐ Tin đáng giao dịch nhất':'⚠️ Tin tốt nhất, nhưng chưa thật an tâm'}</h2><div class="zone-body">
+    <div class="verdict ${buy?'good':'bad'}">
+     <p class="font-extrabold">🤖 Lời khuyên của trợ lý</p>
+     <h3 class="mt-1">${buy?'✅':'⛔'} ${head}</h3>
+     <p class="mt-2">${sub}</p>
+     ${why.length?`<p class="font-extrabold mt-3">Vì sao chọn tin này</p><ul>${why.map(w=>`<li class="pill" style="background:var(--bg)">✅ ${w}</li>`).join('')}</ul>`:''}
+     ${lines.length?`<ul class="mt-3">${lines.join('')}</ul>`:''}
+     <div class="tts" id="tts" aria-label="Điều khiển đọc to"><p class="font-extrabold">🔈 Nghe kết luận</p>
+      <div class="tts-bar" aria-hidden="true"><i id="ttsBar"></i></div>
+      <p class="mute text-sm" id="ttsStat" aria-live="polite">Bấm “Đọc to” để nghe.</p>
+      <div class="tts-row">
+       <button type="button" class="btn wide" id="ttsMain" data-tts="toggle">▶ Đọc to</button>
+       <button type="button" class="btn alt tbtn" data-tts="back" title="Lùi lại một cụm câu (vài giây)">⏪ Lùi</button>
+       <button type="button" class="btn alt tbtn" data-tts="fwd" title="Tiến tới một cụm câu (vài giây)">⏩ Tiến</button>
+       <button type="button" class="btn alt tbtn" data-tts="replay">🔁 Đọc lại</button>
+       <button type="button" class="btn alt tbtn" data-tts="stop">⏹ Tắt</button>
+      </div></div>
+    </div>
+    <article id="tin-0" class="card mt-4 ${buy?'best':''}">${detailBody(best,true,buy)}</article></div></section>`;
+  const top=r.slice(0,3), hl=(i,t)=>i===0&&buy?' style="background:var(--good-bg)"':'';
+  const cmpZone=r.length>=2?`<section class="zone" style="--zc:var(--ink);--zt:var(--bg)"><h2>⚖️ Bảng so sánh nhanh</h2><div class="zone-body">
+    <p class="mute text-sm">So ${top.length} tin tốt nhất. ${buy?'Cột xanh là tin đáng giao dịch nhất.':'Chưa có tin nào thật sự an tâm.'} Vuốt sang ngang nếu bảng rộng.</p>
+    <div class="scroll-x mt-2"><table><thead><tr><th></th>${top.map((x,i)=>`<th${hl(i)}>${i===0&&buy?'⭐ ':''}Tin ${i+1}</th>`).join('')}</tr></thead><tbody>
+     <tr><th>Tên</th>${top.map((x,i)=>`<td${hl(i)}><b class="clamp3">${esc(x.name)}</b></td>`).join('')}</tr>
+     <tr><th>Giá</th>${top.map((x,i)=>`<td${hl(i)}><b>${vnd(x.price)}</b></td>`).join('')}</tr>
+     <tr><th>Tình trạng</th>${top.map((x,i)=>`<td${hl(i)}>${esc(x.cond)}</td>`).join('')}</tr>
+     <tr><th>Nơi bán</th>${top.map((x,i)=>`<td${hl(i)}>${esc(x.loc)}${x.km!=null?'<br>~'+x.km+' km':''}</td>`).join('')}</tr>
+     <tr><th>Điểm giao dịch</th>${top.map((x,i)=>`<td${hl(i)}><span class="tag ${x.level}">${x.score}/100</span></td>`).join('')}</tr>
+     <tr><th>Người bán</th>${top.map((x,i)=>`<td${hl(i)}><span class="tag ${x.trust.level}">${x.trust.score}/100</span></td>`).join('')}</tr>
+     ${top.some(x=>x.specs&&x.specs.cat==='vehicle')?`<tr><th>Đời xe</th>${top.map((x,i)=>`<td${hl(i)}>${x.specs&&x.specs.year?x.specs.year:'—'}</td>`).join('')}</tr><tr><th>Số km</th>${top.map((x,i)=>`<td${hl(i)}>${x.specs&&x.specs.odo?fmtN(x.specs.odo)+' km':'—'}</td>`).join('')}</tr>`:''}
+     ${top.some(x=>x.specs&&x.specs.cat==='property')?`<tr><th>Diện tích</th>${top.map((x,i)=>`<td${hl(i)}>${x.specs&&x.specs.area?x.specs.area+' m²':'—'}</td>`).join('')}</tr>`:''}
+     <tr><th>Giá so tham khảo</th>${top.map((x,i)=>`<td${hl(i)}>${priceDiff(x).txt||'—'}</td>`).join('')}</tr>
+     <tr><th>Đánh giá</th>${top.map((x,i)=>`<td${hl(i)}><b>${lvlTxt(x.level)}</b></td>`).join('')}</tr>
+     <tr><th>Mở tin</th>${top.map((x,i)=>`<td${hl(i)}>${x.url?`<a class="btn alt tbtn" href="${esc(x.url)}" target="_blank" rel="noopener">🔗 Xem tin</a>`:'<span class="mute text-sm">Không có link</span>'}</td>`).join('')}</tr>
+    </tbody></table></div></div></section>`:'';
+  const st=r.stats||{}, sellersN=new Set(r.map(x=>x._n)).size, recent=r.filter(x=>{ const h=ageH(x); return h!=null&&h<=72; }).length;
+  const dupNote=st.merged?msg('Đã gộp <b>'+st.merged+' tin trùng</b> nội dung thành '+P.groups.length+' tin'+(st.repost?' · '+st.repost+' người bán đăng lại':'')+(st.network?' · '+st.network+' nhóm nhiều người cùng đăng':'')+(st.clone?' · <b>'+st.clone+' nhóm nghi lừa đảo</b>':'')+'. Xem phần lưu ý trong từng tin.',st.clone?'warn':'good'):'';
+  const lensZone=r.length>=3?`<section class="zone" style="--zc:var(--ink);--zt:var(--bg)"><h2>🧭 Xem theo cách khác</h2><div class="zone-body">
+    ${recent>=5?`<p class="text-sm font-extrabold" style="color:var(--warn)">🔥 Mặt hàng đang sôi động: ${recent} tin mới đăng trong 3 ngày qua, từ ${sellersN} người bán.</p>`:''}
+    <p class="mute text-sm">Chọn một cách xem để lọc các tin đã tìm được.</p>
+    <div class="flex flex-wrap gap-2 mt-2" id="lensChips" role="group" aria-label="Chọn cách xem">${LENS.map(([k,l])=>`<button type="button" class="rchip" data-lens="${k}" aria-pressed="false">${l}</button>`).join('')}</div>
+    <div id="lensOut" class="mt-3" aria-live="polite"></div></div></section>`:'';
+  const restZone=rest.length?`<section class="zone" style="--zc:var(--pri);--zt:var(--pri-ink)"><h2>🛒 ${paste?'Các tin còn lại':'Các tin khác ('+rest.length+')'}${sample?' (tin mẫu)':''}</h2><div class="zone-body">
+    <p class="mute text-sm mb-2">Đã xếp từ tốt đến kém. Bấm vào một tin để xem chi tiết.</p>
+    <div class="space-y-2">${rest.map(x=>`<details class="card" style="padding:.6rem" data-i="${r.indexOf(x)}"><summary class="sum">
+      <div class="thumb">${x.images&&x.images[0]?img(x.images[0],1):'🖼️'}</div>
+      <div style="min-width:0"><b class="clamp2">${esc(x.name)}</b>
+       <div class="li-p"><span class="font-extrabold">${vnd(x.price)}</span><span class="tag ${x.level}">${lvlTxt(x.level)} · ${x.score}</span>${x.exact===false?'<span class="tag warn">Gần giống</span>':''}</div>
+       <div class="mute text-sm clamp2">${esc(x.loc)}${x.cond!=='Chưa rõ'?' · '+esc(x.cond):''}</div></div></summary>
+      <div class="mt-3 lazy"></div></details>`).join('')}</div></div></section>`:'';
+  $('#out').innerHTML=`${note}${dupNote}<h2 class="text-xl font-extrabold mb-1">${title}</h2>${bestZone}${cmpZone}${lensZone}${restZone}
+   ${paste?'':webSlot(lastQ)+srcPanel(lastQ)}
+   <details class="card mt-5"><summary class="font-extrabold cursor-pointer">❓ Máy chọn tin tốt nhất dựa vào tiêu chí nào?</summary>
+    <p class="mt-2"><b>Điểm giao dịch</b> = <b>40% người bán</b> + <b>30% giá</b> + <b>30% tin đăng</b>. Người bán uy tín (bán nhiều, được đánh giá cao) được ưu tiên hơn việc tin viết dài hay ngắn.</p>
+    <p class="mt-2"><b>Thông số:</b> máy đọc đời xe, số km, thời gian dùng, pin, bảo hành, diện tích, năm xây, giấy tờ pháp lý... rồi so giá với các tin <b>tương tự</b> (cùng đời, cùng mức số km) thay vì so với mọi tin. Số liệu bất thường (số km quá thấp so với tuổi xe, giấy tờ không rõ, từng ngập nước...) sẽ bị trừ điểm.</p>
+    <p class="mt-2"><b>Giá:</b> thấp hơn mức chung của các tin cùng loại thì được điểm cao hơn, nhưng thấp quá mức (dưới khoảng 65%) thì bị trừ vì dễ là lừa đảo.</p>
+    <p class="mt-2"><b>Loại ngay:</b> tin đòi cọc hoặc chuyển tiền trước, giá rẻ bất thường, hoặc người bán dưới 50 điểm tin cậy sẽ không được chọn là tốt nhất.</p>
+    <p class="font-extrabold mt-3">Điểm người bán dựa vào:</p>
+    <ul class="mt-2">${TRUST_CRITERIA.map(c=>`<li class="pill">✔️ ${c}</li>`).join('')}</ul>
+    <p class="mute text-sm mt-2">Điểm chỉ là ước lượng từ thông tin công khai trong tin, không phải kết luận pháp lý. Người bán từ 70 là đáng tin, 50–69 cần thận trọng, dưới 50 nhiều rủi ro. Luôn xem hàng, kiểm tra kỹ và chỉ trả tiền khi nhận hàng.</p></details>`;
+  ttsInit(speech);
+  if(!opt.keep) $('#out').scrollIntoView({behavior:smooth()});
+  if(typeof debugRender==='function') debugRender(P);
+}
+
+document.addEventListener('toggle',e=>{ const d=e.target; if(!d||!d.matches||!d.matches('details[data-i]')||!d.open) return; const box=d.querySelector('.lazy'); if(box&&!box.dataset.done){ box.dataset.done='1'; box.innerHTML=detailBody(S.r[+d.dataset.i],false,false); } },true);
+
+/* ---------- Đọc to: bắt đầu, tạm dừng, tắt, đọc lại, tiến/lùi theo cụm câu ---------- */
+const TTS={chunks:[],i:0,state:'idle',gen:0};
+const ttsOk=()=>'speechSynthesis' in window&&typeof SpeechSynthesisUtterance!=='undefined';
+function ttsSplit(t){
+  const out=[]; (String(t).match(/[^.!?;:]+[.!?;:]?\s*/g)||[String(t)]).forEach(p=>{ p=p.trim(); if(!p) return;
+    if(p.length>90) p.split(/(?<=,)\s*/).forEach(q=>{ q=q.trim(); if(q) out.push(q); }); else out.push(p); });
+  const m=[]; let carry=''; out.forEach(c=>{ c=(carry+' '+c).trim(); carry=''; if(c.length<14) carry=c; else m.push(c); });   // gộp cụm quá ngắn vào cụm sau
+  if(carry){ if(m.length) m[m.length-1]+=' '+carry; else m.push(carry); }
+  return m;
+}
+function ttsReset(){ TTS.gen++; TTS.state='idle'; TTS.i=0; if(ttsOk()) speechSynthesis.cancel(); }
+function ttsInit(text){ TTS.chunks=ttsSplit(text); TTS.i=0; TTS.state='idle'; ttsUI(); }
+function ttsSpeak(i){
+  if(!ttsOk()||!TTS.chunks.length) return;
+  speechSynthesis.cancel(); const g=++TTS.gen; TTS.i=Math.max(0,Math.min(i,TTS.chunks.length-1)); TTS.state='play';
+  const u=new SpeechSynthesisUtterance(TTS.chunks[TTS.i]); u.lang='vi-VN'; u.rate=.9;
+  u.onend=()=>{ if(g!==TTS.gen) return; if(TTS.i<TTS.chunks.length-1) ttsSpeak(TTS.i+1); else{ TTS.state='done'; ttsUI(); } };
+  u.onerror=()=>{ if(g!==TTS.gen) return; TTS.state='idle'; ttsUI(); };
+  speechSynthesis.speak(u); ttsUI();
+}
+function ttsUI(){
+  const main=$('#ttsMain'), stat=$('#ttsStat'), bar=$('#ttsBar'); if(!main||!stat) return;
+  const n=TTS.chunks.length, st=TTS.state, live=st==='play'||st==='pause';
+  if(!ttsOk()){ stat.textContent='Máy này chưa hỗ trợ đọc to.'; document.querySelectorAll('#tts button').forEach(b=>b.disabled=true); return; }
+  main.textContent=st==='play'?'⏸ Tạm dừng':st==='pause'?'▶ Đọc tiếp':'▶ Đọc to';
+  stat.textContent=st==='play'?'Đang đọc... ('+(TTS.i+1)+'/'+n+')':st==='pause'?'Đã tạm dừng ('+(TTS.i+1)+'/'+n+')':st==='done'?'Đã đọc xong. Bấm “Đọc lại” để nghe lần nữa.':'Bấm “Đọc to” để nghe.';
+  bar.style.width=(st==='done'?100:live?Math.round(TTS.i/n*100):0)+'%';
+  const dis=(k,v)=>{ const b=document.querySelector('#tts [data-tts="'+k+'"]'); if(b) b.disabled=v; };
+  dis('back',!live); dis('fwd',!live); dis('stop',!live); dis('replay',!n);
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-tts]'); if(!b) return; const a=b.dataset.tts;
+  if(!ttsOk()){ ttsUI(); return; }
+  if(a==='toggle'){
+    if(TTS.state==='play'){ TTS.gen++; speechSynthesis.cancel(); TTS.state='pause'; ttsUI(); }   // tạm dừng: nhớ cụm đang đọc
+    else if(TTS.state==='pause') ttsSpeak(TTS.i);
+    else ttsSpeak(0);
+  }
+  else if(a==='replay') ttsSpeak(0);
+  else if(a==='stop'){ ttsReset(); ttsUI(); }
+  else if(a==='back'){ if(TTS.state==='pause'){ TTS.i=Math.max(0,TTS.i-1); ttsUI(); } else ttsSpeak(TTS.i-1); }
+  else if(a==='fwd'){ if(TTS.i>=TTS.chunks.length-1){ ttsReset(); TTS.state='done'; ttsUI(); } else if(TTS.state==='pause'){ TTS.i++; ttsUI(); } else ttsSpeak(TTS.i+1); }
+});
+addEventListener('pagehide',()=>{ if(ttsOk()) speechSynthesis.cancel(); });
+
+/* ---------- Khung di chuyển nhanh ---------- */
+(function(){
+  const top=$('#toTop'), bot=$('#toBot'), box=$('#fab');
+  const root=()=>document.scrollingElement||document.documentElement;
+  top.addEventListener('click',()=>window.scrollTo({top:0,behavior:smooth()}));
+  bot.addEventListener('click',()=>window.scrollTo({top:root().scrollHeight,behavior:smooth()}));
+  const upd=()=>{ const y=window.pageYOffset, max=root().scrollHeight-window.innerHeight;
+    const t=y>120, d=y<max-120; top.style.display=t?'':'none'; bot.style.display=d?'':'none'; box.style.display=(t||d)?'':'none'; };
+  addEventListener('scroll',upd,{passive:true}); addEventListener('resize',upd);
+  if('ResizeObserver' in window) new ResizeObserver(upd).observe(document.body);
+  upd();
+})();
+
+/* ---------- 10. Chẩn đoán: thêm ?debug=1 vào địa chỉ trang để xem Chợ Tốt thật sự trả về gì ---------- */
+const DEBUG=typeof location!=='undefined'&&/[?&]debug=1\b/.test(location.search||'');
+const ANON=/phone|email|account|seller_name|full_name|avatar/i;
+const anonymize=v=>{ if(Array.isArray(v)) return v.slice(0,4).map(anonymize); if(v&&typeof v==='object'){ const o={}; Object.keys(v).forEach(k=>{ if(!ANON.test(k)) o[k]=anonymize(v[k]); }); return o; } return typeof v==='string'&&v.length>200?v.slice(0,200)+'…':v; };
+const DBG_EXPECT=[['list_time','thời gian đăng (cho kiểu xem "Mới đăng nhất")'],['orig_list_time','thời gian đăng gốc (nhận ra tin đã đẩy lên)'],['ad_params','khối thông số (đời xe, số km, diện tích...)'],['params','danh sách thông số'],['regdate','năm đăng ký xe'],['mileage_v2','số km đã đi'],['size','diện tích'],['phone','số điện thoại']];
+const DBG_HINT=/param|date|time|mileage|year|size|area|legal|owner|view|click|promot|boost|vip|top|pin|rank|score|verified|protect/i;
+function debugHtml(P){
+  const meta=DBG.meta||{}, have=meta.have||{}, tot=meta.fetched||0, U=DBG.U||{};
+  const fields=DBG_EXPECT.map(([k,d])=>{ const n=have[k]||0; return `<tr><td>${k}</td><td>${n}/${tot}</td><td>${n?'✅':'❌'}</td><td>${esc(d)}</td></tr>`; }).join('');
+  const log=DBG.log.map(l=>`<tr><td>${esc(l.q)}</td><td>${l.o}</td><td>${esc(l.status)}</td><td>${l.ms} ms</td><td>${l.n}</td><td>${esc(l.note||'')}</td></tr>`).join('');
+  const rows=P.an.map(x=>{ const sp=x.specs||{}; return `<tr><td>${esc((x.name||'').slice(0,34))}</td><td>${sp.cat||''}</td><td>${sp.year||''}</td><td>${sp.odo||''}</td><td>${sp.area||''}</td><td>${x.refSrc||''}${x.refN?' ('+x.refN+')':''}</td><td>${x.trust?x.trust.score:''}/${x.v}/${x.q}</td><td><b>${x.score}</b>${x.ok?' ✅':''}</td><td>${x.dup?x.dup.kind+'×'+x.dup.n:(x.hidden?'ẩn':'')}</td><td>${x.exact===false?'gần':''}</td></tr>`; }).join('');
+  return `<section class="zone dbg" id="dbgZone" style="--zc:#7A1FA2;--zt:#fff"><h2>🛠 Chẩn đoán (chỉ hiện khi có ?debug=1)</h2><div class="zone-body">
+    <p>Phiên bản trang <b>${CONFIG.version}</b> · Worker: <span id="dbgPing">chưa kiểm tra</span> · Tỉnh thành: ${REGIONS.length} (${REGIONS.length>3?'đã tải đủ':'chỉ có danh sách dự phòng'})</p>
+    <p class="mt-2"><b>Máy hiểu câu tìm:</b> ${esc(U.display||'')} · ${(U.variants||[]).length} cách gõ · bắt buộc có: ${(U.req||[]).map(u=>esc(u.t)).join(', ')}</p>
+    <p class="font-bold mt-3">Nhật ký yêu cầu lên Worker</p>
+    <table><tr><th>câu gõ</th><th>trang</th><th>mã</th><th>thời gian</th><th>số tin</th><th>ghi chú</th></tr>${log}</table>
+    <p class="font-bold mt-3">Các trường dữ liệu mà trang cần (đếm trên ${tot} tin đã lấy)</p>
+    <table><tr><th>trường</th><th>có ở</th><th></th><th>dùng để</th></tr>${fields}</table>
+    <p class="font-bold mt-3">Từng tin máy đã phân tích</p>
+    <div class="scroll-x"><table><tr><th>tên</th><th>loại</th><th>đời</th><th>km</th><th>m²</th><th>giá tham khảo</th><th>bán/giá/tin</th><th>điểm</th><th>trùng</th><th></th></tr>${rows}</table></div>
+    <div class="grid gap-2 mt-3">
+     <button type="button" class="btn alt" data-dbg="ping">📡 Kiểm tra Worker</button>
+     <button type="button" class="btn alt" data-dbg="raw">🔬 Xem mọi trường Chợ Tốt trả về (dữ liệu thô)</button>
+     <button type="button" class="btn" data-dbg="copy">📋 Sao chép báo cáo để gửi người hỗ trợ</button></div>
+    <div id="dbgRaw" class="mt-3"></div></div></section>`;
+}
+function debugRender(P){
+  if(!DEBUG) return; DBG.P=P;
+  const out=$('#out'); if(out&&out.insertAdjacentHTML) out.insertAdjacentHTML('beforeend',debugHtml(P));
+}
+async function dbgPing(){
+  try{ const r=await fetch(PROXY_URL+'?mode=ping'); const j=await r.json(); DBG.ping=j&&j.ok?j:null; return DBG.ping; }catch(e){ DBG.ping=null; return null; }
+}
+async function dbgRaw(){
+  const q=(DBG.U&&DBG.U.variants&&DBG.U.variants[0])||lastQ, reg=DBG.region;
+  const r=await fetch(PROXY_URL+'?q='+encodeURIComponent(q)+'&raw=1'+(reg?'&region_v2='+encodeURIComponent(reg):'')); const j=await r.json(); if(j.error||!j.keyCounts) throw new Error(j.error||'Worker chưa hỗ trợ ?raw=1 (cần deploy lại worker.js mới)');
+  DBG.raw=j; return j;
+}
+function dbgRawHtml(j){
+  const keys=Object.keys(j.keyCounts).sort((a,b)=>j.keyCounts[b]-j.keyCounts[a]), ex=(j.sample&&j.sample[0])||{};
+  const short=v=>{ const t=typeof v==='object'?JSON.stringify(v):String(v); return esc(t.length>70?t.slice(0,70)+'…':t); };
+  return `<p>Chợ Tốt trả <b>${j.count}</b> tin (tổng ${j.total}). Mỗi trường và số tin có trường đó:</p>
+   <div class="scroll-x"><table><tr><th>trường</th><th>có ở</th><th>ví dụ</th></tr>${keys.map(k=>`<tr${DBG_HINT.test(k)?' style="background:var(--warn-bg)"':''}><td>${esc(k)}</td><td>${j.keyCounts[k]}/${j.count}</td><td>${short(ex[k])}</td></tr>`).join('')}</table></div>
+   <p class="mute text-sm">Dòng tô màu là trường có thể hữu ích (thông số, thời gian, lượt xem, tin nổi bật...).</p>`;
+}
+function dbgReport(){
+  const P=DBG.P, U=DBG.U||{};
+  return {
+    version:CONFIG.version, time:new Date().toISOString(), ua:(typeof navigator!=='undefined'&&navigator.userAgent)||'', proxy:PROXY_URL,
+    worker:DBG.ping, query:{raw:$('#q').value,display:U.display,variants:U.variants,required:(U.req||[]).map(u=>u.t)}, region:DBG.region,
+    requests:DBG.log, fieldsHave:DBG.meta&&DBG.meta.have, counts:DBG.meta&&{fetched:DBG.meta.fetched,kept:DBG.meta.kept,near:DBG.meta.near,failed:DBG.meta.failed},
+    rawInventory:DBG.raw?{count:DBG.raw.count,total:DBG.raw.total,keyCounts:DBG.raw.keyCounts,sample:anonymize(DBG.raw.sample)}:null,
+    items:P?P.an.slice(0,15).map(x=>({name:(x.name||'').slice(0,60),cat:x.specs&&x.specs.cat,year:x.specs&&x.specs.year,odo:x.specs&&x.specs.odo,area:x.specs&&x.specs.area,price:x.price,ref:x.ref?Math.round(x.ref):0,refSrc:x.refSrc,refN:x.refN,trust:x.trust&&x.trust.score,priceScore:x.v,postScore:x.q,score:x.score,ok:x.ok,dup:x.dup?x.dup.kind:(x.hidden?'hidden':''),exact:x.exact!==false,ageH:ageH(x)!=null?Math.round(ageH(x)):null})):[]
+  };
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest&&e.target.closest('[data-dbg]'); if(!b) return; const a=b.dataset.dbg;
+  if(a==='ping'){ const el=$('#dbgPing'); el.textContent='đang kiểm tra...'; const r=await dbgPing(); el.textContent=r?'✅ phiên bản '+r.version:'❌ không phản hồi hoặc chưa cập nhật (hãy deploy lại worker.js mới)'; }
+  if(a==='raw'){ const box=$('#dbgRaw'); box.innerHTML='<div class="spin"></div>'; try{ box.innerHTML=dbgRawHtml(await dbgRaw()); }catch(err){ box.innerHTML=msg('Không lấy được dữ liệu thô: '+esc(err.message),'bad'); } }
+  if(a==='copy'){ const txt=JSON.stringify(dbgReport(),null,1); try{ await navigator.clipboard.writeText(txt); b.textContent='✅ Đã sao chép, hãy dán vào tin nhắn'; }catch(_){ const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); b.textContent='✅ Đã sao chép'; }catch(__){ b.textContent='Không sao chép được'; } ta.remove(); } }
+});
+if(DEBUG&&document.body&&document.body.insertAdjacentHTML) document.body.insertAdjacentHTML('afterbegin','<div class="dbg-ribbon" role="status">🛠 Chế độ chẩn đoán</div>');
+
+/* ---------- Khởi động ---------- */
+renderHist();
+</script>
+</body>
+</html>
