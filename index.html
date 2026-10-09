@@ -234,6 +234,7 @@ const CONFIG={
   deepVariants:2,       // số cách gõ đầu tiên được lấy thêm trang 2 và 3
   maxResults:80,        // số tin khớp đúng tối đa hiển thị
   nearIfFewer:6,        // ít hơn ngần này tin khớp đúng thì thêm các tin "gần giống"
+  rescueMax:6,          // không có tin nào khớp đủ thì cho xem tối đa ngần này tin gần giống nhất
   maxNear:12,           // số tin "gần giống" tối đa
   cacheMinutes:5,       // nhớ kết quả của lần tìm trong bao nhiêu phút
   history:6,            // số cụm tìm gần đây được nhớ
@@ -290,7 +291,7 @@ Người bán: Chị Thu, quận Hải Châu, Đà Nẵng`];
 
 const $ = s => document.querySelector(s);
 const vnd = n => n ? n.toLocaleString('vi-VN') + ' đ' : 'Chưa rõ giá';
-const norm = s => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');
+const norm = s => s.normalize('NFKD').toLowerCase().replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');   // chuẩn hóa Unicode TRƯỚC khi hạ chữ thường, để chữ in đậm kiểu 𝐙𝟏𝟎𝟎𝟎 cũng đọc được
 const has = (t,re) => re.test(norm(t));
 
 /* ---------- Tab & cỡ chữ ---------- */
@@ -362,12 +363,12 @@ buildRegions();
 (async()=>{ try{ const r=await fetch(PROXY_URL+'?mode=regions'); if(!r.ok) return; const j=await r.json(); if(j.regions&&j.regions.length>=3){ REGIONS=j.regions; buildRegions(); } }catch(e){} })();
 function regLocs(region){ if(REG[region]) return REG[region][1]; const r=REGIONS.find(x=>x.code===region); if(!r) return REG[''][1]; return ['Trung tâm, '+r.name,'Phường 1, '+r.name,'Ngoại thành, '+r.name,'Huyện lân cận, '+r.name]; }
 /* ---------- Hiểu câu tìm kiếm: gõ thiếu, gõ sai, dính/tách chữ-số, thiếu hãng ---------- */
-const GENERIC=new Set(['xem','kiem','xe','mua','ban','can','tim','cu','moi','gia','re','chinh','chu','cho','toi','minh','muon','cua','cac','nhung','la','loai','dep','tot','zin','hang','chiec','con','cai','va','co','khong','da','dung','qua','su','giup','xin','oi','nhe','nha']);
+const GENERIC=new Set(['xem','kiem','xe','mua','ban','can','tim','cu','moi','gia','re','chinh','chu','cho','toi','minh','muon','cua','cac','nhung','la','loai','dep','tot','zin','hang','chiec','con','cai','va','co','khong','da','dung','qua','su','giup','xin','oi','nhe']);
 const STRONG={ip:1,ss:1,xm:1,dt:1,tl:1,mg:1,dh:1,lap:1,mbp:1,dtdd:1,hd:1,ab:1,ex:1};
 const NOMERGE=new Set(['pro','air','max','tab','tv','ram','gb','cm','mm','inch','mac','led','hd','fhd','uhd','mini','plus','xe']);
 const SYN={ip:'iphone',dt:'dien thoai',dtdd:'dien thoai',mbp:'macbook',tl:'tu lanh',mg:'may giat',dh:'dieu hoa',sh:'honda sh',ss:'samsung',xm:'xiaomi',lap:'laptop',ab:'air blade',ex:'exciter',airblade:'air blade',oto:'o to',kawa:'kawasaki',hd:'harley davidson'};
-const BRANDS=new Set(['honda','yamaha','suzuki','kawasaki','ducati','triumph','bmw','ktm','harley','davidson','piaggio','vespa','sym','vinfast','benelli','enfield','royal','apple','samsung','oppo','xiaomi','vivo','realme','sony','jbl','bose','marshall','harman','dell','asus','acer','lenovo','hp','lg','panasonic','toshiba','daikin','sharp','toyota','mazda','hyundai','kia','ford','mercedes','audi','canon','nikon','fujifilm','giant','trek','casio','seiko','nokia','huawei','electrolux']);
-const VOCAB=['max','pro','plus','mini','ultra','air','note','fold','flip','promax','inch','iphone','ipad','macbook','airpods','samsung','galaxy','oppo','xiaomi','realme','vivo','huawei','nokia','laptop','dell','asus','acer','lenovo','thinkpad','honda','yamaha','suzuki','vinfast','piaggio','vespa','wave','vision','exciter','winner','airblade','lead','future','sirius','kawasaki','ninja','versys','vulcan','ducati','monster','panigale','scrambler','multistrada','triumph','bonneville','benelli','harley','davidson','sportster','himalayan','hayabusa','burgman','raider','satria','nvx','janus','freego','grande','jupiter','blade','rebel','tiger','camera','nikon','canon','fujifilm','sofa','casio','seiko','toyota','mazda','hyundai','mercedes','audi','panasonic','toshiba','daikin','sharp','electrolux','giant','tivi','marshall','harman','klipsch','bose','sony','kiomic','temeka','partybox','soundlink','stanmore','macbook','airblade','dieuhoa'];
+const BRANDS=new Set(['denon','pioneer','technics','onkyo','marantz','kenwood','akai','jvc','teac','sennheiser','akg','beats','garmin','fujifilm','gopro','dji','honda','yamaha','suzuki','kawasaki','ducati','triumph','bmw','ktm','harley','davidson','piaggio','vespa','sym','vinfast','benelli','enfield','royal','apple','samsung','oppo','xiaomi','vivo','realme','sony','jbl','bose','marshall','harman','dell','asus','acer','lenovo','hp','lg','panasonic','toshiba','daikin','sharp','toyota','mazda','hyundai','kia','ford','mercedes','audi','canon','nikon','fujifilm','giant','trek','casio','seiko','nokia','huawei','electrolux']);
+const VOCAB=['denon','pioneer','technics','onkyo','marantz','kenwood','sennheiser','garmin','gopro','max','pro','plus','mini','ultra','air','note','fold','flip','promax','inch','iphone','ipad','macbook','airpods','samsung','galaxy','oppo','xiaomi','realme','vivo','huawei','nokia','laptop','dell','asus','acer','lenovo','thinkpad','honda','yamaha','suzuki','vinfast','piaggio','vespa','wave','vision','exciter','winner','airblade','lead','future','sirius','kawasaki','ninja','versys','vulcan','ducati','monster','panigale','scrambler','multistrada','triumph','bonneville','benelli','harley','davidson','sportster','himalayan','hayabusa','burgman','raider','satria','nvx','janus','freego','grande','jupiter','blade','rebel','tiger','camera','nikon','canon','fujifilm','sofa','casio','seiko','toyota','mazda','hyundai','mercedes','audi','panasonic','toshiba','daikin','sharp','electrolux','giant','tivi','marshall','harman','klipsch','bose','sony','kiomic','temeka','partybox','soundlink','stanmore','macbook','airblade','dieuhoa'];
 const KNOWN=new Set(VOCAB);
 const MODEL_BRAND=[
  [/^(z(125|250|300|400|500|650|750|800|900|1000|1100)(sx|r|se)?|zh2|zx\d{1,2}r?|er6n?|er6f|w175|w800|klx\d*|kx\d+|versys|vulcan|ninja)$/,'kawasaki'],
@@ -385,8 +386,74 @@ const MODEL_BRAND=[
  [/^(tnt\d+|trk\d+|leoncino\d*|imperiale)$/,'benelli']];
 function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,i)=>i);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c;}return p[n];}
 
+/* ---------- 3b. Tách câu gõ: TÊN HÀNG (bắt buộc có trong tin) và YÊU CẦU KÈM THEO (chỉ dùng để xếp hạng, không bao giờ làm mất tin) ----------
+   Chợ Tốt hiểu câu dài. Trang cũng phải hiểu: "màu đen", "dưới 4 triệu", "ở Đà Nẵng", "128gb", "pin 90", "bảo hành" không phải là tên hàng. */
+const PROVINCES=['ha noi','ho chi minh','hai phong','da nang','can tho','an giang','ba ria vung tau','vung tau','bac giang','bac kan','bac lieu','bac ninh','ben tre','binh dinh','binh duong','binh phuoc','binh thuan','ca mau','cao bang','dak lak','dak nong','dien bien','dong nai','dong thap','gia lai','ha giang','ha nam','ha tinh','hai duong','hau giang','hoa binh','hung yen','khanh hoa','nha trang','kien giang','kon tum','lai chau','lam dong','da lat','lang son','lao cai','long an','nam dinh','nghe an','ninh binh','ninh thuan','phu tho','phu yen','quang binh','quang nam','hoi an','quang ngai','quang ninh','quang tri','soc trang','son la','tay ninh','thai binh','thai nguyen','thanh hoa','thua thien hue','hue','tien giang','tra vinh','tuyen quang','vinh long','vinh phuc','yen bai','bien hoa','thu duc'];
+const PLACE_ALIAS={hcm:'ho chi minh',tphcm:'ho chi minh','sai gon':'ho chi minh',hn:'ha noi'};
+const PLACE_PRETTY={'ho chi minh':'TP Hồ Chí Minh','ha noi':'Hà Nội','da nang':'Đà Nẵng','hai phong':'Hải Phòng','can tho':'Cần Thơ'};
+const PLACE_KEYS=Object.keys(PLACE_ALIAS).concat(PROVINCES).sort((a,b)=>b.length-a.length).join('|');
+const DROP=new Set(['nhat','rat','hoi','kha','van','dang','tam','khoang','gan','o','tai','tu','toi','nhu','duoc','hay','hon','cung','luon','lien','he','ib','gap','luot','voi','theo','tren','duoi','ve','thi','ma','nay','kia','khu','vuc','quanh','nao','gi','thu','mot','de','di','roi','xong','ngay','giup','nhe','a','oi','vay','chu','nhi','doi','toi','tinh','mau']);
+const OPTW=new Set(['may','nghe','bo','cai','chiec','kieu','dong','cuc']);               // chữ chỉ loại chung chung: giữ khi hỏi Chợ Tốt nhưng không bắt buộc có trong tin
+const COND=new Set(['moi','cu','like','new','nguyen','zin','dep','tot','ngon','keng','xin']);
+const COLOR_SAFE=new Set(['trang','bac','xanh','hong','nau','xam','ghi','black','white','silver','gold','blue','red','pink','green','gray','grey']);
+const COLOR_AFTER_MAU=new Set(['den','trang','bac','vang','do','xanh','hong','nau','cam','xam','ghi','kem','tim','duong','ngoc','la']);
+const ACC_AFTER_CO=new Set(['remote','sac','hop','cap','tem','so','hoa','phu','day','vat']);
+function softKind(t,prev,next,L){
+  if(prev==='xanh'&&/^(duong|ngoc|reu|nhat|dam|bien|la)$/.test(t)) return 'color';
+  if(prev==='mau'&&COLOR_AFTER_MAU.has(t)) return 'color';
+  if(t==='hong'&&prev==='so') return 'acc';
+  if(COLOR_SAFE.has(t)) return 'color';
+  if(t==='den'&&/đen/.test(L)) return 'color';                      // "đèn" (đèn pin) không phải màu
+  if(t==='vang'&&/vàng/.test(L)&&next!=='so') return 'color';         // "vang số" không phải màu
+  if(t==='do'&&/đỏ/.test(L)) return 'color';
+  if(COND.has(t)) return 'cond';
+  if((t==='bao'&&next==='hanh')||(t==='hanh'&&prev==='bao')) return 'warr';
+  if((t==='full'&&next==='box')||(t==='box'&&prev==='full')||t==='fullbox') return 'acc';
+  if(ACC_AFTER_CO.has(t)&&(prev==='co'||prev==='kem')) return 'acc';     // "có remote", "kèm sạc", "có sổ"
+  if((t==='kien'&&prev==='phu')||(t==='don'&&prev==='hoa')||(t==='do'&&prev==='so')) return 'acc';
+  return '';
+}
+const UV={ty:1e9,trieu:1e6,tr:1e6,cu:1e6,k:1e3,nghin:1e3,ngan:1e3};
+const NUMR='(\\d+(?:[.,]\\d{1,2})?)', UNR='(ty|trieu|tr|k|nghin|ngan)', UCR='(ty|trieu|tr|cu|k|nghin|ngan)', LB='(?<![a-z0-9.,])';
+const PLACE_RE=new RegExp('(?<![a-z0-9])(?:(?:thanh pho|tp|tinh)\\s+)?('+PLACE_KEYS+')(?![a-z0-9])');
+const DIST_RE=/(?<![a-z0-9])(quan|huyen|thi xa|phuong)\s+(\d{1,2}(?![a-z0-9])|[a-z]+(?:\s[a-z]+)?)/;
+function parseSpecs(pre,rawL){
+  let s=' '+pre+' '; const out={min:0,max:0,places:[],storage:0,qty:[]};
+  const cut=(re,fn)=>{ const m=re.exec(s); if(!m) return false; s=s.slice(0,m.index)+' '+s.slice(m.index+m[0].length); fn(m); return true; };
+  const money=(n,u,tail)=>(parseFloat(String(n).replace(',','.'))+(tail?parseFloat('0.'+tail):0))*UV[u];
+  // mức giá: "từ 3 đến 5 triệu", "dưới 4tr", "trên 2 tỷ", "tầm 3tr5", "80tr"
+  cut(new RegExp(LB+'(?:tu\\s+)?'+NUMR+'\\s*'+UNR+'?\\s*(?:den|toi|-|~)\\s*'+NUMR+'\\s*'+UNR+'(?![a-z0-9])'),m=>{ out.min=money(m[1],m[2]||m[4]); out.max=money(m[3],m[4]); });
+  cut(new RegExp(LB+'(?:duoi|toi da|khong qua|max|re hon|nho hon|ngan sach|<=?)\\s*'+NUMR+'\\s*'+UCR+'(?![a-z0-9])'),m=>{ out.max=money(m[1],m[2]); });
+  cut(new RegExp(LB+'(?:tren|toi thieu|it nhat|lon hon|>=?)\\s*'+NUMR+'\\s*'+UCR+'(?![a-z0-9])'),m=>{ out.min=money(m[1],m[2]); });
+  const ap=m=>{ const v=money(m[1],m[2],m[3]); if(!out.min&&!out.max){ out.min=v*.85; out.max=v*1.15; } };
+  cut(new RegExp(LB+'(?:tam|khoang|quanh|chung|gia|co)\\s*'+NUMR+'\\s*'+UCR+'(\\d{1,3})?(?![a-z0-9])'),ap);
+  cut(new RegExp(LB+NUMR+'\\s*(ty|trieu|tr)(\\d{1,3})?(?![a-z0-9])'),ap);
+  // dung lượng bộ nhớ
+  const ST=/(?<![a-z0-9.,])(8|16|32|64|128|256|512|1024|1|2)\s*(gb|g|tb)(?![a-z0-9])/; let ms;
+  while((ms=ST.exec(s))){ out.storage=Math.max(out.storage,+ms[1]*(ms[2]==='tb'?1024:1)); s=s.slice(0,ms.index)+' '+s.slice(ms.index+ms[0].length); }
+  // các số đi kèm đơn vị: pin 90, 20000km, 80m2, 4 tầng, 3 phòng ngủ
+  cut(/(?<![a-z0-9.,])pin\s*(?:tren|duoi|>=?|<=?)?\s*(\d{2,3})\s*%?(?![0-9a-z])/,m=>out.qty.push({k:'pin '+m[1]+'%',re:'pin\\D{0,12}'+m[1]}));
+  cut(/(?<![a-z0-9.,])(\d{3,7})\s*km(?![a-z0-9])/,m=>out.qty.push({k:m[1]+' km',re:m[1]}));
+  cut(/(?<![a-z0-9.,])(\d{2,4})\s*m2(?![a-z0-9])/,m=>out.qty.push({k:m[1]+' m²',re:m[1]+'\\s*m'}));
+  cut(/(?<![a-z0-9.,])(\d{1,2})\s*(?:tang|lau)(?![a-z0-9])/,m=>out.qty.push({k:m[1]+' tầng',re:m[1]+'\\s*(?:tang|lau)'}));
+  cut(/(?<![a-z0-9.,])(\d{1,2})\s*(?:pn|phong ngu)(?![a-z0-9])/,m=>out.qty.push({k:m[1]+' phòng ngủ',re:m[1]+'\\s*(?:pn|phong ngu)'}));
+  // khu vực
+  let mp; while(out.places.length<2&&(mp=PLACE_RE.exec(s))){ out.places.push(PLACE_ALIAS[mp[1]]||mp[1]); s=s.slice(0,mp.index)+' '+s.slice(mp.index+mp[0].length); }
+  const md=DIST_RE.exec(s);
+  if(md&&(/quận|huyện|thị xã|phường/.test(rawL)||/^\d/.test(md[2]))){      // "quận 7", "huyện Hòa Vang"; chữ "quần" (quần jean) không bị nhầm
+    let w=md[2].split(' '); if(w.length>1&&(KNOWN.has(w[1])||BRANDS.has(w[1])||GENERIC.has(w[1])||DROP.has(w[1])||OPTW.has(w[1]))) w=w.slice(0,1);
+    const used=md[0].length-(md[2].length-w.join(' ').length);
+    out.places.push(md[1]+' '+w.join(' ')); s=s.slice(0,md.index)+' '+s.slice(md.index+used);
+  }
+  out.rest=s; return out;
+}
+function rawSpan(raw,phrase){ const W=String(raw).split(/\s+/), P=phrase.split(' '), nw=w=>norm(w).replace(/[^a-z0-9]/g,'');
+  for(let i=0;i+P.length<=W.length;i++) if(P.every((p,j)=>nw(W[i+j])===p)) return W.slice(i,i+P.length).join(' ').replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu,'');
+  return PLACE_PRETTY[phrase]||phrase; }
+
 function understand(raw){
-  const base=norm(raw).replace(/[^a-z0-9]+/g,' ').trim();
+  raw=String(raw); const rawL=raw.toLowerCase(), S=parseSpecs(norm(raw),rawL);
+  const base=S.rest.replace(/[^a-z0-9]+/g,' ').trim();
   let toks=[];
   base.split(/\s+/).filter(Boolean).forEach(w=>{
     const pre=(w.match(/^([a-z]{1,3})\d/)||[])[1];
@@ -396,29 +463,48 @@ function understand(raw){
   const all=toks.slice();
   const KW=new Set(['doi','sx','dk','model','nam','san','xuat','dang','ky']), isY=t=>/^(?:19[89]|20[0-3])\d$/.test(t||'');
   toks=toks.filter((t,i)=>{ if(!KW.has(t)) return true; let j=i+1; while(KW.has(toks[j])) j++; return !isY(toks[j]); });   // "đời 2019", "năm sản xuất 2019" chỉ là cách nói của năm
+  const arr=toks.slice(); let soft=[];
+  toks=toks.filter((t,i)=>{ const k=softKind(t,arr[i-1],arr[i+1],rawL); if(k){ soft.push({t,k,i}); return false; }
+    if(t==='den'&&/^\d+$/.test(arr[i-1]||'')&&/^\d+$/.test(arr[i+1]||'')) return false;     // "2015 đến 2018"
+    return !DROP.has(t); });
   toks=toks.filter((t,i)=>!(t==='may'&&toks[i-1]==='xe')&&!(t==='xe'&&toks[i+1]==='may')&&!GENERIC.has(t));
-  if(!toks.length) toks=all;
+  if(!toks.length){ soft=[]; toks=all.filter(t=>!DROP.has(t)); if(!toks.length) toks=all; }
   const mg=[]; for(let i=0;i<toks.length;i++){ const t=toks[i], n=toks[i+1];       // "z 1000" -> z1000
     if(/^[a-z]{1,3}$/.test(t)&&!STRONG[t]&&!NOMERGE.has(t)&&n&&/^\d{2,4}$/.test(n)){ mg.push(t+n); i++; } else mg.push(t); }
   const exp=[]; mg.forEach(t=>{ (SYN[t]?SYN[t].split(' '):[t]).forEach(x=>exp.push({t:x})); });
   let changed=false;                                                                  // sửa gõ sai: kawsaki -> kawasaki
-  exp.forEach(o=>{ const t=o.t; if(/\d/.test(t)||t.length<5||KNOWN.has(t)) return; let best=null,bd=9;
+  exp.forEach(o=>{ const t=o.t; if(/\d/.test(t)||t.length<5||KNOWN.has(t)||OPTW.has(t)) return; let best=null,bd=9;
     for(const w of VOCAB){ if(Math.abs(w.length-t.length)>2) continue; const d=lev(t,w); if(d<bd){bd=d;best=w;} }
     if(best&&bd<=(t.length<=6?1:2)){ o.alt=t; o.t=best; changed=true; } });
   const units=exp.map(o=>{ const t=o.t, digits=/^\d+$/.test(t), brand=BRANDS.has(t);
-    return {t,alts:[t].concat(o.alt?[o.alt]:[]),digits,brand,short:!digits&&!/\d/.test(t)&&t.length<=2&&!brand,yearOpt:digits&&t.length===4&&+t>=1990&&+t<=2030}; });
-  const solid=units.some(u=>!u.brand&&!u.short&&!u.yearOpt);
-  units.forEach(u=>{ u.opt=u.yearOpt||(u.short&&solid); });
-  let req=units.filter(u=>!u.opt&&!u.brand); if(!req.length) req=units.filter(u=>!u.opt); if(!req.length) req=units;
-  const models=req.filter(u=>/\d/.test(u.t));
+    return {t,alts:[t].concat(o.alt?[o.alt]:[]),digits,brand,optw:OPTW.has(t),short:!digits&&!/\d/.test(t)&&t.length<=2&&!brand,yearOpt:digits&&t.length===4&&+t>=1990&&+t<=2030}; });
+  const solid=units.some(u=>!u.brand&&!u.short&&!u.yearOpt&&!u.optw);
+  units.forEach(u=>{ u.opt=u.yearOpt||(u.short&&solid)||(u.optw&&solid); });
   let mb=''; for(const u of units){ for(const [re,b] of MODEL_BRAND){ if(re.test(u.t)){ mb=b; break; } } if(mb) break; }
+  const hasNum=units.some(u=>/\d/.test(u.t)&&!u.yearOpt);
+  // hãng chỉ là chữ phụ khi đã có mã máy (tin hay bỏ tên hãng); gõ mỗi tên hãng + loại hàng ("đầu md denon") thì hãng là bắt buộc
+  const brandOptional=hasNum||!!mb;
+  let req=units.filter(u=>!u.opt&&(!u.brand||!brandOptional)); if(!req.length) req=units.filter(u=>!u.opt); if(!req.length) req=units;
+  const models=req.filter(u=>/\d/.test(u.t));
   const hasBrand=mb&&units.some(u=>mb.split(' ').includes(u.t));
   const core=units.filter(u=>!u.yearOpt).map(u=>u.t).join(' ')||raw.trim();
   const spaced=core.replace(/([a-z])(\d)/g,'$1 $2');
   const withB=mb&&!hasBrand?mb+' '+core:'';
-  const vs=[withB||core,core,spaced,withB&&mb+' '+spaced,raw.trim().toLowerCase()].filter(Boolean);
+  const pcore=units.filter(u=>!u.yearOpt).map(u=>rawSpan(raw,u.t)).join(' ')||raw.trim(), yrs=units.filter(u=>u.yearOpt).map(u=>' '+u.t).join('');
+  const place=S.places.map(p=>PLACE_PRETTY[p]?norm(PLACE_PRETTY[p]):p).join(' '), sto=S.storage?(S.storage>=1024?S.storage/1024+'tb':S.storage+'gb'):'';
+  const rich=((withB||core)+(sto?' '+sto:'')+(place?' '+place:'')).trim();
+  const vs=[rich,withB||core,core,spaced,withB&&mb+' '+spaced,raw.trim().toLowerCase()].filter(Boolean);
   const variants=[...new Set(vs)].slice(0,CONFIG.maxVariants);
-  return {raw,units,req,models,variants,display:(withB||core)+(units.filter(u=>u.yearOpt).map(u=>' '+u.t).join('')),changed,brand:mb};
+  // phần giải thích cho người dùng
+  const groups=[]; soft.forEach(s=>{ const g=groups[groups.length-1]; if(g&&g.k===s.k&&s.k!=='cond'&&s.i===g.last+1){ g.t.push(s.t); g.last=s.i; } else groups.push({k:s.k,t:[s.t],last:s.i}); });
+  groups.forEach(g=>{ const ph=g.t.join(' '); g.label=g.k==='color'?'màu '+rawSpan(raw,ph):g.k==='warr'?'bảo hành':g.k==='acc'?'có '+rawSpan(raw,ph):''; });
+  const filters=groups.map(g=>g.label).filter((l,i,a)=>l&&a.indexOf(l)===i);
+  S.places.forEach(p=>filters.push('khu vực '+rawSpan(raw,p)));
+  if(S.min&&S.max) filters.push('giá '+vnd(Math.round(S.min))+' – '+vnd(Math.round(S.max))); else if(S.max) filters.push('giá dưới '+vnd(Math.round(S.max))); else if(S.min) filters.push('giá từ '+vnd(Math.round(S.min)));
+  if(S.storage) filters.push((S.storage>=1024?S.storage/1024+' TB':S.storage+' GB'));
+  S.qty.forEach(q=>filters.push(q.k));
+  const sig=JSON.stringify([S.min,S.max,S.places,S.storage,S.qty.map(q=>q.k),soft.map(s=>s.t)]);
+  return {raw,units,req,models,variants,soft,groups,minPrice:S.min,maxPrice:S.max,places:S.places,storage:S.storage,qty:S.qty,filters,sig,key:(withB||core)+yrs,display:(mb&&!hasBrand?mb+' ':'')+pcore+yrs,changed,brand:mb};
 }
 const BRAND_PREFIX='(?:(?<![a-z])|(?<=kawasaki|honda|yamaha|suzuki|ducati|benelli|triumph|harley|bmw|ktm|vespa|piaggio|vinfast))';   // cho phép #kawasakiz1000
 function unitHit(u,title,full,tw,fw,cf){
@@ -433,16 +519,43 @@ function unitHit(u,title,full,tw,fw,cf){
   });
 }
 function vehicleEvidence(a,full,brand){ return !!(a.regdate||a.mileage_v2)||/(?:xe|o to)/.test(norm(a.category_name||''))||(!!brand&&full.includes(brand.split(' ')[0]))||/(?<![a-z])(?:xe|moto|pkl|odo|bien so|bstp|cavet|ca vet|dang kiem|sang ten|phan khoi|hqcn)(?![a-z])/.test(full); }
-function matchAd(U,a){
+const ST_RE=/(?<![\d.,])(8|16|32|64|128|256|512|1024|1|2)\s*(gb|g|tb)(?![a-z0-9])/g;
+function adStorage(txt){ const s=new Set(); let m; ST_RE.lastIndex=0; while((m=ST_RE.exec(txt))) s.add(+m[1]*(m[2]==='tb'?1024:1)); return s; }
+/* Chấm mức khớp của một tin với câu gõ. m: 'exact' (đúng tên hàng) | 'near' (gần giống) | '' (không liên quan).
+   Yêu cầu phụ (màu, giá, khu vực, dung lượng...) chỉ cộng/trừ điểm và có thể đưa tin xuống "gần giống", không bao giờ làm mất tin. */
+function matchScore(U,a){
   const title=norm(a.subject||''), full=norm((a.subject||'')+' '+(a.body||'')+' '+ptext(paramsOf(a)));
   const tw=new Set(title.split(/[^a-z0-9]+/)), fw=new Set(full.split(/[^a-z0-9]+/).filter(w=>w.length>=4)), cf=full.replace(/[^a-z0-9]/g,'');
-  const hit=u=>unitHit(u,title,full,tw,fw,cf);
-  const got=U.req.filter(hit).length;
-  if(got===U.req.length){ if(U.brand&&!vehicleEvidence(a,full,U.brand)) return '';      // tìm mẫu xe mà tin không có dấu hiệu là xe: bỏ
-    const uy=(U.units.find(u=>u.yearOpt)||{}).t; if(uy){ const P=paramsOf(a), pk=Object.keys(P).find(k=>RK.year.test(k)), ly=findYear(full,title)||(pk?pnum(P[pk]):0); if(ly&&Math.abs(ly-+uy)>1) return 'near'; } return 'exact'; }
-  if(U.req.length>=2&&U.models.every(hit)&&got>=Math.ceil(U.req.length/2)) return 'near';
-  return '';
+  const hit=u=>unitHit(u,title,full,tw,fw,cf), why=[], warn=[];
+  const n=U.req.length, hits=U.req.filter(hit), got=hits.length;
+  const codes=U.req.filter(u=>/[a-z]/.test(u.t)&&/\d/.test(u.t)&&u.t.length>=4);          // mã máy như dmd1000, z1000: đã trúng mã thì chữ chung chung (đầu, loa...) không bắt buộc
+  let m='';
+  if(got===n||(codes.length&&codes.every(hit))) m='exact';
+  else if(n>=2&&U.models.every(hit)&&got>=Math.ceil(n/2)) m=(!U.models.length&&got>=Math.ceil(n*.75))?'exact':'near';
+  const strong=U.units.some(u=>!u.opt&&!u.yearOpt&&(/\d/.test(u.t)||u.t.length>=5)&&hit(u));      // trúng ít nhất một chữ đặc trưng (hãng, mã máy, tên riêng), kể cả hãng được coi là chữ phụ
+  let score=10*(n?got/n:0);
+  if(!m) return {m:'',score,why,warn,got,strong};
+  if(U.brand&&!vehicleEvidence(a,full,U.brand)) return {m:'',score:0,why,warn,got,strong:false};      // tìm mẫu xe mà tin không có dấu hiệu là xe: bỏ
+  if(m==='exact') score+=3;
+  const uy=(U.units.find(u=>u.yearOpt)||{}).t;
+  if(uy&&m==='exact'){ const P=paramsOf(a), pk=Object.keys(P).find(k=>RK.year.test(k)), ly=findYear(full,title)||(pk?pnum(P[pk]):0); if(ly&&Math.abs(ly-+uy)>1){ m='near'; warn.push('khác đời xe bạn gõ ('+ly+')'); } }
+  let bonus=0; const seen=new Set();
+  U.groups.forEach(g=>{ const w=t=>new RegExp('(?<![a-z0-9])'+t+'(?![a-z0-9])').test(full);
+    if(!(g.k==='color'?g.t.some(w):g.t.every(w))) return;                       // màu: trúng một chữ là đủ; "bảo hành", "sổ hồng": phải đủ cả cụm
+    bonus+=g.k==='color'?1:g.k==='cond'?.3:.6;
+    if(g.label&&!seen.has(g.label)){ seen.add(g.label); why.push(g.k==='warr'?'có bảo hành':g.label); } });
+  U.qty.forEach(q=>{ if(new RegExp(q.re).test(full)){ bonus+=.5; why.push(q.k); } });
+  if(U.places.length){ const loc=norm([a.area_name,a.region_name,a.region_name_v3,a.ward_name,a.ward_name_v3,a.detail_address,a.street_name,a.subject].filter(Boolean).join(' ')), p=U.places.find(p=>loc.includes(p));
+    if(p){ bonus+=1.5; why.push('đúng khu vực '+rawSpan(U.raw,p)); } else { score-=1; warn.push('khác khu vực bạn gõ'); } }
+  const pr=Number(a.price)||0;
+  if(pr>0&&(U.maxPrice||U.minPrice)){ const over=U.maxPrice&&pr>U.maxPrice*1.1, under=U.minPrice&&pr<U.minPrice*.9;
+    if(over||under){ warn.push(over?'giá cao hơn mức bạn muốn':'giá thấp hơn khoảng bạn muốn'); score-=2; if(m==='exact') m='near'; } else{ bonus+=1; why.push('đúng tầm giá'); } }
+  if(U.storage){ const ts=adStorage(title), set=ts.size?ts:adStorage(full);
+    if(set.has(U.storage)){ bonus+=1.5; why.push('đúng '+(U.storage>=1024?U.storage/1024+' TB':U.storage+' GB')); }
+    else if(set.size){ warn.push('khác dung lượng ('+[...set].join('/')+' GB)'); score-=1.5; if(m==='exact') m='near'; } }
+  return {m,score:score+Math.min(bonus,5),why,warn,got,strong};
 }
+function matchAd(U,a){ return matchScore(U,a).m; }
 
 /* ---------- Lấy tin thật qua máy chủ trung gian: nhiều cách gõ, nhiều trang, gộp và lọc thông minh ---------- */
 let PAGING=true;     // Chợ Tốt từ chối trang 2, 3 thì ngừng xin trang sâu trong phiên này
@@ -469,7 +582,7 @@ function mapAd(a,exact,pool){
       const parts=[]; [a.street_number,a.street_name,a.detail_address,a.ward_name_v3||a.ward_name,a.area_name,a.region_name_v3||a.region_name].forEach(x=>{ if(x&&!parts.join(' ').includes(String(x).trim())) parts.push(String(x).trim()); });
       const imgs=(a.images&&a.images.length?a.images:(a.image?[a.image]:[])).slice(0,4);
       const nz=v=>Array.isArray(v)?v.length>0:!!v, sticky=a.is_sticky===true||a.sticky_ad_platinum>0||nz(a.stickyad_feature)||nz(a.sticky_ad_type)||nz(a.is_intensive_bump);
-      return {...t,exact,sticky,boosted:!!a._boost||sticky,priceNotValid:a.is_price_not_valid===true,origPrice:Number(a.original_price)||0,nImg:Number(a.number_of_images)||0,hasVideo:a.has_video===true||a.contain_videos===1||nz(a.videos),name:(a.subject||'Tin không có tiêu đề').slice(0,90),seller:(a.account_name||'Chưa rõ').trim(),price:Number(a.price)||0,
+      return {...t,exact,why:a._why||[],matchWarn:a._warn||[],sticky,boosted:!!a._boost||sticky,priceNotValid:a.is_price_not_valid===true,origPrice:Number(a.original_price)||0,nImg:Number(a.number_of_images)||0,hasVideo:a.has_video===true||a.contain_videos===1||nz(a.videos),name:(a.subject||'Tin không có tiêu đề').slice(0,90),seller:(a.account_name||'Chưa rõ').trim(),price:Number(a.price)||0,
         cond:cn==='Đã sử dụng'?'Đã dùng':cn==='Mới'?'Mới':t.cond,
         loc:[a.area_name,a.region_name].filter(Boolean).join(', ')||'Chưa rõ',addr:parts.join(', '),desc:body,urlOnly:false,
         phone:a.phone?String(a.phone):t.phone,source:'Chợ Tốt',live:true,date:a.date||'',images:imgs,t:tm(a.list_time),t0:tm(a.orig_list_time),pos:pool.indexOf(a),params:paramsOf(a),
@@ -483,8 +596,11 @@ async function fetchLive(U,region,opt){
   opt=opt||{};
   const seen=new Map(), pageOf=new Map(); let okc=0, failed=0, jobs=0, firstErr=null, painted=false, fb='';
   const build=()=>{
-    const pool=[...seen.values()], tag=pool.map(a=>({a,m:matchAd(U,a)}));
-    const exact=tag.filter(o=>o.m==='exact'), near=tag.filter(o=>o.m==='near');
+    const pool=[...seen.values()], tag=pool.map(a=>{ const r=matchScore(U,a); a._why=r.why; a._warn=r.warn; return {a,m:r.m,s:r.score,r}; });
+    const byScore=(x,y)=>y.s-x.s;                      // tin khớp nhiều yêu cầu phụ (màu, khu vực, giá...) lên trước; bằng điểm thì giữ thứ tự của Chợ Tốt
+    const exact=tag.filter(o=>o.m==='exact').sort(byScore); let near=tag.filter(o=>o.m==='near').sort(byScore);
+    if(!exact.length&&!near.length){                  // không tin nào đúng tên hàng: vẫn cho xem vài tin trúng ít nhất một chữ đặc trưng (hãng, mã, tên riêng), ghi rõ là gần giống
+      near=tag.filter(o=>o.r.strong).sort(byScore).slice(0,CONFIG.rescueMax).map(o=>(o.a._warn=(o.a._warn||[]).concat('chưa thấy đủ các chữ trong tên hàng'),o)); }
     const keep=exact.slice(0,CONFIG.maxResults).map(o=>({a:o.a,exact:true})).concat(exact.length<CONFIG.nearIfFewer?near.slice(0,CONFIG.maxNear).map(o=>({a:o.a,exact:false})):[]);
     const out=keep.map(({a,exact})=>mapAd(a,exact,pool));
     const have={}; ['list_time','orig_list_time','ad_params','params','regdate','mileage_v2','size','phone','category_name','mobile_model','feature_params','is_sticky','number_of_images','price_million_per_m2','original_price'].forEach(k=>{ have[k]=pool.filter(a=>a[k]!=null&&a[k]!=='').length; });
@@ -573,7 +689,7 @@ function attachWeb(p,seq){ const cur=()=>seq===undefined||seq===SEQ; p.then(l=>{
 /* ---------- Tìm kiếm: huỷ lượt cũ, nhớ kết quả, hiện dần, báo trạng thái thật ---------- */
 let SEQ=0, CURCTRL=null;
 const CACHE=new Map();
-const ckey=(U,region)=>norm(U.display)+'|'+region;
+const ckey=(U,region)=>U.key+'|'+U.sig+'|'+region;
 const sig=a=>a.map(x=>x.url||x.name).join('|');
 function cacheGet(k){
   let e=CACHE.get(k);
@@ -601,6 +717,9 @@ function explainErr(e){
   return 'Có lỗi khi lấy tin.';
 }
 /* thanh trạng thái to, rõ: bố biết ngay đang xem tin thật hay tin mẫu */
+/* Lý do tin này hiện ra: đúng yêu cầu nào, lệch yêu cầu nào */
+function matchLine(x){ const w=x.why||[], c=x.matchWarn||[]; if(!w.length&&!c.length) return '';
+  return '<div class="text-sm mt-1">'+(w.length?'<span style="color:var(--good)">✓ '+w.map(esc).join(' · ')+'</span>':'')+(w.length&&c.length?' &nbsp; ':'')+(c.length?'<span style="color:var(--warn)">⚠ '+c.map(esc).join(' · ')+'</span>':'')+'</div>'; }
 function statusBar(kind,d){
   d=d||{};
   const M={
@@ -621,7 +740,7 @@ async function search(force){
   if(!raw){ $('#out').innerHTML=msg('Bố hãy gõ tên món muốn tìm trước nhé, ví dụ “xe máy Wave”.','warn'); $('#q').focus(); return; }
   const seq=++SEQ; if(CURCTRL) CURCTRL.abort(); const ctrl=CURCTRL=new AbortController();   // lượt tìm cũ bị huỷ, không thể ghi đè lượt mới
   const U=understand(raw), q=U.display; lastQ=q; addHist(raw); DBG.reset(U,region);
-  const hint=msg('Máy hiểu bố muốn tìm: <b>“'+esc(q)+'”</b>. Đã thử '+U.variants.length+' cách gõ ('+U.variants.map(esc).join(' · ')+') để không sót tin.','good');
+  const hint=msg('Máy hiểu bố muốn tìm: <b>“'+esc(q)+'”</b>.'+(U.filters.length?'<br>Yêu cầu kèm theo: <b>'+U.filters.map(esc).join(' · ')+'</b>. Máy dùng để xếp tin hợp ý lên trước, không loại tin nào.':'')+'<br><span class="mute">Đã tìm bằng '+U.variants.length+' cách gõ để không sót tin.</span>','good');
   const title='Kết quả cho “'+esc(q)+'”';
   const web=fetchWeb(q); web.catch(()=>{});
   const key=ckey(U,region), hit=force?null:cacheGet(key);
@@ -773,7 +892,7 @@ function locNeg(t,re){
 }
 function hitNeg(t,re){ return !!locNeg(t,re); }
 const PARAM_KEYS=['regdate','mfdate','mileage_v2','mileage','size','area','rooms','floors','property_legal_document','house_type','motorbike_brand','motorbike_model','car_brand','car_model','owner','construction_year',
-  'category_name','mobile_brand','mobile_model','mobile_capacity','mobile_color','living_size','width','length','toilets','direction','furnishing_sell','land_type','is_main_street','price_million_per_m2'];
+  'category_name','mobile_brand','mobile_model','mobile_capacity','mobile_color','living_size','width','length','toilets','direction','furnishing_sell','land_type','is_main_street','price_million_per_m2','min_salary','max_salary','company_name','job_type','contract_type','vacancies','salary_type','pet_breed','pet_age','pet_gender','pet_vaccinated','condition','warranty','origin','brand','size'];
 const PARAM_NUM=new Set(['size','area','rooms','floors','toilets','width','length','living_size','mileage_v2','mileage','regdate','mfdate']);
 function paramsOf(a){
   const o={}, put=(k,v)=>{ if(v==null||v==='') return; if(typeof v==='object') v=v.value!=null?v.value:(v.label||v.name||''); v=String(v).trim(); if(v) o[norm(String(k))]=v; };
@@ -786,10 +905,375 @@ function paramsOf(a){
 }
 const ptext=P=>Object.values(P).filter(v=>/[a-zA-ZÀ-ỹ]/.test(v)).join(' ');     // chỉ lấy giá trị có chữ (loại bỏ mã số) để ghép vào nội dung tin
 const pnum=v=>{ const m=String(v||'').replace(/\s/g,'').match(/\d[\d.,]*/); return m?numVN(m[0],''):0; };
+/* ---------- 4b. BẢNG LOẠI HÀNG ----------
+   Mỗi nhóm hàng của Chợ Tốt có cách đọc thông số, dấu hiệu cảnh báo, câu hỏi, checklist và lời nhắn riêng.
+   Muốn thêm một nhóm mới: thêm một mục vào CATDEFS, không phải sửa chỗ khác.
+   cn: chữ trong tên danh mục do Chợ Tốt ghi · w: chữ trong tiêu đề · fields: thông số cần đọc (need: thiếu thì nhắc hỏi)
+   pro: điểm cộng · con: điểm trừ nặng (không được chọn là tin tốt nhất) · danger: nghi lừa đảo (loại hẳn) · risk: điểm trừ cần hỏi lại */
+const numF=s=>{ const v=parseFloat(String(s).replace(/\.(?=\d{3}(?!\d))/g,'').replace(',','.')); return isFinite(v)?v:0; };
+const cap1=s=>s?String(s).charAt(0).toUpperCase()+String(s).slice(1):s;
+const FAKE_RE=/(?:(?<![a-z0-9])rep(?![a-z0-9])|replica|(?<![0-9])1\s?:\s?1(?![0-9])|super ?fake|(?<![a-z])sf(?![a-z])|hang nhai|(?<![a-z])fake(?![a-z])|like ?auth|giong (?:auth|that|chinh hang)|hang (?:cao cap|dep) (?:nhu|giong) (?:that|auth))/;
+const FAKE_CON=[FAKE_RE,'Tin dùng chữ của hàng nhái (rep, 1:1, like auth, super fake...)'];
+const DEP_DANGER=[/(?:dat coc|coc truoc|chuyen khoan truoc|ung truoc|gui xe khach|ship xe khach|gui chanh|khong cho xem hang|khong xem hang)/,'Đòi đặt cọc / chuyển tiền trước khi cho xem hàng: dấu hiệu lừa đảo'];
+const GUARANTEE=[/bao hanh|con bao hanh|bh (?:\d+|chinh hang|hang)/,'Có bảo hành'];
+const BOX=[/(?:con|du|full ?box|day du) (?:hop|phu kien)|fullbox|con hop|day du phu kien/,'Còn hộp / đủ phụ kiện'];
+const BILL=[/(?:co|con|kem) (?:hoa don|bill|vat)|hoa don (?:mua|vat)|bill mua/,'Có hóa đơn mua hàng'];
+const OFFICIAL=[/chinh hang|authentic|nhap khau chinh ngach/,'Ghi chính hãng'];
+const SEL=(...a)=>a;
+const LUX={gucci:3e6,'louis vuitton':3e6,lv:3e6,chanel:3e6,hermes:5e6,dior:3e6,prada:3e6,burberry:2e6,balenciaga:3e6,rolex:20e6,omega:12e6,cartier:15e6,patek:50e6,audemars:50e6,tissot:1.5e6};
+const CATDEFS=[
+/* --- Phụ tùng xe: đứng trước Xe cộ để không bị nhầm "mâm xe Honda" là một chiếc xe --- */
+{id:'autoparts',label:'Phụ tùng xe',icon:'🔧',cn:/phu tung|phu kien xe/,
+ w:/(?<![a-z])(?:phu tung|lop xe|vo xe|mam xe|la zang|nhot|ac quy|binh ac quy|non bao hiem|mu bao hiem|yen xe|phuoc|heo (?:dau|dia)|dia thang|loc gio|bugi|day curoa|den (?:xe|pha|hau)|guong (?:xe|chieu hau)|kinh chieu hau|cop (?:xe|may)|dan ao xe|bao tay|giap (?:xe|may)|op lung xe|ga tay|cum (?:ga|phanh)|sen (?:dia|xich)|nhong)/,used:false,
+ fields:[{k:'fit',label:'Dùng cho xe',re:/(?:cho|danh cho|dung cho|lap cho|ap dung)\s+((?:honda|suzuki|exciter|winner|vision|air ?blade|sh|wave|lead|sirius|ninja|toyota|vios|mazda|hyundai|kia|ford|vinfast)[a-z0-9 ]{0,16})/,to:m=>cap1(m[1].trim()),need:true,ask:'Phụ tùng này lắp cho đúng đời xe nào? Cho em xin mã số in trên chi tiết hoặc ảnh tem.'}],
+ pro:[OFFICIAL,[/hang zin|zin theo xe|hang hang|hang chinh hang xe/,'Hàng zin theo xe'],GUARANTEE],con:[FAKE_CON],
+ risk:[[/hang thao xe|thao xe|da (?:qua )?su dung|hang tho/,'Hàng tháo xe cũ, có thể đã mòn'],[/khong (?:ro )?(?:nguon goc|chinh hang)|hang tq|loai 2|hang lap rap/,'Nguồn gốc không rõ hoặc hàng loại 2']],
+ ask:['Hàng chính hãng hay hàng thay thế? Có đổi trả nếu lắp không vừa không?'],
+ docs:'Điểm cộng',photo:'ảnh mã số in trên phụ tùng và ảnh tem/bao bì',meetNote:' và thử lắp ngay tại chỗ nếu được',
+ check:{before:[()=> 'Chụp ảnh tem/mã số phụ tùng xe của bạn để đối chiếu',()=> 'Hỏi rõ hàng mới hay tháo xe, còn bảo hành/đổi trả không'],
+  inspect:['Đối chiếu mã số in trên chi tiết với mã của xe bạn','Hàng mới: bao bì, tem chống giả, màu sắc, chất lượng gia công; hàng cũ: vết mòn, nứt, rỉ sét, cong vênh','Bình ắc quy: xem ngày sản xuất, đo điện áp; lốp/vỏ: xem ngày sản xuất 4 số trên thành lốp (tuần/năm), không mua lốp quá 3 năm','Nón bảo hiểm: kiểm tra tem hợp chuẩn, vỏ không nứt, quai chắc'],
+  pay:['Hỏi chính sách đổi trả nếu lắp không vừa; ưu tiên thử lắp tại chỗ','Không chuyển khoản trước khi nhận hàng']}},
+/* --- Máy chơi game --- */
+{id:'gaming',label:'Máy chơi game',icon:'🎮',cn:/may choi game|(?<![a-z])game(?![a-z])/,
+ w:/(?<![a-z])(?:ps ?[2345]|playstation|xbox|nintendo|switch|steam deck|tay cam|may game|dau game|dia game|rog ally|psp|ps vita|gameboy|game pc)(?![a-z])/,
+ fields:[{k:'stor',label:'Dung lượng ổ cứng',re:/(\d{2,4})\s*(gb|tb)(?![a-z])/,to:m=>m[2]==='tb'?numF(m[1])*1024:numF(m[1]),fmt:v=>v>=1024?v/1024+' TB':v+' GB'}],
+ pro:[GUARANTEE,BOX,[/kem (\d)\s*tay cam|(\d) tay cam/,'Kèm tay cầm'],[/full game|nhieu game|kem (\d+)\s*(?:dia|game)/,'Kèm đĩa / game']],
+ con:[[/bi (?:ban|khoa|cam) (?:online|mang|tai khoan)|banned|ban acc/,'Máy bị cấm chơi online (ban)']],
+ risk:[[/(?<![a-z])(?:hack|jailbreak|cfw|mod ?chip|da hack|da mod|unlock)(?![a-z])/,'Máy đã hack / mod'],[/(?:drift|troi analog|lech analog|loi o dia|kem o dia|nong|quat keu|sua chua|thay (?:quat|o cung|pin))/,'Có dấu hiệu lỗi hoặc đã sửa chữa']],
+ ask:['Máy đã hack hay mod chưa? Có chơi online bình thường không?','Kèm bao nhiêu tay cầm, dây nguồn, dây HDMI; tay cầm có bị trôi analog (drift) không?','Máy chạy lâu có nóng hoặc quạt ồn không? Ổ đĩa đọc đĩa tốt không?'],
+ docs:'Điểm cộng',photo:'video máy đang chạy một game và ảnh tem serial dưới máy',meetNote:' (em xin chơi thử một game)',
+ check:{before:['Hỏi trước: máy đã hack/mod chưa, có chơi online được không','Mang theo đĩa/game quen của bạn để thử'],
+  inspect:['Chơi thử 10–15 phút một game nặng: máy không nóng bất thường, quạt không ồn, không đơ hình','Thử đăng nhập online; nếu bán kèm tài khoản, tự đổi email và mật khẩu ngay trước mặt người bán','Thử mọi nút tay cầm, cần analog (không trôi), rung, cổng sạc','Kiểm tra cổng HDMI, USB, khay đĩa; số serial dưới máy khớp với hộp'],
+  pay:['Ưng mới trả tiền; không trả trước cho người lạ','Lấy đủ dây nguồn, dây HDMI, tay cầm, hộp đi kèm']}},
+/* --- Máy ảnh, máy quay, flycam --- */
+{id:'camera',label:'Máy ảnh / máy quay',icon:'📷',cn:/may anh|may quay|camera|flycam/,
+ w:/(?<![a-z])(?:may anh|canon (?:eos|r\d|\d{2,4}d|m\d|powershot)|nikon (?:d\d|z\d)|sony (?:a\d|alpha|zv|rx|fx)|alpha ?\d|fujifilm|fuji x|lumix|olympus|leica|ong kinh|lens|gopro|flycam|mavic|insta360|may quay|camcorder|dslr|mirrorless|body (?:canon|nikon|sony))(?![a-z])/,
+ fields:[{k:'shot',label:'Số lần chụp (shutter)',re:[/(\d[\d.,]*)\s*(k)?\s*(?:shots?|clicks?|lan chup|kich hoat|shutter)(?![a-z])/,/(?:shutter(?: count)?|shots?|clicks?)\s*[:=]?\s*(\d[\d.,]*)\s*(k)?(?![a-z0-9])/],to:m=>Math.round(numF(m[1])*(m[2]?1000:1)),fmt:v=>fmtN(v)+' lần',need:true,when:/body|may anh|canon|nikon|sony a|alpha|fuji|lumix/,ask:'Số lần chụp (shutter count) bao nhiêu? Cho em xin ảnh chụp màn hình đọc số này.'}],
+ pro:[GUARANTEE,BOX,[/(?:kem|di kem|tang) (?:pin|sac|day deo|the nho|ong kinh|tui)/,'Kèm pin, sạc, phụ kiện'],[/it chup|moi chup|(?:chua|it) dung nhieu/,'Ít dùng']],
+ con:[[/(?<![a-z])(?:nam|moc)(?![a-z])\s*(?:ong kinh|lens|kinh)?|ong kinh (?:nam|moc)/,'Ống kính có nấm / mốc (rất khó xử lý)']],
+ risk:[[/bui (?:cmos|sensor|trong)|(?:xuoc|tray) (?:kinh|lens|man hinh)|co dom|roi|vo nuoc|am nuoc|mop|thay (?:mainboard|man hinh|cam bien)|sua chua|loi (?:af|lay net|man hinh)/,'Có dấu hiệu bụi / trầy / rơi / sửa chữa']],
+ ask:['Ống kính có nấm, mốc, trầy xước hoặc bụi bên trong không?','Cảm biến (sensor) có đốm bụi không, chụp thử ảnh nền trắng có sạch không?','Máy từng rơi, vào nước hay sửa chữa chưa?','Đi kèm gồm những gì: pin, sạc, thẻ nhớ, dây đeo, hộp?'],
+ docs:'Điểm cộng',photo:'ảnh chụp thử và ảnh chụp màn hình số lần chụp (shutter count)',meetNote:' (em mang thẻ nhớ để chụp thử)',
+ check:{before:['Mang thẻ nhớ và laptop/điện thoại để xem ảnh thử, đọc số shutter','Hỏi trước: số shutter, ống kính có nấm xước không'],
+  inspect:['Gắn ống kính, chụp thử tường trắng/trời ở khẩu nhỏ (f/11–16) để tìm đốm bụi cảm biến','Soi ống kính dưới đèn pin: nấm mốc, xước, bụi, bọt khí; xoay vòng zoom/lấy nét êm','Thử lấy nét tự động và thủ công, chống rung, flash, quay video, màn hình lật','Đọc số shutter bằng phần mềm/điện thoại và so với tin','Kiểm tra pin (không phồng), cổng sạc, khe thẻ, các nút xoay, thân máy có vết rơi'],
+  pay:['Ưng mới trả tiền; máy đắt hơn 10 triệu nên nhờ người am hiểu đi cùng','Lấy đủ hộp, pin, sạc, dây đeo, nắp ống kính']}},
+/* --- Tivi --- */
+{id:'tv',label:'Tivi',icon:'📺',cn:/tivi|(?<![a-z])tv(?![a-z])/,w:/(?<![a-z])(?:tivi|smart tv|android tv|google tv|(?:tv|ti vi) (?:samsung|lg|sony|tcl|casper|panasonic|xiaomi|asanzo|toshiba|sharp)|khung treo tivi)(?![a-z])/,
+ fields:[{k:'inch',label:'Kích thước màn hình',re:/(\d{2,3})\s*(?:inch|inches|in(?![a-z])|")/,fmt:v=>v+' inch',need:true,ask:'Tivi bao nhiêu inch và đời/model nào (ghi ở tem sau tivi)?'},
+  {k:'tech',label:'Độ phân giải / công nghệ',re:/(?<![a-z0-9])(4k|8k|full ?hd|fhd|uhd|qled|oled|mini ?led|neo qled|hd ready)(?![a-z0-9])/,to:m=>m[1].toUpperCase().replace(' ','')}],
+ pro:[GUARANTEE,BOX,[/(?:co|con|kem) (?:remote|dieu khien)|dieu khien giong noi/,'Có remote'],[/chan de|gia treo/,'Kèm chân đế / giá treo']],
+ con:[[/(?:soc|vo|ho|mo|nut) man(?: hinh)?|man hinh (?:bi |co |hoi )?(?:soc|vo|nut|mo|ho|loang|diem chet)|diem chet|loi (?:nguon|man hinh)|(?:bi )?(?:soc|loang) (?:man|sang)/,'Màn hình có lỗi (sọc / vỡ / điểm chết)']],
+ risk:[[/am vang|ngoi sang|loang sang|nhoe|tat nguon|tu tat|do bong den|sua chua|thay (?:led|man|main|nguon)|mat (?:hinh|tieng)|loi wifi/,'Có dấu hiệu lỗi hoặc đã sửa chữa']],
+ ask:['Màn hình có điểm chết, sọc, loang sáng hoặc ám màu không?','Còn đủ remote, chân đế/giá treo, dây nguồn không?','Tivi có bị tự tắt, đơ, lỗi wifi hay ứng dụng không? Còn bảo hành không?'],
+ docs:'Điểm cộng',photo:'video tivi đang bật (màn trắng, màn đen) và ảnh tem model sau tivi',meetNote:' (em xin bật thử tivi)',
+ check:{before:['Hỏi trước: bao nhiêu inch, có sọc/điểm chết không, còn remote không','Hỏi cách vận chuyển: tivi lớn cần 2 người, không đặt nằm'],
+  inspect:['Bật ít nhất 10 phút; chiếu màn đen, trắng, đỏ, xanh để tìm điểm chết, sọc, loang sáng','Thử HDMI, USB, wifi, Youtube, Bluetooth, loa, các nút trên tivi và remote','Tem model sau tivi trùng với tin; số inch đúng như quảng cáo','Đủ chân đế, ốc, dây nguồn; không có vết rơi, nứt khung'],
+  pay:['Chốt cách vận chuyển trước khi trả tiền (ai chịu phí, bọc chống sốc)','Ưng mới trả tiền, không chuyển trước']}},
+/* --- Âm thanh --- */
+{id:'audio',label:'Âm thanh',icon:'🔊',cn:/am thanh|hi-?end|amply|(?<![a-z])loa(?![a-z])|karaoke/,
+ w:/(?<![a-z])(?:loa|amply|ampli|amplifier|receiver|dau (?:cd|md|dvd|dia|bang|may nghe|minidisc)|minidisc|subwoofer|sub woofer|micro|mic|mixer|vang so|dac|tai nghe|headphone|earbud|airpods|soundbar|cassette|dan karaoke|dan am thanh|loa keo|bluetooth speaker|jbl|bose|marshall|harman|sennheiser|denon|marantz|pioneer|technics|onkyo|kenwood|yamaha ns|klipsch)(?![a-z])/,
+ fields:[{k:'pw',label:'Công suất',re:/(\d{2,4})\s*(?:w|watt)(?![a-z])/,fmt:v=>v+' W'},{k:'volt',label:'Điện áp',re:/(?<![0-9])(100|110|115|120|220|230|240)\s*v(?![a-z])/,fmt:v=>v+' V',need:true,when:/amply|ampli|dau |receiver|denon|marantz|pioneer|technics|onkyo|kenwood|cassette|minidisc/,ask:'Máy dùng điện áp bao nhiêu (hàng nội địa Nhật 100V cần biến áp)? Cho em xin ảnh tem mặt sau.'}],
+ pro:[GUARANTEE,BOX,[/(?:co|kem|con|day du) (?:remote|dieu khien)/,'Có remote'],[/(?:da|moi) test|test ok|chay (?:on|tot|em)|nghe (?:tot|hay|em)|nguyen zin|zin/,'Người bán nói đã thử, chạy tốt'],[/(?:kem|co) (?:day|cap) (?:nguon|tin hieu)|(?:kem|co) day/,'Kèm dây nguồn / dây tín hiệu']],
+ con:[[/(?:chua|chua duoc|khong|ko|bao) test|chua nghe thu|ban xac|ban linh kien|hu|hong (?:loa|mach|nguon|tieng|micro)|mat tieng|chay re|re re|chap chon/,'Máy chưa test hoặc có lỗi (rè, mất tiếng, chập chờn)'],FAKE_CON],
+ risk:[[/rach (?:mang )?loa|thung (?:mang )?loa|thoi (?:mang|vien)|mang loa (?:bi|cu)|cham mach|thay (?:linh kien|tu|ic|mach|laser|dau doc)|sua chua|da sua|loi (?:laser|dau doc|doc dia)|khong doc dia/,'Có dấu hiệu rách màng loa / sửa chữa / lỗi đầu đọc'],[/(?<![0-9])(?:100|110|115|120)\s*v(?![a-z])/,'Điện áp 100–120V: cần biến áp mới dùng được ở Việt Nam']],
+ ask:['Máy đã test nghe thử chưa, có rè, mất tiếng một bên hoặc chập chờn không?','Có đủ remote, dây nguồn, dây tín hiệu không? Có tháo mở sửa chữa bao giờ chưa?','Cho em xin video máy đang chạy / đang phát nhạc.'],
+ docs:'Điểm cộng',photo:'video máy đang chạy hoặc phát nhạc, và ảnh tem điện áp mặt sau',meetNote:' (em xin nghe thử bằng nguồn nhạc của em)',
+ check:{before:['Hỏi trước: đã test chưa, điện áp bao nhiêu, đủ remote và dây không','Mang theo nguồn nhạc (điện thoại, đĩa) và dây tín hiệu để thử'],
+  inspect:['Cắm điện, bật thử, nghe ở nhiều mức âm lượng và nhiều thể loại: không rè, không mất tiếng một bên, không ù','Loa: nhìn màng loa (rách, móp, mục), gõ nhẹ xem tiếng đục; thử cả hai loa, nghe kỹ bass và treble','Đầu đĩa/băng: thử khay đĩa trượt êm, đọc đĩa nhanh, màn hình hiển thị đủ điểm sáng; amply: xoay hết núm âm lượng/tone, không lỗi lẹt xẹt','Kiểm tra tem điện áp (100V/110V cần biến áp), jack cắm, cổng kết nối; đủ remote và dây','AirPods/tai nghe: tra số serial trên trang hãng; thử pin hai bên, đo độ ồn, kết nối ổn định'],
+  pay:['Chạy thử đủ lâu (10–15 phút) xem máy có nóng bất thường hoặc có mùi khét không','Hỏi thời gian đổi trả hoặc bảo hành vài ngày nếu có']}},
+/* --- Phụ kiện điện thoại, máy tính --- */
+{id:'accessory',label:'Phụ kiện',icon:'🔌',cn:/phu kien (?:dien thoai|may tinh)/,
+ w:/(?<![a-z])(?:op lung|op iphone|kinh cuong luc|cap sac|cu sac|sac nhanh|sac du phong|pin du phong|day sac|cap type ?c|adapter|gia do dien thoai|gay selfie|cap lightning)(?![a-z])/,
+ fields:[],pro:[OFFICIAL,GUARANTEE,BOX,[/ma qr|mfi|check (?:code|ma)/,'Có mã kiểm tra chính hãng']],con:[FAKE_CON],
+ risk:[[/khong (?:ro )?chinh hang|hang tq|loai 2|hang nhai|khong ro nguon goc/,'Nguồn gốc không rõ hoặc hàng thay thế']],
+ ask:['Hàng chính hãng hay hàng thay thế? Có hộp, tem, mã QR kiểm tra không?','Tương thích với đời máy nào, công suất sạc bao nhiêu?'],
+ docs:'Điểm cộng',photo:'ảnh hộp, tem, mã QR và ảnh chụp cận sản phẩm',meetNote:' (em xin thử với máy của em)',
+ check:{before:['Hỏi trước: chính hãng hay thay thế, tương thích máy của bạn không'],
+  inspect:['Sạc/cáp: thử với máy của bạn, kiểm tra có nóng bất thường, có báo "phụ kiện không được hỗ trợ" không','Pin dự phòng: đối chiếu dung lượng ghi trên nhãn, thử sạc một máy; sạc và pin lạ có nguy cơ cháy nổ','Hàng chính hãng: so tem, mã QR, chất lượng hoàn thiện với trang hãng'],pay:['Đừng mua sạc, pin không rõ nguồn gốc dù giá rẻ']}},
+/* --- Máy tính, laptop, linh kiện --- */
+{id:'computer',label:'Máy tính / laptop',icon:'💻',cn:/laptop|may tinh(?! bang)|linh kien|man hinh|pc/,
+ w:/(?<![a-z])(?:laptop|macbook|may tinh|pc (?:gaming|van phong|game)|case (?:may|pc)|man hinh|monitor|vga|card (?:man hinh|do hoa)|rtx ?\d|gtx ?\d|ram (?:ddr|\d)|ddr[345]|ssd|hdd|o cung|mainboard|cpu|core i[3579]|ryzen|thinkpad|dell (?:latitude|xps|inspiron|precision)|hp (?:elitebook|probook|pavilion|envy)|asus (?:tuf|rog|vivobook|zenbook)|lenovo|surface|chuot|ban phim|may in|router|wifi|modem|camera (?:wifi|an ninh))(?![a-z])/,
+ fields:[{k:'cpu',label:'Bộ xử lý',re:/(core ?(?:i[3579]|ultra ?[579])[ -]?\d{4,5}[a-z]{0,2}|ryzen ?[3579] ?\d{4}[a-z]{0,2}|apple m[1-4](?: pro| max| ultra)?|celeron|pentium)/,to:m=>m[1].toUpperCase()},
+  {k:'ram',label:'RAM',re:/(?<![0-9])(4|8|12|16|24|32|64|128)\s*gb\s*(?:ram|ddr)|ram\s*(4|8|12|16|24|32|64|128)\s*gb?(?![a-z])/,to:m=>(m[1]||m[2])+' GB'},
+  {k:'ssd',label:'Ổ cứng',re:/(?:ssd|nvme|o cung|hdd)\s*(\d{2,4})\s*(gb|tb)|(\d{3,4})\s*(gb|tb)\s*(?:ssd|nvme|hdd)/,to:m=>(m[1]||m[3])+' '+(m[2]||m[4]).toUpperCase()},
+  {k:'vga',label:'Card đồ họa',re:/((?:rtx|gtx|rx) ?\d{3,4}(?: ?(?:ti|super|xt))?)/,to:m=>m[1].toUpperCase()},
+  {k:'cycle',label:'Chu kỳ sạc (MacBook)',re:/(?:cycle|chu ky sac|so lan sac)\s*(?:count|:)?\s*(\d{1,4})|(\d{1,4})\s*(?:cycle|cycles|lan sac)/,to:m=>m[1]||m[2],fmt:v=>v+' lần',need:true,when:/macbook/,ask:'MacBook sạc bao nhiêu chu kỳ (cycle count)? Cho em xin ảnh chụp Giới thiệu về máy mac, mục Nguồn điện.'},
+  {k:'bat',label:'Thời lượng pin',re:/pin\s*(?:con|dung|duoc|khoang)?\s*(\d{1,2})\s*(?:tieng|h|gio)/,to:m=>m[1],fmt:v=>v+' giờ'}],
+ pro:[GUARANTEE,BOX,BILL,[/(?:ssd|ram) (?:moi nang|moi thay|nang cap)|nang cap (?:ssd|ram)/,'Đã nâng cấp RAM / SSD'],[/pin (?:tot|moi|zin|thay moi)|pin (?:con )?(?:[89]\d)\s*%/,'Pin còn tốt'],[/man (?:zin|dong deu)|khong (?:soc|loi|diem chet)/,'Màn hình sạch']],
+ con:[[/(?:khoa|dinh|bi) (?:icloud|mdm|mat khau bios|password bios|bios)|icloud (?:khoa|lock)|mdm|activation lock|khoa bios|ban (?:xac|linh kien|lk)|xac may|chua (?:len|boot) (?:duoc|nguon)|khong (?:len nguon|khoi dong|vao duoc)/,'Máy bị khóa iCloud / MDM / BIOS hoặc không lên nguồn'],FAKE_CON,[/(?:vga|card)[^.]{0,20}(?:dao|mining|coin)|(?:dao|mining) (?:coin|eth|btc)|(?:chay|dao) (?:rig|coin)/,'Card đồ họa từng dùng đào coin (xuống cấp nhanh)']],
+ danger:[DEP_DANGER],
+ risk:[[/hong (?:ban le|man|pin|ban phim|loa|webcam|wifi)|vo (?:may|man|vien)|mop|mep|bi (?:tray|xuoc|rach)|soc man|diem chet|loang|ngam nuoc|vo nuoc|am nuoc|thay (?:main|mainboard|man|pin|ban phim)|da sua|sua chua|bo main|quat (?:keu|on)|nong may|tu tat|treo/,'Có dấu hiệu lỗi, vỡ, ngấm nước hoặc đã sửa chữa'],[/pin (?:chai|yeu|hu|phong|kem|can thay)|chai pin|pin (?:duoc )?(?:1|2)\s*(?:tieng|h)/,'Pin chai hoặc yếu'],[/(?:chua|khong) (?:co )?(?:sac|adapter)|thieu sac/,'Thiếu sạc']],
+ ask:['Máy có bị khóa iCloud / mật khẩu BIOS / MDM không?','Pin còn dùng được bao lâu, màn hình có điểm chết, bản lề có lỏng không?','Máy đã từng sửa chữa, thay linh kiện hoặc vào nước chưa?','Cấu hình đầy đủ: CPU, RAM, ổ cứng, card đồ họa? Có kèm sạc, chuột, túi không?'],
+ docs:'Điểm cộng',photo:'ảnh cấu hình máy (Giới thiệu về máy / Task Manager), ảnh màn hình đang bật và tem dưới đáy máy',meetNote:' (em xin chạy thử vài phần mềm và kiểm tra cấu hình tại chỗ)',
+ check:{before:['Hỏi trước: cấu hình cụ thể, pin, bảo hành, đã khóa mật khẩu nào chưa','Mang theo USB hoặc phần mềm đo cấu hình/pin, và sạc của bạn nếu cùng loại'],
+  inspect:['Bật máy, vào thông tin hệ thống đối chiếu CPU, RAM, ổ cứng, card đồ họa đúng như tin (máy lạ có thể ghi sai cấu hình)','Pin: đo sức khỏe pin (MacBook xem cycle count; Windows chạy lệnh powercfg /batteryreport); sạc đủ, rút sạc thử vài phút','Màn hình: bật toàn trắng, đen, đỏ, xanh để tìm điểm chết, loang sáng, sọc; thử cảm ứng nếu có','Thử bàn phím từng phím, touchpad, loa, micro, webcam, cổng USB / HDMI / sạc, wifi, bluetooth','Mở bản lề nhiều lần: không kêu răng rắc, không lỏng, không nứt vỏ quanh bản lề','Chạy một việc nặng 10 phút: máy không đơ, quạt không ồn bất thường, không nóng bỏng; kiểm tra ổ cứng bằng CrystalDiskInfo','MacBook/iPad: yêu cầu đăng xuất iCloud và tắt Tìm máy của tôi trước mặt bạn; Windows: kiểm tra có tài khoản công ty, MDM không'],
+  pay:['Máy đã xóa sạch tài khoản cá nhân mới thanh toán','Lấy sạc đúng hãng, hộp, hóa đơn nếu có; hỏi đổi trả vài ngày']}},
+/* --- Đồ gia dụng, đồ điện --- */
+{id:'appliance',label:'Đồ gia dụng',icon:'🧊',cn:/gia dung|tu lanh|may giat|dieu hoa|may lanh|quat|bep|do dien gia dinh|do dung (?:nha bep|gia dinh)|lo (?:vi song|nuong)/,
+ w:/(?<![a-z])(?:tu lanh|tu dong|may giat|may say|dieu hoa|may lanh|may nuoc nong|binh nong lanh|binh nuoc nong|may loc nuoc|may loc khong khi|may hut bui|robot hut bui|quat|bep (?:tu|tu hong ngoai|gas|ga)|lo (?:vi song|nuong)|noi (?:chien|com|ap suat|lau)|may xay|may ep|may pha ca phe|ma nuong|may rua bat|may hut mui|tu (?:mat|bao quan|ruou)|may in nuoc|may lam kem|may lam sua|lo vi song|am (?:dun|sieu toc)|panasonic|daikin|toshiba|aqua|electrolux|lg inverter|samsung inverter|sharp|hitachi|midea|sunhouse|kangaroo|philips|xiaomi robot)(?![a-z])/,
+ fields:[{k:'cap',label:'Dung tích / công suất',re:/(\d{2,4})\s*(?:lit|l)(?![a-z])|(\d(?:[.,]\d)?)\s*(?:hp|ngua)(?![a-z])|(\d{3,5})\s*(?:btu)(?![a-z])|(\d{1,2}(?:[.,]\d)?)\s*kg(?![a-z])|(\d{3,4})\s*w(?![a-z])/,to:m=>m[1]?m[1]+' lít':m[2]?m[2]+' HP':m[3]?m[3]+' BTU':m[4]?m[4]+' kg':m[5]+' W'},
+  {k:'inv',label:'Công nghệ tiết kiệm điện',re:/(inverter|non[- ]?inverter|khong inverter)/,to:m=>/non|khong/.test(m[1])?'Không inverter':'Inverter'},
+  {k:'yr',label:'Đời máy',re:/(?:doi|sx|san xuat|mua nam|mua tu)\s*(20[012]\d)/,to:m=>m[1]}],
+ pro:[GUARANTEE,BOX,BILL,[/(?:con|moi) (?:bao hanh)|bao hanh (?:hang|chinh hang|\d+\s*(?:thang|nam))/,'Còn bảo hành hãng'],[/it dung|chua dung nhieu|dung it|moi dung \d+\s*(?:thang|lan)|moi (?:99|98)%|(?:99|98)%|nhu moi|like new/,'Ít dùng, còn mới'],[/(?:da )?(?:ve sinh|bao tri|nap gas)|test ky|chay (?:em|tot|on)|chay ngon/,'Đã vệ sinh / chạy tốt']],
+ con:[[/(?:chua|khong|ko) (?:test|thu)|ban (?:xac|linh kien|lk)|hu (?:may|lanh|bo mach|bo)|(?:khong|ko|het) lanh|khong (?:chay|len nguon|vat|xa nuoc)|hong (?:may|nen|lock|main|board|dong co)|lock (?:hu|hong|chet)|chay nuoc|ro gas|het gas|do nen/,'Máy chưa test, hỏng hoặc không hoạt động bình thường'],FAKE_CON],
+ danger:[DEP_DANGER],
+ risk:[[/rung (?:manh|lac)|keu (?:on|to|ro|ro ro|lach cach)|on (?:ao|to)|dong (?:tuyet|da)|chay nuoc|ri sat|ten gi|nut vo|bong tróc|troc son|mop|sua (?:chua|may)|da sua|thay (?:bo|main|board|lock|dong co|may nen|block)|nhap khau xach tay/,'Có dấu hiệu lỗi, rỉ sét hoặc đã sửa chữa'],[/hang (?:noi dia )?(?:nhat|han|my|duc)|doi cu|may cu|hang cu/,'Hàng cũ / hàng nội địa nước ngoài: cần hỏi điện áp, phụ tùng'],[/(?<![0-9])(?:100|110|115|120)\s*v(?![a-z])/,'Điện áp 100–120V: cần biến áp mới dùng được ở Việt Nam']],
+ ask:['Máy dùng được bao lâu, còn bảo hành hãng không? Có hóa đơn mua không?','Máy chạy êm không, có rung, ồn, rò nước hoặc rò gas không? Đã sửa chữa lần nào chưa?','Điện áp 220V không, đời máy năm nào, còn đủ phụ kiện và sách hướng dẫn không?','Chi phí vận chuyển, tháo lắp ai chịu? (điều hòa, máy giặt, tủ lạnh lớn cần thợ)'],
+ docs:'Điểm cộng',photo:'video máy đang chạy và ảnh tem nhãn model / công suất',meetNote:' (em xin bật chạy thử trước khi nhận)',
+ check:{before:['Hỏi trước: bảo hành, đời máy, điện áp, chi phí vận chuyển và tháo lắp','Hàng lớn (tủ lạnh, máy giặt, điều hòa): hỏi kích thước cửa ra vào và đường vận chuyển'],
+  inspect:['Cắm điện, bật chạy thử đủ 10–15 phút: tủ lạnh/điều hòa xuống lạnh, máy giặt giặt và vắt đủ chu trình, bếp từ đun sôi nước','Nghe tiếng máy: không rung mạnh, không kêu lạch cạch hoặc quá ồn; ngửi mùi khét hoặc gas','Kiểm tra tem nhãn: model, công suất, điện áp 220V khớp với tin; tra số serial trên trang hãng nếu cần','Tủ lạnh: ngăn đá có đóng tuyết dày không, gioăng cửa kín không, đèn sáng, ngăn kệ đủ; máy giặt: không rò nước, khay xả sạch','Điều hòa: dàn nóng/lạnh sạch, ống đồng không móp, điều khiển đủ, gas đủ, nên có thợ tháo lắp xem cùng','Nồi, máy xay, nồi chiên: lớp chống dính không bong, dây điện không nứt, nắp đậy kín','Vỏ máy không rỉ nặng, móp méo lớn; phụ kiện kèm theo đầy đủ'],
+  pay:['Máy chạy tốt mới trả tiền; hỏi bảo hành hoặc đổi trả vài ngày với đồ lớn','Chốt người vận chuyển, giá tháo lắp trước khi chuyển tiền']}},
+/* --- Nội thất --- */
+{id:'furniture',label:'Nội thất',icon:'🛋️',cn:/noi that|giuong|nem (?:cao su|lo xo|foam|memory|ep|bong)|dem (?:cao su|lo xo|foam|memory|ep)|tu quan ao|ban ghe|sofa|bo ban|tu bep|do trang tri/,
+ w:/(?<![a-z])(?:sofa|ghe (?:sofa|massage|an|van phong|gaming|thu gian|xoay)|ban (?:an|lam viec|hoc|console|tru)|giuong|tu (?:quan ao|bep|ke|go|tivi|sach|ly)|ke (?:sach|tivi|go)|ban tho|tu thuoc|sap thu|rem cua|den (?:ngu|trang tri|chum|hat)|guong (?:soi|trang diem)|bo ban ghe|chan ga|ghe massage|bo sofa|tranh (?:treo|son dau|dong ho)|hoa lua|ke de)(?![a-z])/,
+ fields:[{k:'size',label:'Kích thước',re:/(?<![0-9])(\d{2,3}(?:[.,]\d)?)\s*(?:x|\*)\s*(\d{2,3}(?:[.,]\d)?)(?:\s*(?:x|\*)\s*(\d{2,3}(?:[.,]\d)?))?\s*(?:cm|m)?(?![0-9])/,to:m=>m[1]+' × '+m[2]+(m[3]?' × '+m[3]:'')},
+  {k:'mat',label:'Chất liệu',re:/(go (?:tu nhien|oc cho|soi|lim|gu|huong|xoan dao|thong|cao su|mit|sua|me tay|cam)|go cong nghiep|mdf|mfc|hdf|plywood|da (?:that|cong nghiep|pu)|ni|vai (?:boc|nhung|linen)|inox|nhom|kinh cuong luc|nhua|song may|tre|nem (?:cao su|lo xo|bong|foam|memory))/,to:m=>cap1(m[1])}],
+ pro:[GUARANTEE,BILL,[/go (?:tu nhien|that|nguyen khoi|lim|gu|huong|oc cho|soi)|nguyen khoi/,'Gỗ tự nhiên'],[/(?:con|moi) (?:99|98|95)%|moi (?:mua|dung)|it dung|nhu moi|like new|nguyen zin/,'Ít dùng, còn mới'],[/co (?:the )?(?:thao|lap)|thao lap duoc|ho tro ship|giao tan noi/,'Có hỗ trợ tháo lắp / giao hàng']],
+ con:[[/(?:moi|mot) (?:mat|nat|moc)|mot (?:xuyen|nat)|gay (?:chan|khung)|bi (?:cong vênh|cong venh|nut|gay)/,'Gỗ bị mối mọt hoặc nứt gãy kết cấu'],FAKE_CON],
+ danger:[DEP_DANGER],
+ risk:[[/tray|xuoc|tro(?:c)? (?:son|da|vecni)|bong da|rach|mop|nat|vet (?:bam|ban|o)|co (?:vet|mui)|bi (?:cu|ban|mo)|mui (?:am|hoi|moc)|sat thang|ron cap/,'Có vết trầy xước, rách, bẩn hoặc mùi ẩm'],[/go (?:cong nghiep|ep|mdf)|mdf|mfc|hdf|gia go/,'Gỗ công nghiệp: dễ phồng khi gặp nước, nên hỏi kỹ'],[/nem (?:cu|da dung|su dung)|nem da dung/,'Nệm đã dùng: nên kiểm tra vệ sinh, mối bọ']],
+ ask:['Chất liệu thật sự là gì (gỗ tự nhiên hay công nghiệp)? Kích thước chính xác bao nhiêu?','Đồ có bị mối mọt, nứt, trầy xước hoặc có mùi ẩm không? Cho em xin ảnh cận cảnh các góc.','Tháo lắp và vận chuyển ai chịu phí? Có tự tháo được không?'],
+ docs:'Điểm cộng',photo:'ảnh nhiều góc, ảnh cận cảnh chân, mặt đáy, và ảnh có đặt cạnh vật chuẩn (người, hộp) để thấy kích thước',meetNote:' (em xin đo lại kích thước tại chỗ)',
+ check:{before:['Đo lại không gian đặt nội thất và cửa, cầu thang để chắc đồ vào được','Hỏi trước: chất liệu, kích thước, ai tháo lắp và vận chuyển'],
+  inspect:['Dùng thước dây đo lại kích thước thực tế, đối chiếu tin','Gỗ: gõ nhẹ nghe tiếng đặc/ rỗng, nhìn lỗ nhỏ, mùn gỗ (mối mọt), vết nấm mốc, cạnh bị phồng do nước','Ngồi thử, nằm thử, đóng mở ngăn kéo/cánh tủ, kiểm tra bản lề, ray trượt, ốc vít chắc chắn','Sofa/nệm: nhấc xem khung bên trong, ngửi mùi ẩm mốc; nệm cũ nên kiểm tra mối bọ, vết ố; da/vải không rách, bong','Kiểm tra màu sắc dưới ánh sáng ngày, vết trầy xước so với ảnh'],
+  pay:['Chốt người tháo lắp, vận chuyển, giá cước trước khi trả tiền','Ưng mới thanh toán, không chuyển trước']}},
+/* --- Thời trang, đồng hồ, túi, giày --- */
+{id:'fashion',label:'Thời trang / đồng hồ',icon:'👗',cn:/thoi trang|quan ao|giay dep|dong ho|tui xach|nuoc hoa|my pham|trang suc|vi da|balo|kinh mat|do dung ca nhan|phu kien thoi trang/,
+ w:/(?<![a-z])(?:ao (?:thun|so mi|khoac|polo|len|dai|vest|phong)|quan (?:jean|tay|short|kaki|au|legging|dai|boi)|giay (?:the thao|da|tay|sneaker|cao got|bata|nike|adidas|jordan)|sandal|sneaker|tui (?:xach|deo|da|hieu)|balo|vi (?:da|nu|cam tay)|that lung|dong ho|nuoc hoa|kinh (?:mat|can)|trang suc|nhan (?:vang|bac|kim cuong)|day chuyen|vong tay|lac tay|hoa tai|gucci|louis vuitton|lv|chanel|hermes|dior|prada|burberry|balenciaga|rolex|omega|cartier|casio|g-?shock|seiko|citizen|orient|tissot|fossil|daniel wellington|apple watch|garmin|nike|adidas|jordan|converse|vans|uniqlo|zara|son moi|kem (?:duong|chong nang)|serum|my pham)(?![a-z])/,
+ fields:[{k:'size',label:'Size',re:/(?:size|sz|co)\s*[:=]?\s*(xxs|xs|s|m|l|xl|xxl|xxxl|2xl|3xl|\d{2}(?:[.,]5)?)(?![a-z0-9])/,to:m=>m[1].toUpperCase(),need:true,when:/(?<![a-z])(?:ao|quan|sneaker|that lung)(?![a-z])/,ask:'Size bao nhiêu, có số đo cụ thể (dài, rộng, vòng ngực / vòng eo / chiều dài chân) không?'},
+  {k:'mat',label:'Chất liệu',re:/(cotton|kaki|jean|denim|len|lua|da (?:that|cong nghiep|pu|bo that)|nhung|ni|linen|polyester|canvas|thun|dui|voan|ren)/,to:m=>cap1(m[1])},
+  {k:'brand',label:'Thương hiệu',re:/(gucci|louis vuitton|(?<![a-z])lv(?![a-z])|chanel|hermes|dior|prada|burberry|balenciaga|rolex|omega|cartier|patek|audemars|tissot|casio|g-?shock|seiko|citizen|orient|fossil|nike|adidas|jordan|converse|vans|uniqlo|zara|coach|michael kors|mk|fendi|versace|givenchy|ysl|saint laurent|celine|bvlgari|tag heuer|longines|apple watch|garmin)/,to:m=>cap1(m[1])}],
+ pro:[OFFICIAL,BILL,BOX,[/(?:co|con|kem) (?:tag|the|tem|card|giay chung nhan|certificate|serial|ma so)|full ?set|fullbox|fullset|da check (?:auth|legit)|legit check|check (?:legit|auth)/,'Còn tem / tag / giấy chứng nhận'],[/(?:moi|mac) \d+\s*lan|moi (?:99|98|95)%|moi 100%|new 100%|chua (?:mac|dung|qua su dung)|nguyen tem|new tag|nwt/,'Còn mới, ít mặc / chưa dùng'],[/(?:co |nhan )?doi tra|nhan (?:bao hanh|doi tra)|bao hanh (?:hang|chinh hang|\d+\s*(?:thang|nam))/,'Có đổi trả / bảo hành']],
+ con:[FAKE_CON,[/(?:hang|loai) (?:xach tay|order|quang chau|tq|trung quoc)|auth (?:chua|khong)|khong (?:chinh hang|bill|hoa don|co tem)|tem nhan (?:da )?(?:cat|mat)|cat tem/,'Hàng không rõ nguồn gốc / không có hóa đơn, tem']],
+ danger:[DEP_DANGER],
+ risk:[[/rach|tray|xuoc|bong tróc|troc|phai mau|bac mau|co vet|vet (?:ban|o|nuoc)|co mui|mui (?:am|hoi|khoi)|lem|bi (?:ho|rut|xuoc|han)|co (?:van|dom)|mat hop|mat tem|mat day chuyen|mat dai/,'Có vết rách, trầy, phai màu hoặc mùi lạ'],[/(?:da|cu) (?:su dung|deo|dung)\s+(?:nhieu|lau)|hang cu|2hand|second ?hand|si tuyen|hang thanh ly|dong ho chua (?:chay|co hop)|may (?:khong|chua) chay|de (?:lau|nghi)/,'Hàng cũ hoặc hàng si tuyển: nên xem kỹ chất lượng'],[/rep|1:1|like auth|sf|super fake/,'Từ dùng của hàng nhái']],
+ ask:['Hàng chính hãng hay hàng nhái / rep? Có hóa đơn, tem, thẻ bảo hành hoặc mã kiểm tra không?','Size và số đo cụ thể (chiều dài, rộng, vòng eo / ngực)? Còn đủ hộp, túi, thẻ không?','Hàng đã qua sử dụng bao lâu, có vết rách, bẩn, phai màu hay mùi lạ không?','Đồng hồ: máy cơ hay pin, chạy chính xác không, có tháo mở thay dây hay thay kính chưa?'],
+ docs:'Điểm cộng',photo:'ảnh tem / tag / serial, ảnh cận cảnh chất liệu và vết sờn, ảnh đo size trải phẳng',meetNote:' (em xin thử đồ / đeo thử tại chỗ)',
+ check:{before:['Hỏi trước: chính hãng hay không, có hóa đơn / tem / mã kiểm tra không','Đo size bản thân, mang theo thước dây để đối chiếu số đo'],
+  inspect:['Đối chiếu tem, mã số, chữ khắc, đường may, logo với ảnh trên trang hãng; hàng nhái thường may xấu, logo lệch, mùi hóa chất nồng','Quần áo / giày: mặc thử hoặc đo size thực tế; xem nách, cổ, gót giày có bẩn, sờn, mòn đế không','Túi / ví: kiểm tra khóa kéo, quai, lớp lót bên trong, mùi da, serial / date code; nếu hàng hiệu nên nhờ shop kiểm định chuyên nghiệp','Đồng hồ: đeo thử, lên dây (máy cơ) hoặc kiểm tra pin; đối chiếu số trên vỏ, thử nước nếu cần, xem kính có xước, mặt số có bụi hơi nước không','Nước hoa / mỹ phẩm: xem hạn sử dụng, nắp seal, mã vạch, mùi nước hoa đúng nhóm hương','Trang sức: xin hóa đơn / giấy kiểm định, mang đến tiệm kim hoàn uy tín xem tuổi vàng, đá trước khi trả tiền'],
+  pay:['Hàng hiệu giá thấp bất thường rất có thể là hàng giả: không chuyển tiền trước','Hỏi chính sách đổi trả nếu không vừa size hoặc không đúng mô tả']}},
+/* --- Mẹ và bé --- */
+{id:'baby',label:'Mẹ và bé',icon:'🍼',cn:/me va be|tre em|do tre em|do choi|em be|do so sinh|xe day tre/,
+ w:/(?<![a-z])(?:xe (?:day|noi|tap di)|noi (?:em be|dien|rung)|ghe (?:an|an dam|oto|o to|ngoi o to)|giuong (?:cui|tre em|noi)|bim|ta (?:giay|quan|dan)|sua (?:bot|tuoi|cong thuc|mẹ|me)|binh sua|may hut sua|may tiet trung|may hap sua|quan ao (?:tre em|so sinh|be)|do so sinh|do choi|lego|xep hinh|bup be|thu nhoi bong|tham xop|bé (?:trai|gai)|tre so sinh|em be|me va be|aptamil|friso|similac|meiji|morinaga|abbott|pigeon|avent|chicco|joie|combi|graco)(?![a-z])/,
+ fields:[{k:'age',label:'Độ tuổi phù hợp',re:/(?:cho|tu|danh cho|be)\s*(\d{1,2}(?:\s*-\s*\d{1,2})?)\s*(thang|tuoi)/,to:m=>m[1]+' '+m[2].replace('thang','tháng').replace('tuoi','tuổi')},
+  {k:'hsd',label:'Hạn sử dụng',re:/(?:hsd|han su dung|date|exp(?:iry)?)\s*[:\-]?\s*((?:\d{1,2}[\/.\-]){1,2}\d{2,4}|thang \d{1,2}[\/.\-]\d{2,4})/,to:m=>m[1],need:true,when:/sua|bim|ta |thuc pham|an dam|vitamin|cháo|chao|nan |friso|similac|aptamil|meiji|morinaga|abbott/,ask:'Hạn sử dụng còn đến khi nào? Cho em xin ảnh chụp ngày sản xuất / hạn dùng và mã vạch.'}],
+ pro:[OFFICIAL,GUARANTEE,BOX,BILL,[/(?:moi|con) (?:99|98|95)%|it dung|moi (?:mua|dung \d)|nhu moi|like new|ve sinh|giat sach/,'Ít dùng, đã vệ sinh'],[/co (?:tem|chung nhan|ce|astm|ece)|tieu chuan (?:an toan|chau au|my|ece)/,'Có tem / chứng nhận an toàn']],
+ con:[[/het han|can date|date can|con (?:\d+)\s*(?:thang|ngay|tuan)\s*(?:het|date)|han (?:\d+)\s*(?:thang|ngay)|hsd (?:ngan|can)/,'Hàng sắp hết hạn hoặc hết hạn (đồ ăn / sữa / bỉm cho bé)'],FAKE_CON],
+ danger:[DEP_DANGER,[/sua (?:xach tay|khong tem|khong nhan)|khong (?:tem|nhan) (?:phu|goc)|khong ro nguon goc|sua (?:tron|chia|lẻ|le)/,'Sữa không tem nhãn phụ / không rõ nguồn gốc: nguy hiểm cho bé']],
+ risk:[[/tung (?:ngã|nga|tai nan|va cham|bi (?:roi|dam))|ghe oto (?:da|tung)|hu (?:phanh|khung)|keu|ket banh|lung lay|nut|gay|co (?:vet|mui)|mui (?:am|hoi|moc|khoi|chua)|ngai|mop|rach|bong|troc|ri sat|hu hong/,'Có dấu hiệu từng va chạm, hư hỏng hoặc mùi ẩm'],[/da qua su dung|hang cu|2nd|2hand/,'Hàng cũ: cần kiểm tra vệ sinh và độ an toàn']],
+ ask:['Đồ chơi / xe / ghế đã dùng bao lâu, có từng va chạm hay hỏng hóc không?','Có đầy đủ phụ kiện, dây an toàn, tem chứng nhận an toàn không?','Sữa, đồ ăn: hạn sử dụng còn bao lâu, có tem phụ tiếng Việt không?'],
+ docs:'Điểm cộng',photo:'ảnh tem an toàn, ảnh hạn sử dụng (nếu là đồ ăn), ảnh cận cảnh các mối nối và dây an toàn',meetNote:' (em xin kiểm tra kỹ độ an toàn tại chỗ)',
+ check:{before:['Hỏi trước: tuổi bé, độ cũ, tem an toàn, hạn sử dụng (nếu là sữa, bỉm, thực phẩm)'],
+  inspect:['Sữa, bỉm, thực phẩm: kiểm tra hạn sử dụng, nắp seal còn nguyên, tem phụ tiếng Việt, mã vạch hợp lệ','Xe đẩy / nôi / ghế ngồi ô tô: kiểm tra khóa gập, phanh, dây an toàn, bánh xe; ghế ô tô từng va chạm thì không dùng lại','Đồ chơi: không có mảnh nhỏ bong dễ nuốt, cạnh nhọn, mùi hóa chất nồng; pin và ốc chắc chắn','Đồ cũ: vệ sinh, giặt sạch, tiệt trùng trước khi cho bé dùng; kiểm tra mùi ẩm mốc, vết nấm'],
+  pay:['Với sữa bột và thực phẩm bé: chỉ mua nơi uy tín; không mua hàng không tem phụ, không hạn rõ','Ưng mới thanh toán']}},
+/* --- Thú cưng --- */
+{id:'pet',label:'Thú cưng',icon:'🐶',cn:/thu cung|vat nuoi|ca canh|(?:^|, ?)(?:cho|meo|chim|ga|vit)(?! thue)(?: |,|$)/,
+ w:/(?<![a-z])(?:cho (?:con|phoc|corgi|poodle|alaska|husky|golden|becgie|pug|chihuahua|ta|vang|mini|pitbull|bully|labrador|samoyed|shiba|pomeranian|phu quoc|co)|meo (?:con|anh long|munchkin|ba tu|xiem|ta|bengal|scottish|tai cup|tai cup)|thu cung|cho con|meo con|chim (?:canh|yen|cut|khuyen|chao mao|sao|ca)|ca (?:canh|koi|rong|betta|vang|la han|neon|ngua van)|ho thuy sinh|ho ca|chuot (?:hamster|lang)|hamster|bo sat|nhim|thuc an (?:cho|meo|hat)|long chim|chuong (?:cho|meo|chim)|giong)(?![a-z])/,
+ fields:[{k:'age',label:'Tuổi',re:/(\d{1,2})\s*(thang|tuan|nam)\s*(?:tuoi)?(?![a-z])/,to:m=>m[1]+' '+m[2].replace('thang','tháng').replace('tuan','tuần').replace('nam','năm')},
+  {k:'sex',label:'Giới tính',re:/(?<![a-z])(duc|cai|boy|girl|dực)(?![a-z])/,to:m=>/duc|boy/.test(m[1])?'Đực':'Cái'},
+  {k:'vac',label:'Tiêm phòng',re:/(da tiem|tiem (?:du|mui|ngua|phong|vaccine)|vac(?:c)?ine|chung ngua|tiem \d\s*(?:mui|lan)|so tiem|so suc khoe)/,to:m=>cap1(m[1]),need:true,ask:'Bé đã tiêm phòng những mũi nào? Cho em xin ảnh sổ tiêm / giấy chứng nhận thú y.'}],
+ pro:[[/da tiem|tiem (?:du|day du|\d\s*mui)|vacc?ine|so tiem|giay (?:to|chung nhan)|thu y|pedigree|giay (?:nguon goc|giong)|bo me (?:thuan|chung nhan)|co chip|tay giun/,'Có sổ tiêm / giấy tờ thú y'],[/bao (?:suc khoe|doi)|doi tra|bao hanh (?:giong|sua)|cam ket (?:giong|suc khoe)|bao benh|bao xin|doi neu benh/,'Có cam kết bảo hành sức khỏe'],[/hoat bat|khoe|an (?:tot|khoe)|nhanh nhen|ngoan/,'Bé khỏe, hoạt bát']],
+ con:[[/ve sinh (?:chua|khong)|benh|(?:dang )?bi (?:benh|care|parvo|vi rut)|cham an|bo an|(?:chua )?(?:tiem|tay)\s*(?:chua|khong)|khong tiem|chua tiem|care|parvo/,'Bé chưa tiêm phòng hoặc có dấu hiệu bệnh'],FAKE_CON],
+ danger:[DEP_DANGER,[/(?:giu|dat) cho|coc (?:truoc|giu|cho)|ship (?:xe|chanh|tinh)|gui (?:xe|chanh|tinh|tinh thanh)|ban nhan (?:tien|chuyen khoan)|khong cho xem/,'Đòi cọc / gửi xe khách mà chưa cho xem thú: rất hay gặp trong lừa đảo thú cưng']],
+ risk:[[/hang (?:nhap|ngoai|ngoai)|nhap khau|thuan (?:chung|chung pedigree)|lai|chua ro (?:giong|nguon)|khong (?:giay|pedigree|giay to)|khong ro (?:bo me|nguon)/,'Giống / nguồn gốc không rõ ràng'],[/dang (?:co thai|mang thai)|ban gap|can ban gap|ban lo|ban re|thanh ly/,'Bán gấp hoặc giá rất thấp bất thường: nên xem trực tiếp']],
+ ask:['Bé bao nhiêu tháng tuổi, đã tiêm phòng những mũi nào? Cho em xin ảnh sổ tiêm.','Bố mẹ của bé có giấy chứng nhận giống không? Có cho xem bố mẹ không?','Bé đã tẩy giun, đã đi vệ sinh bình thường chưa? Có cam kết đổi trả nếu bé bệnh trong vài ngày đầu không?'],
+ used:false,docs:'Điểm cộng',photo:'video bé đang chạy / ăn uống, ảnh sổ tiêm và giấy chứng nhận giống',meetNote:' (em xin xem bé và bố mẹ bé trực tiếp)',
+ check:{before:['Không chuyển tiền cọc khi chưa gặp bé; lừa đảo thú cưng rất phổ biến qua ảnh đẹp','Hỏi trước: tuổi, sổ tiêm, giấy tờ giống, cam kết sức khỏe'],
+  inspect:['Quan sát bé: mắt sáng, mũi ẩm, lông mượt, bụng không chướng, không chảy nước mắt / mũi, đi lại nhanh nhẹn, không ho','Xem bố mẹ hoặc ít nhất ảnh/video thật của bố mẹ bé để đoán kích thước và giống khi lớn','Sổ tiêm: tên bé, ngày tiêm, tên bác sĩ, dấu của phòng khám thú y; kiểm tra bằng điện thoại phòng khám nếu cần','Nên mang theo thùng/lồng chuyên dụng; hẹn khám thú y ngay sau khi nhận bé và thỏa thuận trước việc đổi trả nếu bệnh'],
+  pay:['Chỉ thanh toán khi đã xem bé tận nơi, nhận đủ sổ tiêm và giấy tờ','Viết giấy hoặc nhắn tin cam kết bảo hành sức khỏe nếu có']}},
+/* --- Nhạc cụ, sách, thể thao, giải trí --- */
+{id:'music',label:'Nhạc cụ',icon:'🎸',cn:/nhac cu|guitar|piano|organ/,
+ w:/(?<![a-z])(?:guitar|dan (?:guitar|piano|organ|ukulele|violin|ghi ta|nguyet|bau|tranh|nhi|tyba|tinh)|ukulele|piano|organ|keyboard|trong (?:dien|co|jazz)|violin|sao truc|saxophone|harmonica|synthesizer|pedal|amply (?:guitar|bass)|casio (?:ct|px|lk)|yamaha (?:psr|p-|clp|ydp|f|c)|roland|korg|fender|gibson|ibanez|taylor|martin|epiphone|takamine|ghi ta|cajon|mandolin)(?![a-z])/,
+ fields:[{k:'type',label:'Loại đàn',re:/(acoustic|classic|electric|piano co|piano dien|digital piano|organ|ukulele|violin|cajon|trong dien)/,to:m=>cap1(m[1])},{k:'size',label:'Kích cỡ',re:/(?<![0-9])(3\/4|1\/2|4\/4|1\/4|1\/8|size [1-4])/,to:m=>m[1]}],
+ pro:[GUARANTEE,BOX,[/(?:kem|co|tang) (?:bao|case|tui|capo|day deo|pick|gia|chan|nguon|adapter|pedal|bo suc)/,'Kèm bao đàn, phụ kiện'],[/test|choi (?:tot|ngon|em)|lên dây|len day|tiếng (?:tot|hay)/,'Đã thử, tiếng tốt'],[/go (?:nguyen tam|that|solid|nguyen khoi)|top (?:solid|go that)/,'Mặt gỗ nguyên tấm']],
+ con:[[/(?:nut|gay|toe|vo|bong|hu|cong) (?:can|dan|than|cong|cần|top|nap)|can (?:cong|vong|vênh)|cần (?:vong|cong)|ket phim|hu (?:mach|pickup|piano|nguon)|mot (?:xuyen|nat)|loi (?:nguon|mach)/,'Đàn nứt / cong cần / hỏng mạch'],FAKE_CON],
+ danger:[DEP_DANGER],
+ risk:[[/(?:be|tach|ho) (?:mat|dan)|trong (?:phim|key)|phim (?:keu|ket|liet)|mat tieng|re re|phim (?:khong|ko)|bi (?:xuoc|tray|ho|nut)|o go|ron nut|dao go|rach|can (?:cao|xe)|action cao|cao (?:action|giay)|keu rè|chay re|re/,'Có dấu hiệu nứt, hở, phím kẹt hoặc lỗi âm thanh'],[/hang (?:tq|trung quoc|nhai|loai 2)|dan cu|da choi lau|go ep|go cong nghiep|laminate/,'Đàn cũ hoặc gỗ ép: âm thanh kém hơn gỗ nguyên tấm']],
+ ask:['Đàn có nứt, cong cần, ho mặt hay phím bị kẹt / liệt không?','Đàn đã sửa chữa lần nào chưa? Có kèm bao đàn, phụ kiện, bộ nguồn (piano điện) không?','Cho em xin video chơi thử một đoạn nhạc.'],
+ docs:'Điểm cộng',photo:'video chơi thử, ảnh cận cảnh cần đàn, mặt đàn, đầu đàn và số serial',meetNote:' (em xin chơi thử trước khi nhận)',
+ check:{before:['Hỏi trước: loại gỗ, nứt hay cong cần, kèm bao và phụ kiện gì','Nếu chơi được, mang bài quen thuộc để thử âm'],
+  inspect:['Guitar: nhìn dọc cần đàn (cần không cong vênh), khoảng cách dây tới phím ở phím 12 (action), phím không mòn lõm; nhìn mặt đàn tìm nứt, ngón bám','Chơi thử tất cả dây, tất cả phím: không rè, không tắt tiếng; vặn khóa lên dây nhẹ nhàng','Piano/organ điện: bấm từng phím, kiểm tra đủ âm, pedal, nút âm lượng, cổng cắm, loa; phím không kẹt, không phát ra tiếng lạ','Đàn điện (electric): cắm vào amply nghe không ù, vặn các núm không lẹt xẹt','Trống: kiểm tra mặt trống, ốc căng, pad; violin: nứt, cầu đàn, âm vòng cung'],
+  pay:['Chơi thử đủ lâu rồi mới trả tiền; nhạc cụ giá trị cao nên nhờ thợ/nhạc công xem cùng']}},
+{id:'sports',label:'Thể thao / xe đạp',icon:'🚲',cn:/the thao|xe dap|gym|cau long|bong da|tennis|golf|leo nup|cam trai|thuyen|dung cu the thao/,
+ w:/(?<![a-z])(?:xe dap|xe dap dien|may chay bo|may tap|ta tay|ta don|ghe tap|bo tap|vot (?:cau long|tennis|pickleball)|gay golf|bo gay golf|bong (?:da|ro|chuyen|ban)|giay (?:da bong|bong da|chay bo|leo nui)|luot van|truot patin|giay patin|patin|skateboard|bi-?a|ban bida|cau (?:ca|long)|can cau|may cau|cam trai|tui ngu|balo leo nui|do boi|thuyen (?:kayak|phao)|kayak|dung cu tap|thiet bi tap|xe dap the thao|mtb|touring|fixed gear|giant|trinx|asama|cannondale|specialized|life fitness|kettler|elipsoid|dap xe)(?![a-z])/,
+ fields:[{k:'size',label:'Size / cỡ',re:/(?:size|khung)\s*[:=]?\s*(xs|s|m|l|xl|xxl|\d{2}(?:\.5)?(?:\s*cm)?)(?![a-z0-9])/,to:m=>m[1].toUpperCase(),need:true,when:/xe dap|mtb|touring|fixed/,ask:'Size khung xe bao nhiêu, chiều cao người dùng phù hợp?'},
+  {k:'group',label:'Bộ truyền động',re:/(shimano (?:tiagra|105|ultegra|dura-?ace|sora|claris|tourney|altus|acera|alivio|deore|slx|xt|xtr)|sram (?:apex|rival|force|red|nx|gx|xx1))/,to:m=>m[1].split(' ').map(cap1).join(' ')},
+  {k:'frame',label:'Chất liệu khung',re:/(khung (?:nhom|carbon|thep|crom|alloy|aluminum|titanium)|carbon|alloy|aluminium|chromoly|cr-?mo)/,to:m=>cap1(m[1].replace('khung ',''))}],
+ pro:[GUARANTEE,BOX,BILL,[/(?:da )?(?:bao duong|thay (?:nhong|xich|sen|phanh|lop|moi))|bao duong dinh ky|moi (?:thay|bao duong)/,'Đã bảo dưỡng / thay mới phụ tùng'],[/it (?:di|dung|choi)|moi (?:di|dap|dung) \d+|moi (?:99|98|95)%|nhu moi|like new/,'Ít dùng, còn mới'],[/(?:co|kem|tang) (?:bom|khoa|den|chan bun|bình nuoc|binh nuoc|ro|gia)|full phu kien/,'Kèm phụ kiện']],
+ con:[[/(?:nut|gay|cong|vo|ri|mong) (?:khung|sườn|suon|ong|day|vanh)|khung (?:nut|gay|cong|ri|han|vo|bi nut)|cong (?:ghi dong|ghi-dong)|hu (?:motor|bo dieu khien|bang dien|board)|dong co (?:hu|hong|chay)|tu dut|mat (?:motor|pin)/,'Khung nứt / gãy / hỏng động cơ'],FAKE_CON],
+ danger:[DEP_DANGER],
+ risk:[[/tung (?:te|nga|roi|dam)|bi (?:xuoc|tray|nat|nut)|ri (?:sat|set|lom)|mon (?:lom|nhieu)|keu|lech (?:banh|vanh|day)|nhao|rung (?:lac|manh)|sua chua|da sua|thay (?:motor|pin|khung)|pin (?:chai|yeu|phong)|day curoa|bien tan/,'Có dấu hiệu từng ngã, rỉ sét, mòn nặng hoặc đã sửa chữa'],[/hang (?:nhai|loai 2|tq|trung quoc)|ghep|lap rap|nhieu mon|nhat tu|hang nhat|hang nhat noi dia/,'Xe ghép / lắp ráp từ nhiều bộ phận: cần xem kỹ chất lượng']],
+ ask:['Khung xe/dụng cụ có nứt, cong hoặc từng bị ngã không? Size bao nhiêu, người cao bao nhiêu mặc vừa?','Bộ truyền động, phanh, vành, lốp còn tốt không? Đã thay phụ tùng nào?','Máy tập: động cơ, băng chuyền có chạy êm không? Cho em xin video chạy thử.'],
+ docs:'Điểm cộng',photo:'ảnh chụp toàn bộ, ảnh cận cảnh khung, ghi đông, mặt gạt, ảnh tem serial',meetNote:' (em xin chạy thử vài vòng)',
+ check:{before:['Hỏi trước: size, độ cũ, đã từng ngã không, có hóa đơn hoặc phiếu bảo hành không','Xe đạp: biết chiều cao bản thân và size phù hợp'],
+  inspect:['Xe đạp: nhìn khung quanh các mối hàn, ống đầu, trục giữa tìm vết nứt, móp; vặn tay lái, thử phanh trước sau, đạp thử đổi số mọi líp','Kiểm tra vành, nan hoa (không cong, không lỏng), lốp (mòn, nứt), xích / líp / đĩa (mòn thành răng cưa)','Xe điện, máy tập điện: bật nguồn, chạy thử mọi tốc độ, nghe tiếng động cơ êm; pin sạc đầy mới thử đi','Dụng cụ gym, vợt, gậy golf: kiểm tra vết nứt, mòn, rỉ sét, độ chắc chắn, độ rung','Đối chiếu số khung (xe đạp), serial, tem với tin; hỏi giấy tờ nếu có'],
+  pay:['Ưng mới trả tiền; xe đạp giá trị cao nên có người am hiểu xem cùng','Không đặt cọc cho người lạ nếu chưa thấy hàng']}},
+/* --- Dụng cụ, máy công nghiệp --- */
+{id:'tools',label:'Dụng cụ / máy móc',icon:'🛠️',cn:/dung cu|may cong|cong nong|nong nghiep|xay dung|vat tu|may moc|thiet bi cong/,
+ w:/(?<![a-z])(?:may (?:khoan|cat|han|mai|ham|bom|nen khi|phat dien|bao|duc|can|dap|xay|trộn|tron|cay|gat|cat co|phun thuoc|say|ep|dong goi|hut chan khong)|bo dung cu|dung cu|cua may|cua xang|cua dien|khoan (?:pin|dien)|ca lang|may phat|may nen|ban nang|may moc|dong co (?:dien|xang|diesel)|makita|bosch|dewalt|hikoki|stanley|milwaukee|ingco|kyocera|hitachi|metabo|ryobi|honda gx|kubota|yanmar|robin)(?![a-z])/,
+ fields:[{k:'pw',label:'Công suất',re:/(\d{2,5}(?:[.,]\d)?)\s*(?:w|kw|hp|ngua)(?![a-z])/,to:m=>m[0].replace(/\s+/g,'').toUpperCase().replace('NGUA','HP')},{k:'volt',label:'Điện áp / nguồn',re:/(\d{2,3})\s*v(?![a-z])|(pin 18v|pin 12v|pin 20v|pin lithium|dung xang|chay xang|chay dau|chay dien|3 pha|1 pha)/,to:m=>m[1]?m[1]+' V':cap1(m[2]),need:true,when:/may|khoan|han|nen khi|mai|phat/,ask:'Máy dùng điện áp nào (220V / 380V 3 pha / pin 18V…)? Có kèm pin, sạc, mũi, phụ kiện không?'}],
+ pro:[GUARANTEE,BOX,BILL,[/(?:da )?(?:test|chay thu)|chay (?:em|tot|ngon|on)|may (?:khoe|chay tot)/,'Đã chạy thử, chạy tốt'],[/(?:kem|co) (?:pin|sac|mui|hop|phu kien|2 pin|2 sac)|full phu kien/,'Kèm pin, sạc, phụ kiện'],[/hang (?:chinh hang|bao hanh|nhat|duc|my)|nhap khau/,'Hàng chính hãng / nhập khẩu']],
+ con:[[/(?:chua|khong|ko) (?:test|chay|thu)|hu (?:motor|dong co|bo mach|pin|cuon)|dong co (?:hu|hong|chay)|khong (?:len|chay|quay)|chap (?:dien|mach)|ban (?:xac|linh kien|ac)|cuon day (?:chay|hu)|ro (?:dau|nuoc|dien)/,'Máy chưa test, hỏng hoặc có nguy cơ rò điện / chập'],FAKE_CON],
+ danger:[DEP_DANGER],
+ risk:[[/hang (?:cu|thanh ly|thao may|thao xac|nhat noi dia|hang tq)|da (?:qua )?su dung|sua chua|da sua|thay (?:cuon|motor|pin|chổi than|choi than)|keu|rung|nong|nguoc chieu|hao (?:dien|xang|dau)|co (?:vet|ri|set)|ri set/,'Hàng cũ / thanh lý, có thể đã mòn hoặc sửa chữa'],[/(?<![0-9])(?:100|110|115|120)\s*v(?![a-z])/,'Điện áp 100–120V: cần biến áp mới dùng được ở Việt Nam']],
+ ask:['Máy đã dùng bao lâu, giờ hoạt động hoặc đã chạy bao nhiêu giờ? Còn bảo hành không?','Điện áp bao nhiêu (220V / 380V / pin 18V)? Kèm sạc, pin, mũi, phụ kiện gì?','Máy chạy có êm không, có rò điện, rò dầu, nóng bất thường không?'],
+ docs:'Điểm cộng',photo:'video máy đang chạy và ảnh tem nhãn công suất / số máy',meetNote:' (em xin chạy thử máy tại chỗ)',
+ check:{before:['Hỏi trước: điện áp, công suất, giờ hoạt động, kèm phụ kiện gì','Mang theo vật liệu để thử máy (gỗ, sắt, nước…) nếu có thể'],
+  inspect:['Cắm điện, chạy thử ở các mức tốc độ trong 10 phút: không rung giật, không nóng cháy, không có mùi khét hoặc tia lửa bất thường','Kiểm tra dây điện, phích cắm, vỏ máy: không nứt, không hở, không chắp nối','Đối chiếu tem công suất, điện áp với tin; máy chạy xăng / dầu: xem rò rỉ, khói, dễ nổ máy','Kiểm tra pin / sạc: sạc có vào, pin có đầy, máy khoan có đủ lực','Máy lớn (phát điện, máy nén khí): nên có thợ cơ khí đi cùng, xem hóa đơn giờ chạy'],
+  pay:['Trả tiền sau khi đã thử máy; máy lớn nên hỏi bảo hành ngắn hạn']}},
+/* --- Đồ văn phòng, công nông nghiệp --- */
+{id:'office',label:'Đồ văn phòng',icon:'🖨️',cn:/van phong|mua ban van phong|thiet bi van phong|do dung van phong/,
+ w:/(?<![a-z])(?:may (?:in|photocopy|photo|chieu|scan|cham cong|pos|tinh tien|dem tien|huy giay|hut mui|fax|ghi am|lam the)|projector|bàn lam viec|ban lam viec|tu (?:ho so|sat|tai lieu)|ket sat|ban hop|ghe van phong|ghe giam doc|phu kien van phong|hop muc|muc in|may chu|server|may bo dam|pbx|tong dai|may cham cong|canon (?:lbp|mf|imagerunner|ir)|hp (?:laserjet|deskjet)|brother|epson|ricoh|fuji xerox|kyocera|xerox|sharp)(?![a-z])/,
+ fields:[{k:'pages',label:'Số trang đã in',re:/(?:da in|counter|so trang|dem trang)\s*[:=]?\s*(\d[\d.,]{2,8})|(\d[\d.,]{2,8})\s*(?:trang|page|pages|copy|ban in)/,to:m=>m[1]||m[2],fmt:v=>fmtN(v)+' trang',need:true,when:/may in|photocopy|photo|ricoh|xerox|canon (?:ir|mf)|laserjet/,ask:'Máy đã in bao nhiêu trang (counter)? Cho em xin ảnh chụp trang báo cáo trạng thái in.'},
+  {k:'lamp',label:'Giờ đèn chiếu',re:/(?:gio den|lamp hours?|da dung)\s*[:=]?\s*(\d[\d.,]{1,6})\s*(?:h|gio|hours?)?/,to:m=>m[1],fmt:v=>fmtN(v)+' giờ',need:true,when:/may chieu|projector/,ask:'Giờ đèn của máy chiếu bao nhiêu, đèn còn sáng đều không?'}],
+ pro:[GUARANTEE,BOX,BILL,[/(?:con|kem) (?:hop muc|day nguon|day usb|toner|trong|remote)|full phu kien/,'Kèm mực, dây nguồn, phụ kiện'],[/(?:da )?(?:test|in thu)|in (?:ro|nhanh|tot)|chay (?:em|tot|ngon)/,'Đã in thử, chạy tốt']],
+ con:[[/(?:chua|khong|ko) (?:test|in)|hu (?:may|trong|bo nhiet|head|dau phun)|ket giay (?:lien|nhieu)|ban (?:xac|linh kien)|khong (?:in duoc|len nguon|nhan)|loi (?:trong|nhiet|bo nho)/,'Máy chưa test, hỏng hoặc kẹt giấy liên tục'],FAKE_CON],
+ danger:[DEP_DANGER],
+ risk:[[/(?:ket|nhan) giay|in (?:mo|nhoe|nhat|loang|lem)|trang den|sọc|lech|loi (?:muc|bo nho)|nen ban|muc (?:chay|nhat|thua|tran)|da do muc|do muc|sua chua|da sua|thay (?:trong|linh kien|den|mach)|rach|vo/,'Có dấu hiệu in lỗi, kẹt giấy, đã đổ mực hoặc sửa chữa'],[/hang (?:cu|thanh ly|thao may|nhat|nhat noi dia)|thanh ly|may cu/,'Hàng cũ / thanh lý']],
+ ask:['Máy đã in bao nhiêu trang, hộp mực / trống còn dùng được bao lâu?','Kết nối gì (USB, wifi, mạng LAN)? Có kèm dây, hộp mực, driver không?','Máy có kẹt giấy, in mờ, nhòe hay có sọc không? Cho em xin ảnh bản in thử.'],
+ docs:'Điểm cộng',photo:'ảnh bản in thử, ảnh trang báo cáo số trang đã in và tem model',meetNote:' (em xin in thử vài trang tại chỗ)',
+ check:{before:['Hỏi trước: số trang đã in, hộp mực còn bao lâu, kết nối gì','Mang laptop hoặc USB để in thử và cài driver'],
+  inspect:['Máy in/photocopy: in thử trang mẫu, kiểm tra nét chữ rõ, không sọc, không loang, giấy vào êm, không kẹt','In báo cáo trạng thái để xem số trang đã in và lỗi hiện tại; hộp mực còn bao nhiêu','Máy chiếu: bật thử 10 phút, xem hình có sáng đều, có đốm đen, quạt có ồn, các cổng HDMI / VGA hoạt động','Máy pos / cân / máy đếm tiền: thử mọi chức năng với dữ liệu mẫu','Bàn ghế văn phòng: ngồi thử, kiểm tra bánh xe, khung, piston nâng hạ, khóa tủ'],
+  pay:['Máy in/photo cũ: hỏi bảo hành hoặc đổi trả ngắn hạn; hộp mực, trống thay thế đắt nên hỏi giá']}},
+/* --- Thực phẩm, đồ uống, nông sản --- */
+{id:'food',label:'Thực phẩm / nông sản',icon:'🥗',cn:/thuc pham|do an|thuc uong|nong san|trai cay|rau cu|ca phe|mat ong|nong lam san/,
+ w:/(?<![a-z])(?:thuc pham|do an|ca phe|mat ong|yen sao|gao|hat (?:dieu|sen|macca)|ca kho|nuoc mam|tuong|nuoc ep|trai cay|rau (?:sach|qua)|ca (?:bien|song|tuoi|dong lanh)|hai san|ngheu|sau rieng|xoai|chuoi|dua hau|dau tay|mang cut|chom chom|nhan sam|ruou|nuoc ngot|sua (?:tuoi|chua|hat)|dac san|an vat|banh keo)(?![a-z])/,
+ fields:[{k:'hsd',label:'Hạn sử dụng',re:/(?:hsd|han su dung|date|exp(?:iry)?)\s*[:\-]?\s*((?:\d{1,2}[\/.\-]){1,2}\d{2,4})/,to:m=>m[1],need:true,when:/banh|sua|do hop|nuoc mam|tuong|ca phe|tra |mat ong|nuoc ep|bia|ruou|dong goi|dac san/,ask:'Hạn sử dụng còn đến khi nào? Có ảnh chụp tem, nhãn, mã vạch, giấy kiểm nghiệm / công bố sản phẩm không?'},
+  {k:'wt',label:'Khối lượng',re:/(\d+(?:[.,]\d+)?)\s*(kg|g|gram|ml|lit|l)(?![a-z])/,to:m=>m[1]+' '+m[2]}],
+ pro:[OFFICIAL,[/(?:co|con) (?:tem|vietgap|globalgap|organic|haccp|giay (?:cong bo|kiem nghiem|chung nhan|vsatt)|ma vach|ocop)|vietgap|globalgap|haccp|ocop/,'Có giấy chứng nhận VietGAP / OCOP / kiểm nghiệm'],[/(?:tu )?(?:vuon|trang trai)|tu (?:nha )?lam|nha trong|nha lam|hang dia phuong|dac san vung/,'Hàng nhà làm / tự trồng'],[/(?:giao|ship) (?:hoa toc|tan noi|trong ngay)|dong goi (?:can than|hut chan khong|dat)/,'Giao nhanh, đóng gói kỹ']],
+ con:[[/het han|qua han|can date|date can|(?:con|hsd) (?:\d{1,2})\s*(?:ngay|tuan)|thuc pham (?:khong|ko) (?:tem|nhan)|khong (?:ro )?(?:tem|nguon goc|hsd)|hang (?:khong tem|khong nhan|trôi noi|troi noi)/,'Sắp hết hạn / quá hạn / không tem nhãn'],FAKE_CON],
+ danger:[DEP_DANGER,[/mat ong (?:rung|gia|pha)|thuoc|chua (?:benh|ung thu|tieu duong|gout)|giam can (?:nhanh|cap toc|\d+kg)|(?:tang|giam) (?:vong|can) (?:nhanh)|thuc pham chuc nang (?:chua)|dac tri|cam ket khoi/,'Quảng cáo thực phẩm "chữa bệnh", "giảm cân cấp tốc": vi phạm quy định, dễ là hàng kém chất lượng']],
+ risk:[[/hang (?:trôi noi|troi noi|xach tay|nhap lau|khong ro nguon)|nhap lau|khong (?:co )?hoa don|hang tq|trung quoc|khong ro|chua kiem nghiem|chua cong bo/,'Nguồn gốc không rõ, chưa kiểm nghiệm'],[/hang (?:ton|dong lanh|dông lạnh|de lau)|sap (?:het|can)|thanh ly|xa kho/,'Hàng tồn / thanh lý: kiểm tra kỹ hạn dùng']],
+ ask:['Hạn sử dụng còn bao lâu? Có ảnh tem nhãn, mã vạch, giấy công bố hoặc kiểm nghiệm không?','Nguồn gốc xuất xứ của sản phẩm ở đâu, bảo quản thế nào?','Cách giao hàng, thời gian ship và có đóng gói giữ lạnh không (với đồ tươi)?'],
+ used:false,docs:'Điểm cộng',photo:'ảnh tem nhãn, hạn sử dụng, mã vạch và ảnh thực tế sản phẩm',meetNote:' (em xin kiểm tra hạn dùng và tem nhãn khi nhận)',
+ check:{before:['Hỏi trước: hạn sử dụng, nguồn gốc, bảo quản, cách giao','Đồ tươi, đồ lạnh cần giao nhanh và có đá giữ lạnh'],
+  inspect:['Xem hạn sử dụng, tem nhãn, mã vạch; hàng đóng gói phải còn nguyên seal','Thực phẩm tươi: màu sắc tươi, không có mùi lạ, không thâm, không chảy nước','Mật ong, yến sào, thuốc nam, sâm, nấm quý: đòi giấy kiểm nghiệm hoặc nguồn gốc; không mua hàng "chữa bệnh"','Mở thử một gói / ăn thử nếu người bán cho phép'],
+  pay:['Thanh toán khi nhận hàng và đã kiểm tra; không chuyển tiền trước cho người lạ']}},
+/* --- Cây cảnh, nông cụ --- */
+{id:'plant',label:'Cây cảnh / vườn',icon:'🪴',cn:/cay canh|cay|vuon|hoa|nong cu|phan bon|hat giong|giong cay|bonsai/,
+ w:/(?<![a-z])(?:cay (?:canh|bonsai|mai|dao|quat|cau|kim tien|kim ngan|luoi ho|trau ba|sen da|xuong rong|lan|hong|an qua|ca phe|tieu|sau rieng|mit|xoai)|bonsai|mai (?:vang|tu quy|chiu thuy)|lan (?:ho diep|hoang thao|dendro|vanda|cattleya|hai)|hoa (?:lan|hong|sen)|chau (?:cay|canh|gom|su)|hon non bo|sen da|xuong rong|phan bon|dat trong|gia the|hat giong|cay giong|ca canh|hon non bo|tieu canh|bach tung|van nien thanh)(?![a-z])/,
+ fields:[{k:'h',label:'Chiều cao',re:/(?:cao|chieu cao)\s*[:~]?\s*(\d{1,3}(?:[.,]\d)?)\s*(cm|m)(?![a-z])|(\d{1,3}(?:[.,]\d)?)\s*(cm|m)\s*cao/,to:m=>(m[1]||m[3])+' '+(m[2]||m[4])},{k:'age',label:'Tuổi cây',re:/(\d{1,3})\s*nam\s*(?:tuoi)?(?![a-z])/,to:m=>m[1]+' năm'}],
+ pro:[[/(?:cay )?(?:khoe|xanh tot|da (?:len|ra) re|re (?:to|nhieu)|chau (?:dep|goc)|dang dep|the dep|cay dep)/,'Cây khỏe, dáng đẹp'],[/bao (?:song|doi|chet)|doi tra|giao (?:tan noi|toan quoc)|dong goi (?:cay|can than|rieng)|tu (?:nha |vuon )?(?:uom|trong)/,'Có bảo hành sống / đóng gói giao hàng']],
+ con:[[/(?:sau|benh|thoi (?:re|goc|than)|nam bẹnh|nam benh|vang (?:la)|cay (?:chet|hu|kho)|nhi?em|rep)/,'Cây có sâu bệnh / thối rễ / úa'],FAKE_CON],
+ danger:[DEP_DANGER],
+ risk:[[/cay (?:moi|vua) (?:dao|chuyen|thay chau)|moi dao|moi duoi|chua (?:len|ra) re|tru|rung la|ung|vang la/,'Cây mới đào hoặc chưa hồi phục'],[/vat (?:cam )?giong|cay (?:kho|chua)|hang (?:tq|trung quoc)|gia/,'Nguồn giống không rõ']],
+ ask:['Cây bao nhiêu tuổi, cao bao nhiêu, đã trồng chậu bao lâu? Cho em xin ảnh gốc, rễ và lá.','Cây có sâu bệnh, thối rễ, rụng lá không? Có bảo hành sống không?','Vận chuyển cây lớn ai chịu phí, đóng gói thế nào?'],
+ used:false,docs:'Điểm cộng',photo:'ảnh gốc, rễ, lá và toàn cây, kèm vật chuẩn để thấy kích thước',meetNote:' (em xin xem trực tiếp bộ rễ và lá)',
+ check:{before:['Hỏi trước: tuổi cây, sâu bệnh, chăm sóc, bảo hành sống','Cây lớn: hỏi chi phí vận chuyển và khả năng đến nơi'],
+  inspect:['Xem gốc, rễ (nhấc nhẹ khỏi chậu): rễ trắng khỏe, không thối, không sâu','Lá xanh, không úa, không đốm; thân không nứt, không bướu bất thường','Đối chiếu kích thước thật, dáng cây với ảnh trong tin','Cây lan, mai, bonsai giá trị cao: nhờ người chơi cây có kinh nghiệm xem cùng'],
+  pay:['Cây giá trị cao nên có bảo hành sống bằng văn bản; không chuyển cọc trước khi xem cây']}},
+/* --- Đồ sưu tầm, cổ vật, tranh --- */
+{id:'collect',label:'Đồ sưu tầm / cổ vật',icon:'🏺',cn:/suu tam|co vat|do co|tien co|tem|tranh/,
+ w:/(?<![a-z])(?:co vat|do co|tien co|tien xu|tem (?:buu chinh|thu)|bang (?:vang|dia)|dia than|dia cd|dia nhac|dia (?:vinyl|than)|vinyl|mo hinh|figure|gundam|lego|pokemon|the (?:bai|pokemon|yugioh)|tranh (?:son dau|thuy mac|dong ho|thu phap|co|the thao)|tuong (?:phat|gom|dong|go|da)|gom (?:su|co|chu dau)|binh (?:gom|co|hoa)|do gom|do dong|do da|da quy|thach anh|ngoc bich|hổ phách|ho phach|tram huong|vong tram|goc quy|am trà|am tra|dong ho (?:co|treo tuong)|may (?:chu dien|chup anh) co|sach (?:co|hiem|bia cung)|manga|album)(?![a-z])/,
+ fields:[{k:'yr',label:'Niên đại',re:/(?:nien dai|doi|trieu|the ky|nam)\s*[:\-]?\s*(\d{4}|[a-z]+(?: [a-z]+)?\s+(?:the ky|trieu)|(?:thanh|nguyen|ly|tran|han|duong|tong|minh)\b)/,to:m=>cap1(m[1])},{k:'cert',label:'Giấy giám định',re:/(giay (?:giam dinh|chung nhan|xac nhan)|chung nhan|ho so goc|ho so chinh hang)/,to:m=>cap1(m[1]),need:true,ask:'Có giấy giám định / chứng nhận của đơn vị uy tín không? Cho em xin ảnh giấy tờ.'}],
+ pro:[[/giay (?:giam dinh|chung nhan|xac nhan)|chung nhan|ho so (?:goc|chinh hang)|nguon goc (?:ro rang|gia truyen)|truyen (?:lai|doi)|chinh hang|authentic|box ?set|nguyen (?:seal|hop)|new (?:seal|100%)/,'Có giấy giám định / nguồn gốc rõ'],BOX,[/(?:duoc )?(?:giam dinh|kiem dinh) (?:boi|tai|o)\s+\w+/,'Có đơn vị giám định']],
+ con:[FAKE_CON,[/lam (?:gia|nhai|co)|hang (?:gia|nhai|lap)|gia co|nhai co|lam gia cổ|phuc che|phong theo/,'Hàng phục chế / làm giả cổ: không phải đồ thật']],
+ danger:[DEP_DANGER,[/(?:co|tim) (?:khach|nguoi) (?:mua|vo)|ban gap (?:vi|do) (?:benh|no|tien)|tim (?:nguoi|khach) (?:dinh gia|mua) gia cao|dau gia (?:gia ngoai|cao)/,'Mô típ lừa đảo đồ cổ: "có khách mua giá cao", "bán gấp vì bệnh, nợ"']],
+ risk:[[/hang (?:nhat|tq|trung quoc) (?:khong|chua)|chua giam dinh|khong ro nguon goc|khong giay|tu truyen|nghe noi|chua ro doi/,'Chưa giám định, nguồn gốc không rõ'],[/nut|sut|me (?:mieng|canh|ria|day)|tray (?:xuoc|men)|ri set|phai mau|mat (?:mau|men)|vo (?:mieng|men)|han ron|tung (?:bi )?(?:vo|nut|han)/,'Có dấu hiệu nứt, sứt, mẻ hoặc hao mòn'],[/vo gia|gia tri (?:khung|cuc cao|vo cung)|hang chuc ty|\d+\s*ty/,'Giá trị tự nhận rất cao: dễ là bẫy lừa đảo']],
+ ask:['Có giấy giám định hoặc nguồn gốc gia truyền không? Cho em xin ảnh giấy tờ.','Niên đại, chất liệu, kích thước chính xác? Vật có nứt, sứt, mẻ không?','Cho phép em mang đến đơn vị giám định độc lập xem trước khi mua được không?'],
+ used:false,docs:'Điểm cộng',photo:'ảnh nhiều góc, ảnh dấu hiệu niên đại / đáy, giấy giám định và hóa đơn',meetNote:' (em xin mang đến đơn vị giám định độc lập)',
+ check:{before:['Đồ cổ, đá quý, tranh: giá trị thường rất khó định, đừng quyết nhanh vì "bán gấp"','Hỏi trước: nguồn gốc, niên đại, giấy giám định, cho phép giám định độc lập'],
+  inspect:['Quan sát trực tiếp dưới ánh sáng tự nhiên; so với ảnh trong tin; xem dấu niên đại, men, bao tương, chất liệu','Đá quý / ngọc / trầm: mang đến đơn vị giám định (kiểm định đá, tuổi trầm) trước khi trả tiền','Tem, tiền xu, thẻ bài: so với catalog hoặc nhờ người chơi lâu năm xem','Đĩa, mô hình, lego: hộp còn nguyên seal, số seri, linh kiện đủ; so với danh mục hãng'],
+  pay:['Món đắt tiền phải giám định độc lập trước khi chuyển tiền; không đặt cọc','Lập giấy biên nhận ghi rõ món hàng, giá và nguồn gốc']}},
+/* --- Việc làm --- */
+{id:'job',label:'Việc làm',icon:'💼',cn:/viec lam|tuyen dung|tim viec/,
+ w:/(?<![a-z])(?:tuyen (?:dung|gap|ctv|nhan vien|cong nhan|tai xe|lao dong|nu|nam)|can tuyen|tim viec|viec lam|cong tac vien|ctv|luong (?:\d|tu|thang|cb|co ban)|thu nhap (?:\d|tu|len)|lam (?:tai nha|online|them|viec)|part ?time|full ?time|nhan vien (?:kinh doanh|ban hang|phuc vu|ke toan|van phong|bao ve|giao hang)|pha che|thu ngan|tai xe (?:grab|xe tai|giao hang)|shipper|giao hang|giup viec|nau an|lao dong pho thong)(?![a-z])/,
+ fields:[{k:'sal',label:'Mức lương nêu trong tin',re:/(?:luong|thu nhap)\s*(?:tu|~|:|co ban)?\s*(\d{1,3}(?:[.,]\d)?)\s*(?:-|den|toi)?\s*(\d{1,3}(?:[.,]\d)?)?\s*(tr|trieu|k|nghin|tr\/thang|m)/,to:m=>m[1]+(m[2]?'–'+m[2]:'')+' '+(/k|nghin/.test(m[3])?'nghìn':'triệu'),need:true,ask:'Mức lương cụ thể thế nào (lương cứng, hoa hồng, thưởng)? Trả bằng chuyển khoản hay tiền mặt?'},
+  {k:'place',label:'Nơi làm việc',re:/(?:tai|o|khu vuc)\s+(quan [a-z0-9 ]{1,15}|huyen [a-z ]{2,15}|[a-z]+ (?:ha noi|tphcm|sai gon|da nang))/,to:m=>cap1(m[1])}],
+ pro:[[/(?:ky |co )?hop dong lao dong|bao hiem|bhxh|luong cung|luong co ban|thu viec (?:\d)|duoc dao tao|co (?:thuong|phu cap|an trua)|ngay phep/,'Có hợp đồng, bảo hiểm, lương cứng'],[/cong ty (?:co ten|dang ky)|dia chi (?:cu the|ro ranh)|mst|ma so thue|giay phep kinh doanh|gpkd|website/,'Công ty có địa chỉ / mã số thuế cụ thể']],
+ con:[[/(?:dong|nop|dat) (?:tien |phi )?(?:coc|dong phuc|dong phuc|bao lanh|giu cho|ho so|dao tao)|phi (?:ho so|dao tao|giu cho|chung chi)|ung (?:tien|truoc)|chuyen khoan (?:truoc|phi)|chi phi (?:ho so|dao tao|dong phuc)/,'Đòi phí hồ sơ / đặt cọc / đóng phí trước khi đi làm: dấu hiệu lừa đảo']],
+ danger:[DEP_DANGER,[/luong (?:khung|cao|ao|cao ngat|tren trời)|thu nhap (?:khung|khong gioi han|\d{2,3}\s*tr|tren \d{2,3})\s*(?:tr|trieu)|lam (?:nhe|nhan)|viec (?:nhe|nhan) luong cao|khong can (?:kinh nghiem|bang cap) luong|(?:click|like|share|dang tin|nhap lieu) (?:kiem|nhan) tien|kiem tien online|lam nhiem vu|nhiem vu (?:online|tai nha)|nap (?:tien|von)|dau tu|crypto|tien ao/,'Việc nhẹ lương cao / làm nhiệm vụ / kiếm tiền online: rất thường là lừa đảo']],
+ risk:[[/lam (?:tai nha|online|truc tuyen)|ctv|cong tac vien|khong (?:can )?bang cap|nu (?:tu |duoi )?\d{2}|hoa hong (?:cao|khung|100%)|da cap|mlm|kinh doanh da cap|cap tren|ban hang online (?:khong|chua)|ke toan khong|nhan vien tu van (?:tai nha|online)/,'Việc làm online / cộng tác viên / đa cấp: cần xác minh kỹ'],[/gap|can (?:gap)|nhanh|di lam ngay|khong can pv|khong phong van|nhan ngay|vao lam ngay/,'Giục đi làm ngay, không phỏng vấn: nên cảnh giác']],
+ ask:['Công ty tên gì, địa chỉ văn phòng cụ thể, mã số thuế (tra cứu trên cổng thông tin doanh nghiệp)?','Mức lương cứng và các khoản khác ghi trong hợp đồng như thế nào? Có đóng bảo hiểm không?','Có thu bất kỳ khoản phí nào (hồ sơ, đồng phục, đào tạo) không?'],
+ used:false,docs:'Điểm cộng',photo:'ảnh giấy phép kinh doanh, địa chỉ công ty và mẫu hợp đồng',meetNote:' (em xin đến công ty phỏng vấn trực tiếp)',
+ check:{before:['Tra cứu tên công ty, mã số thuế, địa chỉ trên cổng thông tin doanh nghiệp quốc gia','Nhờ người quen biết công ty (nếu có) xác nhận','Đi phỏng vấn trực tiếp tại văn phòng, không phỏng vấn qua Zalo / Telegram rồi giao việc'],
+  inspect:['Đến tận nơi: công ty đúng địa chỉ, có biển hiệu, có nhân sự làm việc thật','Hợp đồng lao động ghi rõ: lương, giờ làm, bảo hiểm, thời gian thử việc; không ký khi chưa đọc kỹ','Không nộp bản gốc CCCD, bằng cấp, sổ hộ khẩu; chỉ nộp bản photo khi cần'],
+  pay:['Không đóng bất kỳ khoản phí nào (hồ sơ, đồng phục, đào tạo, cọc): việc làm hợp pháp không thu tiền của người lao động','Không chuyển tiền "nhận việc", "nạp vốn làm nhiệm vụ"']}},
+/* --- Dịch vụ, du lịch --- */
+{id:'service',label:'Dịch vụ / du lịch',icon:'🧰',cn:/dich vu|du lich|sua chua|giup viec|van chuyen|gia su/,
+ w:/(?<![a-z])(?:dich vu|sua (?:chua|may|dien|nuoc|laptop|dien thoai|may lanh|dieu hoa|tivi|xe)|lap (?:dat|mang|camera|dieu hoa|may lanh)|ve sinh (?:nha|may lanh|dieu hoa|sofa|cong nghiep)|chuyen nha|van chuyen|thue xe|cho thue xe|tour|du lich|ve may bay|visa|khach san|homestay|chup anh|quay phim|gia su|day (?:hoc|kem)|dich thuat|ke toan|luat su|bao hiem|vay (?:tien|von)|cho vay|the tin dung|mo the|thue (?:phong|may|xe|nha|dat|van phong))(?![a-z])/,
+ fields:[{k:'area',label:'Khu vực phục vụ',re:/(?:phuc vu|hoat dong|lam viec)\s*(?:tai|o|khu vuc)?\s*(toan quoc|tp ?hcm|ha noi|da nang|[a-z ]{3,18})/,to:m=>cap1(m[1].trim())},{k:'price',label:'Báo giá',re:/(?:gia|phi|chi phi)\s*(?:tu|chi|chi tu|\:)?\s*(\d{1,3}(?:[.,]\d{3})*(?:\s*(?:k|d|dong|trieu|tr|nghin|\/)))/,to:m=>m[1]}],
+ pro:[GUARANTEE,BILL,[/(?:bao hanh) (?:\d+\s*(?:thang|ngay|nam))|bao hanh sau sua|ky hop dong|hop dong ro/,'Có bảo hành sau dịch vụ / hợp đồng'],[/(?:khao sat|bao gia) (?:mien phi|truoc)|bao gia (?:ro|truoc|chi tiet)|(?:kiem tra|tu van) mien phi|khong phat sinh/,'Báo giá rõ, khảo sát miễn phí, không phát sinh'],[/cong ty (?:co ten)|mst|ma so thue|giay phep kinh doanh|gpkd|dia chi (?:cu the)/,'Có pháp nhân / địa chỉ cụ thể']],
+ con:[[/phi (?:ho so|bao lanh|giu cho|giai ngan|dang ky|thu tuc|quan ly) (?:truoc)|dong (?:phi|tien) (?:truoc)|nop (?:phi|tien) truoc|chuyen khoan truoc/,'Đòi đóng phí trước khi dịch vụ được cung cấp'],FAKE_CON],
+ danger:[DEP_DANGER,[/vay (?:tien )?(?:khong|ko) (?:the chap|tin chap|can|dieu kien|lai)|vay (?:nhanh|nong) (?:\d|trong)|giai ngan (?:nhanh|ngay|trong \d)|khong can (?:cavet|ca vet|so do|so hong|bang luong|lich su tin dung)|no xau (?:van|cung)|vay (?:\d+)\s*(?:tr|trieu) (?:chi|chi can)|lai suat (?:0|thap|0,\d)%|phi (?:giai ngan|bao hiem khoan vay|xet duyet|chung minh)/,'Cho vay "giải ngân nhanh, không thế chấp, thu phí trước": dấu hiệu lừa đảo cho vay'],[/ve (?:may bay|xe) (?:gia re|re bat ngo|gia soc)|tour (?:0 dong|mien phi|gia soc)|visa (?:bao dau|100%|cam ket dau)|visa (?:nhanh|cap toc) (?:\d)|voucher (?:gia soc|giam 90)/,'Vé / tour / visa giá rẻ bất ngờ, "bao đậu 100%": dễ là lừa đảo']],
+ risk:[[/gia (?:re|sieu re|re bat ngo)|re nhat|re hon (?:\d)|khong (?:hoa don|hop dong)|truc tiep|lam (?:xong|ngay) (?:tra|thanh toan)|thanh toan (?:ngay|truoc)|dat coc|coc trước/,'Giá rẻ bất thường hoặc không có hợp đồng / hóa đơn'],[/(?:lam|nhan) (?:thue)|tho (?:tu do|ngoai)|khong (?:co )?dia chi/,'Thợ tự do, không địa chỉ cố định: khó khiếu nại']],
+ ask:['Báo giá chi tiết là bao nhiêu, có phát sinh thêm không? Bảo hành sau khi làm xong bao lâu?','Đơn vị có địa chỉ, mã số thuế, giấy phép không? Có hợp đồng / hóa đơn không?','Thời gian thực hiện cụ thể và cách thanh toán (trả sau khi xong việc)?'],
+ used:false,docs:'Điểm cộng',photo:'ảnh sản phẩm / công trình đã làm, giấy phép kinh doanh và báo giá',meetNote:' (em xin gặp trực tiếp, thanh toán sau khi nghiệm thu)',
+ check:{before:['Xin báo giá bằng văn bản hoặc tin nhắn, ghi rõ hạng mục, thời gian, bảo hành','Kiểm tra uy tín: đánh giá, hình ảnh công trình, địa chỉ, mã số thuế (nếu là công ty)','Vay / bảo hiểm / thẻ tín dụng: chỉ làm với ngân hàng, tổ chức tài chính có tên trong danh sách của Ngân hàng Nhà nước'],
+  inspect:['Xem trực tiếp sản phẩm / mẫu đã làm của đơn vị hoặc gặp tại văn phòng','Hợp đồng ghi rõ nội dung, giá, tiến độ, bảo hành, trách nhiệm khi phát sinh','Du lịch / vé máy bay: tra mã đặt chỗ trên trang hãng; visa: xác nhận hồ sơ qua kênh chính thức'],
+  pay:['Thanh toán theo tiến độ (cọc nhỏ, phần còn lại sau nghiệm thu); không chuyển hết tiền trước','Không bao giờ đóng "phí hồ sơ, phí giải ngân" để được vay; không gửi OTP, CCCD, mật khẩu ngân hàng']}}
+];
+/* ---------- Máy đọc theo loại hàng ---------- */
+const wb=re=>new RegExp('(?<![a-z0-9])(?:'+re.source+')(?![a-z0-9])');
+const DEF_ORDER=['autoparts','gaming','camera','tv','audio','accessory','computer','plant','pet','appliance','furniture','baby','fashion','music','sports','tools','office','food','collect','job','service'];
+CATDEFS.sort((a,b)=>DEF_ORDER.indexOf(a.id)-DEF_ORDER.indexOf(b.id));
+const CATIDX={};
+CATDEFS.forEach(d=>{ CATIDX[d.id]=d; d.cnR=wb(d.cn); ['pro','con','danger','risk'].forEach(k=>{ d[k]=(d[k]||[]).map(p=>[wb(p[0]),p[1]]); });
+  d.wG=new RegExp(d.w.source,'g'); d.fields=(d.fields||[]).map(f=>({...f,res:[].concat(f.re)})); });
+const PRICED=new Set(['audio','tv','camera','gaming','computer']);     // chỉ những nhóm này mới có bảng giá ước tính tương đối đáng tin
+const pickDefCn=cn=>{ if(!cn) return null; return CATDEFS.find(d=>d.cnR.test(cn))||null; };
+const pickDefPri=t=>{ const t0=t.slice(0,34); for(const i of ['autoparts','accessory']){ const d=CATIDX[i]; if(new RegExp(d.w.source).test(t0)) return d; } return null; };
+const pickDefW=(title)=>{ let best=null, bs=0; CATDEFS.forEach(d=>{ const m=title.match(d.wG); const s=m?new Set(m).size:0; if(s>bs){ bs=s; best=d; } }); return best; };
+function readField(f,text,P){
+  for(const re of f.res){ const m=re.exec(text); if(!m) continue;
+    let v=f.to?f.to(m):m[1]; if(f.fmt&&typeof v==='string'&&/^[\d.,]+$/.test(v)) v=numF(v); return v; }
+  return null;
+}
+function defScan(sp,d,x,text,title,P,L,C,R,D){
+  sp.cat='goods'; sp.def=d.id; sp.kind=d.label; sp.icon=d.icon; sp.fields=[];
+  d.fields.forEach(f=>{
+    const v=readField(f,text,P);
+    if(v!=null&&v!==''&&v!==0){ sp.fields.push({k:f.k,label:f.label,v,txt:f.fmt?f.fmt(v):String(v),res:f.res}); }
+    else if(f.need&&(!f.when||f.when.test(text))&&f.ask){ sp.fields.push({k:f.k,label:f.label,v:null,need:true}); sp.ask.push(f.ask); }
+  });
+  d.pro.forEach(p=>L(p[0],p[1])); d.con.forEach(p=>C(p[0],p[1])); d.danger.forEach(p=>D(p[0],p[1])); d.risk.forEach(p=>R(p[0],p[1]));
+  if(d.id==='job'){
+    const lo=pnum(P.min_salary), hi=pnum(P.max_salary);
+    if(lo>0||hi>0){ sp.fields=sp.fields.filter(f=>f.k!=='sal'); sp.fields.unshift({k:'sal',label:'Mức lương (mục thông số)',v:lo,txt:(lo&&hi&&hi!==lo?vnd(lo)+' – '+vnd(hi):vnd(lo||hi)),pkey:'min_salary'});
+      sp.ask=sp.ask.filter(q=>!/Mức lương cụ thể/.test(q)); }
+    if(P.company_name) sp.fields.push({k:'co',label:'Công ty',v:P.company_name,txt:esc(P.company_name),pkey:'company_name'});
+  }
+  if(d.id==='fashion'){
+    const b=sp.fields.find(f=>f.k==='brand'); const bk=b?norm(String(b.v)):'';
+    const fl=LUX[bk]; if(fl&&x.price>0&&x.price<fl*0.3&&!sp.legalCons.length){ sp.risks.push('Giá thấp hơn nhiều so với hàng chính hãng của '+b.v+' (mức giá này thường là hàng nhái)'); }
+  }
+  d.ask.forEach(q=>sp.ask.push(q));
+}
+/* Phân loại nhỏ trong xe cộ và nhà đất: xe ô tô, xe điện, xe tải · phòng trọ, đất nền, căn hộ, mặt bằng */
+function subScan(sp,text,title,L,C,R){
+  const ex=(id,label,asks,inspect,pay)=>{ sp.sub=id; sp.subLabel=label; asks.forEach(q=>sp.ask.push(q)); sp.subCheck={inspect,pay:pay||[]}; };
+  if(sp.cat==='vehicle'){
+    if(/(?<![a-z])(?:xe dien|xe may dien|xe dap dien|yadea|dat bike|pega|dibao|klara|feliz|evo ?(?:200|grand)|theon|vento)(?![a-z])/.test(text)){
+      R(/(?:pin|ac quy) (?:chai|yeu|phong|hu|can thay)|chai pin/,'Pin yếu / chai'); R(/(?:khong|ko|chua) (?:co )?(?:bien so|cavet|ca vet|giay to)/,'Xe điện không biển số / giấy tờ');
+      ex('ebike','Xe điện',['Pin loại gì (axit chì hay lithium), còn bao nhiêu % dung lượng, đã thay pin chưa?','Sạc đầy chạy được bao nhiêu km, có đủ sạc và chìa khóa?','Xe điện có biển số, giấy tờ xe, hay bảo hành pin còn không?'],['Sạc đầy pin, chạy thử đến lúc giảm công suất để ước quãng đường thực tế','Kiểm tra phanh, đèn, còi, tay ga, động cơ êm không giật; xem số khung, số máy, giấy đăng ký (nếu có)'],['Xe điện cũ: hỏi bảo hành pin; thay pin rất đắt, không mua nếu pin chai nặng']);
+    } else if(/(?<![a-z])(?:o to|oto|sedan|suv|hatchback|mpv|pick ?up|ban tai|vios|camry|corolla|civic|accord|city|crv|cr-v|accent|elantra|i10|grand i10|santa ?fe|tucson|morning|cerato|k3|seltos|sorento|mazda ?[236]|cx-?[3589]|ranger|fortuner|innova|xpander|fadil|lux ?[as]|vf ?[3-9]|kia|ford|mercedes|bmw|audi|lexus|porsche|mitsubishi|suzuki (?:ertiga|swift|ciaz)|(?:xe )?\d\s?cho)(?![a-z])/.test(title)){
+      R(/xe (?:dich vu|taxi|grab|be|cho thue)|chay (?:dich vu|taxi|grab)/,'Xe từng chạy dịch vụ / taxi'); R(/(?:lui|chinh|can) (?:odo|km|cong to met)|odo (?:lui|chinh)/,'Nghi chỉnh đồng hồ số km');
+      ex('car','Ô tô',['Xe đã qua mấy chủ, đăng kiểm còn hạn đến khi nào? Có bảo hiểm thân vỏ không?','Lịch sử bảo dưỡng ở hãng có đầy đủ không? Xe có từng chạy dịch vụ (taxi, Grab)?','Xe có từng thay hộp số, động cơ, sơn lại toàn bộ hay đâm đụng nặng không?'],['Xem kỹ gầm, khe cửa, cốp: tìm vết hàn, sơn lại, khe hở không đều (dấu hiệu đâm đụng)','Mở nắp ca-pô: không rò dầu, nước làm mát đúng màu, không có mùi khét; khởi động nguội nghe tiếng máy, xem khói xả','Chạy thử ít nhất 15–20 phút: phanh, lái, hộp số (chuyển số êm), điều hòa, đèn, kính điện; bật hết đèn cảnh báo lên rồi xem đèn nào còn sáng','Kiểm tra số khung, số máy khớp cà vẹt; đối chiếu số km đồng hồ với lịch sử bảo dưỡng và độ mòn vô lăng, ghế, bàn đạp','Nên thuê thợ hoặc trung tâm kiểm định xe chuyên nghiệp xem cùng trước khi trả tiền'],['Thanh toán qua công chứng hoặc ngân hàng, nhận cà vẹt, chìa khóa đủ ngay khi sang tên; kiểm tra xe có đang thế chấp ngân hàng không']);
+    } else if(/(?<![a-z])(?:xe tai|xe ben|xe khach|dau keo|rmooc|ro mooc|container|xe cau|xe cuu thuong|xe bon|xe lu|xe xuc|may xuc|may cay|may kéo|may keo)(?![a-z])/.test(title)){
+      R(/xe (?:cai tao|do thung|doi thung|doi tai trong)|cai tao/,'Xe cải tạo / đổi thùng'); R(/(?:khong|chua) (?:co )?(?:phu hieu|dang kiem|gpkd)/,'Thiếu phù hiệu / đăng kiểm');
+      ex('truck','Xe tải / xe chuyên dụng',['Tải trọng cho phép thực tế là bao nhiêu? Xe có cải tạo, đổi thùng không?','Đăng kiểm, phù hiệu, bảo hiểm còn hạn không? Xe có chạy dịch vụ, vận tải?','Xe còn nợ ngân hàng, thế chấp hoặc phạt nguội không?'],['Chạy thử có tải nếu được: kiểm tra phanh, hộp số, ly hợp, rò rỉ dầu, khói xả','Kiểm tra khung gầm, hàn, nứt; thùng xe, cầu, nhíp','Đối chiếu số khung, số máy, giấy đăng kiểm, giấy phép lưu hành; tra cứu phạt nguội'],['Nên có thợ máy xe tải đi cùng; thanh toán qua ngân hàng, lập hợp đồng mua bán có công chứng']);
+    }
+  } else if(sp.cat==='property'){
+    const t=title+' '+text.slice(0,500);
+    if(/(?<![a-z])(?:phong tro|nha tro|cho thue|can ho dich vu|ky tuc|o ghep|sleepbox|thue phong|thue nha|thue can ho|thue van phong|thue mat bang)(?![a-z])/.test(t)){
+      R(/dat coc (?:\d|2|3|hai|ba) thang|coc (?:\d|2|3) thang/,'Cọc nhiều tháng'); R(/khong (?:co )?(?:hop dong|giay to)|gia dien nuoc cao|dien (?:\d{4,5})\s*(?:d|dong)|nuoc (?:\d{2,3})\s*k/,'Phí điện nước hoặc hợp đồng chưa rõ');
+      ex('rent','Cho thuê',['Giá thuê đã gồm điện, nước, internet, rác, gửi xe chưa? Giá điện nước tính theo giá nhà nước hay giá riêng?','Đặt cọc mấy tháng, hợp đồng thuê ghi thời hạn bao lâu, có được trả cọc khi trả phòng không?','Có chung chủ không, giờ giấc đi lại, nuôi thú cưng, nấu ăn, để xe có hạn chế gì? Có PCCC, camera, lối thoát hiểm không?'],['Xem trực tiếp cả ban ngày lẫn buổi tối: tiếng ồn, ánh sáng, mùi ẩm, ổ cắm điện, nước, wifi, khóa cửa','Kiểm tra trần, tường có thấm, nấm mốc, côn trùng; vòi nước, bồn rửa, nhà vệ sinh hoạt động tốt','Xem lối thoát hiểm, bình chữa cháy, an ninh khu trọ; hỏi những người đang ở về chủ nhà'],['Chỉ đặt cọc khi đã xem phòng và có biên nhận ghi rõ số tiền, ngày, điều kiện hoàn cọc; đọc kỹ hợp đồng thuê']);
+    } else if(/(?<![a-z])(?:can ho|chung cu|penthouse|duplex|officetel|condotel|studio)(?![a-z])/.test(t)){
+      R(/(?:chua|dang cho) (?:co )?(?:so|ban giao)|hop dong mua ban|hdmb|hop dong (?:cọc|coc)|vi bang|nhan nha/,'Chưa có sổ riêng / mới ở hợp đồng mua bán');
+      ex('apt','Căn hộ',['Căn hộ đã có sổ hồng riêng chưa, hay mới có hợp đồng mua bán? Thời hạn sở hữu lâu dài hay 50 năm?','Phí quản lý hàng tháng bao nhiêu, đã đóng đến tháng nào? Có nợ phí, nợ điện nước, nợ ngân hàng không?','Chủ đầu tư là ai, tình trạng bàn giao (thô / cơ bản / đầy đủ nội thất), tầng mấy, hướng nào?'],['Đối chiếu số căn hộ, tầng, tòa với sổ hoặc hợp đồng; xem ban công, hướng, ánh sáng, thang máy, bãi xe','Hỏi ban quản lý tòa nhà về phí, nợ, quy định cho thuê, thú cưng, sửa chữa','Kiểm tra thấm tường, trần, đường ống nước, điện, điều hòa, khóa cửa; xem tình trạng chung của tòa nhà'],['Nhờ văn phòng công chứng kiểm tra pháp lý, số tiền cọc có biên nhận; thanh toán theo tiến độ trong hợp đồng, không đưa tiền mặt cho môi giới']);
+    } else if(/(?<![a-z])(?:dat nen|dat vuon|dat nong nghiep|dat trong cay|lo dat|dat tho cu|dat o|dat ruong|dat du an|phan lo|ban dat|dat mat tien|dat hem|dat thua)(?![a-z])/.test(t)&&!/(?<![a-z])(?:nha|biet thu|can ho)(?![a-z])/.test(title)){
+      R(/dat (?:nong nghiep|trong cay|ruong|vuon|rung|lua)|chua tach thua|khong tach (?:duoc )?thua/,'Đất nông nghiệp / chưa tách thửa'); R(/duong (?:hem|xe) (?:nho|\d(?:\.\d)?\s*m)|khong (?:co )?(?:duong|loi) (?:vao|di)|ket duong|vao (?:hem )?nho/,'Đường vào nhỏ hoặc chưa rõ');
+      ex('land','Đất nền',['Loại đất là gì: thổ cư (đất ở) hay nông nghiệp? Mục đích sử dụng có xây nhà được không?','Đã có sổ riêng chưa, có tách thửa được không? Đất có dính quy hoạch, lộ giới, đường đi chung không?','Đường vào rộng bao nhiêu, xe ô tô vào được không? Có điện, nước, cống thoát nước đến đất chưa?'],['Đến tận nơi, đối chiếu mốc ranh với sổ, sơ đồ thửa; hỏi hàng xóm về ranh giới, tranh chấp, ngập, nghĩa trang gần','Tra quy hoạch, lộ giới tại UBND phường/xã hoặc cổng thông tin quy hoạch địa phương trước khi đặt cọc','Hỏi giá thị trường xung quanh ít nhất 3 nơi, tránh mua theo lời môi giới "sắp lên giá"'],['Đặt cọc phải có hợp đồng đặt cọc công chứng/viết tay có người làm chứng, ghi rõ điều kiện hoàn cọc; không đưa tiền mặt cho môi giới; giao dịch qua công chứng']);
+    } else if(/(?<![a-z])(?:mat bang|van phong|kiot|shophouse|cua hang|kho xuong|nha xuong|xuong)(?![a-z])/.test(t)){
+      ex('shop','Mặt bằng / kinh doanh',['Hợp đồng thuê/bán còn bao lâu, giá thuê có tăng hàng năm không? Chủ nhà có cho sang nhượng không?','Có đủ giấy phép kinh doanh, PCCC, giấy tờ nhà? Mặt tiền, lối vào, chỗ để xe thế nào?','Chi phí điện nước, quản lý, thuế và các khoản phát sinh khác là bao nhiêu?'],['Quan sát lượng người qua lại vào nhiều giờ khác nhau (sáng, trưa, tối, cuối tuần)','Kiểm tra điện 3 pha, nước, thoát nước, biển hiệu, PCCC; hỏi hộ kinh doanh bên cạnh về chủ nhà'],['Hợp đồng thuê/sang nhượng nên công chứng; tiền cọc có biên nhận']);
+    }
+  }
+}
+
 function extractSpecs(x){
   const P=x.params||{}, pkk=re=>Object.keys(P).find(k=>re.test(k)), pk=re=>{ const k=pkk(re); return k?P[k]:''; };
   const text=norm((x.name||'')+'\n'+(x.desc||'')+'\n'+ptext(P)), title=norm(x.name||'');
-  const sp={ask:[],legalPros:[],legalCons:[],risks:[],src:{},srcKey:{},rules:[]};
+  const sp={ask:[],legalPros:[],legalCons:[],risks:[],dangers:[],src:{},srcKey:{},rules:[]};
   const textNP=norm((x.name||'')+'\n'+(x.desc||''));      // chữ của tin, không kể mục thông số
   let y=pnum(pk(RK.year)); if(y>=1980&&y<=CURY+1){ sp.src.year='mục thông số'; sp.srcKey.year=pkk(RK.year); } else y=0;
   const yTxt=findYear(textNP,title);
@@ -806,12 +1290,15 @@ function extractSpecs(x){
   sp.floors=pnum(pk(RK.floors)); if(sp.floors) sp.srcKey.floors=pkk(RK.floors); else sp.floors=findFloors(text);
   const VEH=/(?:honda|yamaha|suzuki|kawasaki|ducati|bmw|triumph|ktm|harley|piaggio|vespa|sym|vinfast|toyota|mazda|hyundai|kia|ford|mercedes|audi|moto|phan khoi|exciter|winner|wave|vision|lead|air ?blade|ninja|vios|civic|xe may|o to|oto)\b/;
   const PROP=/(?:nha|dat|can ho|chung cu|phong tro|biet thu|mat tien|hem|kiot|nha pho|lo dat|so hong|so do|nha cap 4|shophouse)/;
-  const ELEC=/(?:iphone|ipad|samsung|xiaomi|oppo|laptop|macbook|dien thoai|tai nghe|airpods|tivi|man hinh|may anh|may tinh|apple watch)/;
+  const ELEC=/(?:iphone|ipad|samsung galaxy|galaxy (?:s|a|z|note|m)\d*|xiaomi|redmi|poco|oppo|vivo|realme|pixel|oneplus|nokia|huawei|honor|dien thoai|may tinh bang|apple watch|smartwatch)/;
   const VSTRONG=/(?:xe may|xe so|xe ga|xe tay ga|xe con tay|moto|phan khoi|o to|oto|exciter|winner|wave|vision|air ?blade|ninja|vios|civic|(?<![a-z])sh ?\d{2,3}|(?<![a-z])z ?\d{3,4}|r15|nvx|sirius|raider|vario|pcx)/;
   const notVeh=/(?:xe dap|xe noi|xe day|xe lan|xe tap di|do choi|mo hinh)/.test(title);
   const catName=norm(P.category_name||'');
-  const byCat=/(?:dien thoai|may tinh|laptop|may anh|tivi|am thanh|tai nghe|do dien tu|may choi game|dong ho thong minh)/.test(catName)?'electronics':/(?:nha o|nha dat|bat dong san|can ho|chung cu|van phong|mat bang|phong tro|(?<![a-z])dat(?![a-z]))/.test(catName)?'property':/(?:xe may|o to|xe dien|xe tai|xe cong nong)/.test(catName)?'vehicle':'';   // Chợ Tốt ghi sẵn loại hàng
-  sp.cat=byCat||((sp.area&&PROP.test(text)&&!/(?:xe|moto)\b/.test(title))?'property':(!notVeh&&(sp.odo||(sp.year&&VEH.test(text))||(VSTRONG.test(title)&&(sp.year||/(?<![a-z])(?:xe|moto|pkl|odo|bien so|cavet|ca vet|dang kiem|sang ten|phan khoi|hqcn)(?![a-z])/.test(text)))||(VEH.test(title)&&/(?<![a-z])xe(?![a-z])/.test(title)))||/(?:bien so|ca ?vet|dang kiem|bstp)/.test(text)||Object.keys(P).some(k=>/mileage|regdate|motorbike|car_/.test(k)))?'vehicle':ELEC.test(text)?'electronics':'generic');
+  const byCat=/(?:dien thoai|may tinh bang|dong ho thong minh|smartwatch)/.test(catName)?'electronics':/(?:nha o|nha dat|bat dong san|can ho|chung cu|van phong|mat bang|phong tro|(?<![a-z])dat(?![a-z]))/.test(catName)?'property':/(?:xe may|o to|xe dien|xe tai|xe cong nong)/.test(catName)?'vehicle':'';   // Chợ Tốt ghi sẵn loại hàng
+  let def=pickDefCn(catName)||pickDefPri(title)||((P.min_salary!=null||P.company_name!=null)?CATIDX.job:null);
+  sp.cat=def?'goods':byCat||((sp.area&&PROP.test(text)&&!/(?:xe|moto)\b/.test(title))?'property':(!notVeh&&(sp.odo||(sp.year&&VEH.test(text))||(VSTRONG.test(title)&&(sp.year||/(?<![a-z])(?:xe|moto|pkl|odo|bien so|cavet|ca vet|dang kiem|sang ten|phan khoi|hqcn)(?![a-z])/.test(text)))||(VEH.test(title)&&/(?<![a-z])xe(?![a-z])/.test(title)))||/(?:bien so|ca ?vet|dang kiem|bstp)/.test(text)||Object.keys(P).some(k=>/mileage|regdate|motorbike|car_/.test(k)))?'vehicle':ELEC.test(text)?'electronics':'generic');
+  if(sp.cat==='generic'&&!def){ def=pickDefW(title); if(def) sp.cat='goods'; }
+  const D=(re,t)=>{ if(hitNeg(text,re)){ sp.dangers.push(t); sp.rules.push({k:'con',label:t,re}); } };
   const L=(re,t)=>{ if(hitNeg(text,re)){ sp.legalPros.push(t); sp.rules.push({k:'pro',label:t,re}); } }, C=(re,t)=>{ if(hitNeg(text,re)){ sp.legalCons.push(t); sp.rules.push({k:'con',label:t,re}); } }, R=(re,t)=>{ if(hitNeg(text,re)){ sp.risks.push(t); sp.rules.push({k:'risk',label:t,re}); } };
   if(sp.cat==='vehicle'){
     L(/chinh chu/,'Chính chủ'); L(/ca ?vet|cavet/,'Có cà vẹt'); L(/dang kiem/,'Có đăng kiểm'); L(/giay to (?:day du|hop le|chinh chu|ro rang)|day du giay to/,'Giấy tờ đầy đủ'); L(/bstp|bien so (?:tp|thanh pho|so dep)/,'Biển số thành phố');
@@ -840,7 +1327,9 @@ function extractSpecs(x){
     R(/thay man|thay vo|ep kinh|sua chua|bo main|mat face ?id|mat van tay|mat touch ?id|hong cam/,'Đã sửa chữa / thay linh kiện');
     if(!sp.battery) sp.ask.push('Pin còn bao nhiêu phần trăm (xem ảnh chụp Sức khỏe pin)?'); if(!sp.warrM) sp.ask.push('Còn bảo hành không, đến khi nào?'); sp.ask.push('Máy đã từng sửa chữa hay thay linh kiện chưa? Có bị khóa iCloud/mạng không?');
   }
-  if(!sp.usedM&&sp.cat!=='property'&&sp.cat!=='vehicle') sp.ask.push('Đã dùng bao lâu rồi?');
+  else if(sp.cat==='goods'&&def) defScan(sp,def,x,text,title,P,L,C,R,D);
+  if(sp.cat==='vehicle'||sp.cat==='property') subScan(sp,text,title,L,C,R);
+  if(!sp.usedM&&sp.cat!=='property'&&sp.cat!=='vehicle'&&!(def&&def.used===false)) sp.ask.push('Đã dùng bao lâu rồi?');
   const yt=findYear(title,title), yb=findYear(norm(x.desc||''),'');
   sp.yearConflict=!!(yt&&yb&&Math.abs(yt-yb)>1);
   return sp;
@@ -883,6 +1372,9 @@ function applySpecs(sp,pros,cons,danger){
     if(sp.battery>=90){ pros.push('Pin còn '+sp.battery+'%'); q+=3; } else if(sp.battery&&sp.battery<80) bad('Pin chỉ còn '+sp.battery+'%, có thể phải thay sớm',4);
     if(sp.warrM>=6){ pros.push('Còn bảo hành khoảng '+sp.warrM+' tháng'); q+=3; }
     sp.legalCons.forEach(t=>{ danger.push(t+' — rất rủi ro'); }); sp.risks.slice(0,2).forEach(t=>bad(t,5));
+  } else if(sp.cat==='goods'){
+    sp.legalPros.slice(0,3).forEach(t=>{ pros.push(t); q+=3; });
+    sp.legalCons.forEach((t,i)=>bad(t,i?4:12)); sp.dangers.forEach(t=>{ danger.push(t); }); sp.risks.slice(0,3).forEach(t=>bad(t,5));
   }
   return Math.max(-20,Math.min(15,q));
 }
@@ -947,6 +1439,7 @@ function evidenceFor(x){
   if(sp.storage) put('storage','Dung lượng',locStorage(n));
   if(sp.srcKey.legal) ev.legal={param:sp.srcKey.legal,value:P[sp.srcKey.legal]};
   if(sp.warrM) put('warrM','Bảo hành',locWarranty(n));
+  (sp.fields||[]).forEach(f=>{ if(f.v==null) return; if(f.pkey){ ev['f_'+f.k]={param:f.pkey,value:P[f.pkey]}; return; } for(const re of (f.res||[])){ const m=re.exec(n); if(m){ put('f_'+f.k,f.label,{i:m.index,j:m.index+m[0].length}); break; } } });
   (sp.rules||[]).forEach(r=>{ const o=O(locNeg(n,r.re)); if(o){ rules.push({k:r.k,label:r.label,...o}); spans.push({...o,label:r.label}); } });
   return {orig,nameLen:nm.length,descEnd:nm.length+1+ds.length,ev,rules,spans};
 }
@@ -962,22 +1455,25 @@ function snippetHtml(orig,start,end){
 
 function specsHtml(x){
   const sp=x.specs; if(!sp||sp.cat==='generic'&&!sp.usedM&&!sp.year) return '';
+  const DEFX=sp.cat==='goods'?CATIDX[sp.def]:null;
   const E=evidenceFor(x)||{ev:{},rules:[],spans:[],orig:'',descEnd:0,nameLen:0};
   const rows=[], evLine=k=>{ const e=E.ev[k]; const conf=k==='year'&&sp.paramYear?`<div class="ev">⚠ Mục thông số của tin ghi đời <b>${sp.paramYear}</b>, khác với nội dung tin.</div>`:(k==='odo'&&sp.paramOdo?`<div class="ev">⚠ Mục thông số của tin ghi <b>${fmtN(sp.paramOdo)} km</b>, khác với nội dung tin.</div>`:''); if(!e) return conf;
     return conf+(e.param?`<div class="ev">Lấy từ mục thông số của tin: <b>${esc(e.param)}</b> = ${esc(e.value)}</div>`:`<div class="ev">“${snippetHtml(E.orig,e.start,e.end)}”</div>`); };
   const row=(l,v,warn,k)=>rows.push(`<div class="row"><span class="mute">${l}</span><b${warn?' style="color:var(--warn)"':''}>${v}</b></div>${k?evLine(k):''}`);
-  const KIND={vehicle:'Xe cộ',property:'Nhà đất',electronics:'Đồ điện tử',generic:'Khác'};
+  const KIND={vehicle:'Xe cộ',property:'Nhà đất',electronics:'Điện thoại / máy tính bảng',generic:'Khác'}; const kindTxt=sp.cat==='goods'?sp.icon+' '+sp.kind:(sp.subLabel?KIND[sp.cat]+' · '+sp.subLabel:KIND[sp.cat]);
   const py=sp.year&&sp.odo&&sp.age>=2?' (~'+fmtN(sp.odo/sp.age)+' km/năm)':'';
   if(sp.cat==='vehicle'){ row('Đời / năm sản xuất',sp.year?sp.year+' ('+sp.age+' năm tuổi)':'Chưa ghi rõ',!sp.year,'year'); row('Số km đã đi',sp.odo?fmtN(sp.odo)+' km'+py:'Chưa ghi rõ',!sp.odo,'odo'); }
   if(sp.cat==='property'){ row('Diện tích',sp.area?sp.area+' m²'+(x.price>0&&sp.area?' · '+vnd(Math.round(x.price/sp.area/1e4)*1e4)+'/m²':''):'Chưa ghi rõ',!sp.area,'area'); if(sp.floors) row('Số tầng',sp.floors,false,'floors'); if(sp.rooms) row('Phòng ngủ / vệ sinh',sp.rooms+' PN'+(sp.toilets?' · '+sp.toilets+' WC':'')); if(sp.width&&sp.length) row('Rộng × dài',Math.round(sp.width*10)/10+' × '+Math.round(sp.length*10)/10+' m'); if(sp.houseType) row('Loại hình',esc(sp.houseType)+(sp.mainStreet?' · mặt phố':'')); if(sp.direction) row('Hướng cửa chính',esc(sp.direction)); if(sp.built) row('Năm xây',sp.built+' ('+(CURY-sp.built)+' năm)',false,'built'); }
   if(sp.cat==='electronics'){ if(sp.storage||sp.capCode) row('Dung lượng',sp.storage?sp.storage+' GB':'(mã '+esc(sp.capCode)+')',false,sp.storage?'storage':''); row('Pin',sp.battery?sp.battery+'%':'Chưa ghi rõ',!sp.battery,'battery'); row('Bảo hành',sp.warrM?'~'+sp.warrM+' tháng':'Chưa ghi rõ',!sp.warrM,'warrM'); }
+  if(sp.cat==='goods'){ sp.fields.forEach(f=>row(f.label,f.v==null?'Chưa ghi rõ':(f.pkey?f.txt:esc(f.txt)),f.v==null,f.v==null?'':'f_'+f.k)); if(sp.year) row('Năm sản xuất / mua',sp.year+(sp.age?' ('+sp.age+' năm)':''),false,'year'); if(sp.warrM) row('Bảo hành','~'+sp.warrM+' tháng',false,'warrM'); }
   if(sp.usedM) row('Thời gian đã dùng',sp.usedM>=12?(Math.round(sp.usedM/12*10)/10)+' năm':sp.usedM+' tháng',false,'usedM');
-  if(sp.cat!=='generic'){ row(sp.cat==='property'?'Pháp lý':'Giấy tờ',sp.legalPros.length?esc(sp.legalPros.join(', ')):'Chưa thấy nhắc',!sp.legalPros.length,'legal'); }
-  const flags=sp.legalCons.map(t=>'⛔ '+t).concat(sp.risks.map(t=>'⚠️ '+t));
+  if(sp.cat==='goods'){ row(DEFX.docs||'Điểm cộng',sp.legalPros.length?esc(sp.legalPros.join(', ')):'Chưa thấy nhắc',!sp.legalPros.length); }
+  else if(sp.cat!=='generic'){ row(sp.cat==='property'?'Pháp lý':'Giấy tờ',sp.legalPros.length?esc(sp.legalPros.join(', ')):'Chưa thấy nhắc',!sp.legalPros.length,'legal'); }
+  const flags=sp.legalCons.map(t=>'⛔ '+t).concat((sp.dangers||[]).map(t=>'🚨 '+t),sp.risks.map(t=>'⚠️ '+t));
   const src=[...new Set(Object.values(sp.src))].join(', ');
   const evRules=E.rules.length?`<details class="mt-2"><summary class="text-sm" style="font-weight:700;cursor:pointer">🔎 Xem ${E.rules.length} chỗ máy đã đọc ra ý này</summary>${E.rules.map(r=>`<div class="ev"><b>${r.k==='pro'?'✅':r.k==='con'?'⛔':'⚠️'} ${esc(r.label)}:</b> “${snippetHtml(E.orig,r.start,r.end)}”</div>`).join('')}</details>`:'';
   const full=E.orig&&E.spans.length?`<details class="mt-2"><summary class="text-sm" style="font-weight:700;cursor:pointer">📄 Xem nguyên văn tin, máy tô sáng chỗ đã đọc</summary><div class="ev-full">${highlightText(E.orig.slice(0,E.descEnd),E.spans.filter(s=>s.end<=E.descEnd))}</div></details>`:'';
-  return `<div class="zbox line"><p class="font-extrabold">🔎 Máy đọc được từ tin (${KIND[sp.cat]})</p>${rows.join('')}
+  return `<div class="zbox line"><p class="font-extrabold">🔎 Máy đọc được từ tin (${kindTxt})</p>${rows.join('')}
     ${flags.length?flags.map(f=>`<span class="pill" style="background:var(--bad-bg)">${esc(f)}</span>`).join(''):''}
     ${evRules}${full}
     ${sp.ask.length?`<p class="font-extrabold mt-3">❓ Nên hỏi người bán</p>${sp.ask.slice(0,4).map(q=>`<span class="pill">${esc(q)}</span>`).join('')}`:''}
@@ -1139,7 +1635,7 @@ function detailBody(x,best,buy){
   return `<div class="hero"><div class="ring" style="--p:${x.score};--c:var(${col})" role="img" aria-label="Điểm ${x.score} trên 100"><span><b>${x.score}</b><small>/100</small></span></div>
     <div style="min-width:0"><div class="flex flex-wrap gap-1 mb-1"><span class="tag ${x.level}">${lvlTxt(x.level)}</span>
     ${best&&buy?'<span class="tag good">⭐ Đáng giao dịch nhất</span>':''}${x.exact===false?'<span class="tag warn">Gần giống</span>':''}${x.sticky?'<span class="tag warn" title="Người bán trả phí để tin được đẩy lên đầu">Tin ưu tiên</span>':x.boosted?'<span class="tag warn" title="Tin này hiện lại ở nhiều trang kết quả của Chợ Tốt">Hay hiện ở đầu</span>':''}${x.sample?'<span class="tag warn">Tin mẫu</span>':''}${x.source&&!x.sample?`<span class="tag warn">${esc(x.source)}</span>`:''}</div>
-    <h3 class="text-lg font-extrabold leading-snug">${esc(x.name)}</h3></div></div>
+    <h3 class="text-lg font-extrabold leading-snug">${esc(x.name)}</h3>${matchLine(x)}</div></div>
    ${x.images&&x.images.length?`<div class="gal" aria-label="Ảnh sản phẩm">${x.images.map(u=>x.url?`<a class="ph" href="${esc(x.url)}" target="_blank" rel="noopener">${img(u)}</a>`:`<div class="ph">${img(u)}</div>`).join('')}</div>`:''}
    <div class="zbox line">
     <div class="row" style="border-top:0"><span class="mute">Giá</span><b class="text-lg nw">${vnd(x.price)}</b></div>
@@ -1238,6 +1734,7 @@ function prepare(items){
     if(!x.specs) x.specs=extractSpecs(x);
     if(x.priceNotValid||isFakePrice(x.price,norm((x.name||'')+' '+(x.desc||'')))){ x.priceRaw=x.price; x.price=0; x.priceFake=true; }   // giá giả không được tính vào giá tham khảo
     x.genericAd=isGenericAd(x);
+    if(x.refSrc==='cat'&&!(x.specs.cat==='electronics'||(x.specs.cat==='goods'&&PRICED.has(x.specs.def)))){ x.ref=null; x.refSrc=null; }   // bảng giá ước tính chỉ đáng tin với điện thoại, âm thanh, tivi, máy ảnh, game, máy tính
     x.refCat=(x.refSrc==='cat'&&x.ref)?x.ref:0;      // mốc giá ước tính gốc, dùng lại khi không đủ tin tương tự để so
   });
   const cl0=clusterItems(items), reps0=cl0.map(g=>g.slice().sort((a,b)=>(b.t||0)-(a.t||0))[0]);
@@ -1364,7 +1861,7 @@ function offerPrice(x){
 }
 function negoMsgs(x){
   const sp=x.specs||{cat:'generic',ask:[]}, nm=(x.name||'sản phẩm').slice(0,60), who='anh/chị';
-  const photo=sp.cat==='vehicle'?'ảnh đồng hồ odo, cà vẹt và số khung':sp.cat==='property'?'ảnh sổ (anh/chị có thể che số CCCD) và ảnh hiện trạng':sp.cat==='electronics'?'ảnh màn hình pin và phần cài đặt iCloud':'thêm vài tấm ảnh thật, chụp gần';
+  const photo=sp.cat==='vehicle'?'ảnh đồng hồ odo, cà vẹt và số khung':sp.cat==='property'?'ảnh sổ (anh/chị có thể che số CCCD) và ảnh hiện trạng':sp.cat==='electronics'?'ảnh màn hình pin và phần cài đặt iCloud':sp.cat==='goods'?CATIDX[sp.def].photo:'thêm vài tấm ảnh thật, chụp gần';
   const qs=sp.ask.slice(0,3).map(q=>'- '+q).join('\n');
   const refTxt=x.refSrc==='similar'?'các tin tương tự ('+(x.refNote||'cùng loại')+')':x.refSrc==='median'?'các tin cùng loại trên Chợ Tốt':'giá thị trường';
   const r=x.ref&&x.price?x.price/x.ref:1, pct=Math.round(Math.abs(r-1)*100), off=offerPrice(x);
@@ -1373,7 +1870,7 @@ function negoMsgs(x){
   return {
     ask:`Chào ${who}, em đang quan tâm tin "${nm}" trên Chợ Tốt ạ.${extra}\n${qs?`${who[0].toUpperCase()+who.slice(1)} cho em hỏi thêm:\n${qs}\n`:''}${who[0].toUpperCase()+who.slice(1)} cho em xin ${photo} ạ. Em cảm ơn!`,
     deal:off?`Chào ${who}, em đang quan tâm tin "${nm}" (giá ${sayVnd(x.price)}) ạ.${extra}${refLine}\nNếu hàng đúng như mô tả, em xin đề nghị ${sayVnd(off)}, em đến xem và lấy ngay trong ngày. ${who[0].toUpperCase()+who.slice(1)} xem giúp em nhé, em cảm ơn!`:`Chào ${who}, em đang quan tâm tin "${nm}" nhưng chưa thấy ghi giá. ${who[0].toUpperCase()+who.slice(1)} cho em xin giá cuối và hàng còn không ạ?`,
-    meet:`Chào ${who}, em muốn hẹn xem trực tiếp "${nm}" ạ. ${who[0].toUpperCase()+who.slice(1)} cho em xin địa chỉ và giờ phù hợp (em ưu tiên ban ngày, nơi đông người hoặc tại nhà ${who}). Em xin kiểm tra hàng${sp.cat==='vehicle'?' và đối chiếu giấy tờ chính chủ':sp.cat==='property'?' và xem bản gốc giấy tờ':''}, ưng thì em thanh toán ngay khi nhận hàng, em không đặt cọc hay chuyển tiền trước ạ. Em cảm ơn!`
+    meet:`Chào ${who}, em muốn hẹn xem trực tiếp "${nm}" ạ. ${who[0].toUpperCase()+who.slice(1)} cho em xin địa chỉ và giờ phù hợp (em ưu tiên ban ngày, nơi đông người hoặc tại nhà ${who}). Em xin kiểm tra hàng${sp.cat==='goods'?CATIDX[sp.def].meetNote:''}${sp.cat==='vehicle'?' và đối chiếu giấy tờ chính chủ':sp.cat==='property'?' và xem bản gốc giấy tờ':''}, ưng thì em thanh toán ngay khi nhận hàng, em không đặt cọc hay chuyển tiền trước ạ. Em cảm ơn!`
   };
 }
 function negoBox(x){
@@ -1411,11 +1908,17 @@ function checklistFor(x){
     G.push({t:'Trước khi đi',i:SAFE.concat(['Hỏi trước: pin, bảo hành, đã sửa chữa chưa','Chuẩn bị SIM và sạc của bạn để thử'])});
     G.push({t:'Khi xem máy',i:['Kiểm tra iCloud / tài khoản: yêu cầu chủ máy đăng xuất trước mặt bạn','Đối chiếu số IMEI / serial trên máy với hộp và tra bảo hành trên web hãng',sp.battery?'Mở Cài đặt xem sức khỏe pin (tin ghi '+sp.battery+'%)':'Mở Cài đặt xem sức khỏe pin','Kiểm tra màn hình: điểm chết, ám màu, cảm ứng','Thử loa, micro, camera trước sau, sạc, nút bấm, vân tay / Face ID','Thử SIM, sóng, wifi, bluetooth']});
     G.push({t:'Thanh toán',i:['Ưng ý mới thanh toán, ưu tiên chuyển khoản ngay tại chỗ sau khi nhận máy','Lấy hóa đơn, hộp và phụ kiện đi kèm']});
+  } else if(sp.cat==='goods'){
+    const c=CATIDX[sp.def].check, fn=a=>(a||[]).map(v=>typeof v==='function'?v(sp):v);
+    G.push({t:'Trước khi đi',i:SAFE.concat(fn(c.before),(sp.dangers&&sp.dangers.length)?['🚨 Tin có dấu hiệu lừa đảo ('+sp.dangers.join('; ')+'): không chuyển tiền, chỉ làm việc trực tiếp']:[])});
+    G.push({t:'Khi xem hàng',i:fn(c.inspect).concat(sp.risks.length?['Kiểm tra kỹ vì tin có nhắc: '+sp.risks.join(', ')]:[])});
+    G.push({t:'Thanh toán',i:fn(c.pay)});
   } else {
     G.push({t:'Trước khi đi',i:SAFE.concat(['Hỏi lại hàng còn không, phụ kiện đi kèm gồm những gì'])});
     G.push({t:'Khi xem hàng',i:['So hàng thật với ảnh và mô tả trong tin','Chạy thử / dùng thử mọi chức năng chính','Hỏi hóa đơn, bảo hành, lý do bán']});
     G.push({t:'Thanh toán',i:['Không đặt cọc, không chuyển tiền khi chưa xem hàng','Chỉ trả tiền khi nhận hàng và đã kiểm tra']});
   }
+  if(sp.subCheck&&G.length>2){ G[1].i=G[1].i.concat(sp.subCheck.inspect); G[2].i=G[2].i.concat(sp.subCheck.pay); }
   return G;
 }
 function ckLoad(k){ try{ return JSON.parse(localStorage.getItem('ck:'+k)||'{}'); }catch(e){ return CKMEM[k]||{}; } }
@@ -1580,7 +2083,7 @@ function showResults(items,note,title,paste,opt){
       <div class="thumb">${x.images&&x.images[0]?img(x.images[0],1):'🖼️'}</div>
       <div style="min-width:0"><b class="clamp2">${esc(x.name)}</b>
        <div class="li-p"><span class="font-extrabold">${vnd(x.price)}</span><span class="tag ${x.level}">${lvlTxt(x.level)} · ${x.score}</span>${x.exact===false?'<span class="tag warn">Gần giống</span>':''}</div>
-       <div class="mute text-sm clamp2">${esc(x.loc)}${x.cond!=='Chưa rõ'?' · '+esc(x.cond):''}</div></div></summary>
+       <div class="mute text-sm clamp2">${esc(x.loc)}${x.cond!=='Chưa rõ'?' · '+esc(x.cond):''}</div>${matchLine(x)}</div></summary>
       <div class="mt-3 lazy"></div></details>`).join('')}</div></div></section>`:'';
   $('#out').innerHTML=`${note}${dupNote}<h2 class="text-xl font-extrabold mb-1">${title}</h2>${bestZone}${cmpZone}${lensZone}${restZone}
    ${paste?'':webSlot(lastQ)+srcPanel(lastQ)}
